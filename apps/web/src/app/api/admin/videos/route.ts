@@ -15,6 +15,8 @@ export async function POST(req: NextRequest) {
       categoryId,
       isFeatured,
       isTrending,
+      reelStart,
+      creditStart,
     } = body;
 
     const video = await prisma.video.create({
@@ -30,6 +32,8 @@ export async function POST(req: NextRequest) {
         categoryId,
         isFeatured: isFeatured || false,
         isTrending: isTrending || false,
+        reelStart: reelStart || 0,
+        creditStart: creditStart ?? null,
       },
     });
 

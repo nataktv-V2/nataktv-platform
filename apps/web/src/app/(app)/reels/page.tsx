@@ -4,26 +4,31 @@ import { useEffect, useState, useRef } from "react";
 import { useSubscription } from "@/components/subscription/SubscriptionGate";
 import Link from "next/link";
 
-type Video = {
+type ReelItem = {
   id: string;
   youtubeId: string;
   title: string;
+  startTime: number;
+  endTime: number | null;
   language: { name: string };
   category: { name: string };
+  thumbnailUrl: string;
+  isClip: boolean;
+  videoId: string;
 };
 
 export default function ReelsPage() {
-  const [videos, setVideos] = useState<Video[]>([]);
+  const [videos, setVideos] = useState<ReelItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const { isSubscribed, loading: subLoading } = useSubscription();
 
   useEffect(() => {
-    fetch("/api/videos?limit=20")
+    fetch("/api/reels?limit=20")
       .then((res) => res.json())
       .then((data) => {
-        setVideos(data.videos || []);
+        setVideos(data.reels || []);
         setLoaded(true);
       })
       .catch(() => setLoaded(true));
@@ -100,15 +105,23 @@ export default function ReelsPage() {
           className="h-[calc(100vh-7.5rem)] snap-start relative bg-black flex items-center justify-center"
           style={{ scrollSnapAlign: "start" }}
         >
+          {/* Blurred thumbnail background for vertical viewing */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={video.thumbnailUrl || `https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover blur-2xl brightness-[0.3] scale-110"
+          />
+
           {Math.abs(i - activeIndex) <= 1 ? (
             <iframe
-              src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=${i === activeIndex ? 1 : 0}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&playsinline=1&mute=${i === activeIndex ? 0 : 1}`}
-              className="w-full h-full"
+              src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=${i === activeIndex ? 1 : 0}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&playsinline=1&mute=${i === activeIndex ? 0 : 1}${video.startTime ? `&start=${video.startTime}` : ""}${video.endTime ? `&end=${video.endTime}` : ""}`}
+              className="relative w-full aspect-video"
               allow="autoplay; encrypted-media"
               allowFullScreen
             />
           ) : (
-            <div className="w-full h-full bg-bg-surface flex items-center justify-center">
+            <div className="w-full aspect-video bg-bg-surface flex items-center justify-center">
               <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
             </div>
           )}

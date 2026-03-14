@@ -7,12 +7,13 @@ type Props = {
   youtubeId: string;
   title: string;
   videoId: string;
+  creditStart?: number | null;
 };
 
-export function GatedVideoPlayer({ youtubeId, title, videoId }: Props) {
+export function GatedVideoPlayer({ youtubeId, title, videoId, creditStart }: Props) {
   return (
     <SubscriptionGate>
-      <VideoPlayer youtubeId={youtubeId} title={title} videoId={videoId} />
+      <VideoPlayer youtubeId={youtubeId} title={title} videoId={videoId} creditStart={creditStart} />
     </SubscriptionGate>
   );
 }

@@ -44,6 +44,8 @@ export default async function EditVideoPage({
           categoryId: video.categoryId,
           isFeatured: video.isFeatured,
           isTrending: video.isTrending,
+          reelStart: video.reelStart,
+          creditStart: video.creditStart,
         }}
       />
     </div>

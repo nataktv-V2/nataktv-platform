@@ -14,6 +14,7 @@ type VideoWithRelations = {
   id: string;
   title: string;
   thumbnailUrl: string;
+  generatedThumbnailUrl?: string | null;
   duration: number;
   language: { name: string };
   category: { name: string };

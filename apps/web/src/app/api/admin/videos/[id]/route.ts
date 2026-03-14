@@ -19,6 +19,8 @@ export async function PUT(
       categoryId,
       isFeatured,
       isTrending,
+      reelStart,
+      creditStart,
     } = body;
 
     const video = await prisma.video.update({
@@ -35,6 +37,8 @@ export async function PUT(
         categoryId,
         isFeatured: isFeatured || false,
         isTrending: isTrending || false,
+        reelStart: reelStart || 0,
+        creditStart: creditStart ?? null,
       },
     });
 

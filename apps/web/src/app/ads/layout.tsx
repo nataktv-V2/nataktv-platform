@@ -1,7 +1,9 @@
+import { AdScaler } from "@/components/ads/AdScaler";
+
 export default function AdsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <AdScaler>{children}</AdScaler>;
 }

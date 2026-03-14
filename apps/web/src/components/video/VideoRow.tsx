@@ -4,6 +4,7 @@ type Video = {
   id: string;
   title: string;
   thumbnailUrl: string;
+  generatedThumbnailUrl?: string | null;
   duration: number;
   language?: { name: string };
   category?: { name: string };
@@ -27,6 +28,7 @@ export function VideoRow({ title, videos }: VideoRowProps) {
             id={video.id}
             title={video.title}
             thumbnailUrl={video.thumbnailUrl}
+            generatedThumbnailUrl={video.generatedThumbnailUrl}
             duration={video.duration}
             language={video.language?.name}
             category={video.category?.name}

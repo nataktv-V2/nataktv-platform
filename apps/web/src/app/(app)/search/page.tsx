@@ -7,6 +7,7 @@ type Video = {
   id: string;
   title: string;
   thumbnailUrl: string;
+  generatedThumbnailUrl?: string | null;
   duration: number;
   language: { name: string };
   category: { name: string };
@@ -94,7 +95,7 @@ export default function SearchPage() {
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500"
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted"
         >
           <path
             fillRule="evenodd"
@@ -106,8 +107,8 @@ export default function SearchPage() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search shows, movies, series..."
-          className="w-full bg-[#121216] border border-white/10 rounded-full pl-10 pr-10 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-[#f97316]"
+          placeholder="Search shows, movies..."
+          className="w-full bg-bg-surface border border-border-subtle rounded-full pl-10 pr-10 py-1.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
           autoFocus
         />
         {query && (
@@ -195,6 +196,7 @@ export default function SearchPage() {
               id={video.id}
               title={video.title}
               thumbnailUrl={video.thumbnailUrl}
+              generatedThumbnailUrl={video.generatedThumbnailUrl}
               duration={video.duration}
               language={video.language?.name}
             />

@@ -102,6 +102,12 @@ export default async function AdminVideos() {
                       >
                         Edit
                       </Link>
+                      <Link
+                        href={`/admin/videos/${video.id}/clips`}
+                        className="px-3 py-1 text-xs bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded transition-colors"
+                      >
+                        Clips
+                      </Link>
                       <DeleteVideoButton videoId={video.id} />
                     </div>
                   </td>

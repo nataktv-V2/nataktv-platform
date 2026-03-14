@@ -16,6 +16,8 @@ type VideoData = {
   categoryId: string;
   isFeatured: boolean;
   isTrending: boolean;
+  reelStart: number;
+  creditStart: number | null;
 };
 
 function extractYouTubeId(input: string): string {
@@ -43,6 +45,8 @@ export function VideoForm({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [generatingThumb, setGeneratingThumb] = useState(false);
+  const [thumbResult, setThumbResult] = useState<string | null>(null);
   const [youtubeInput, setYoutubeInput] = useState(
     initialData?.youtubeId || ""
   );
@@ -51,6 +55,8 @@ export function VideoForm({
     description: initialData?.description || "",
     thumbnailUrl: initialData?.thumbnailUrl || "",
     duration: initialData?.duration || 0,
+    reelStart: initialData?.reelStart || 0,
+    creditStart: initialData?.creditStart ?? null,
     languageId: initialData?.languageId || languages[0]?.id || "",
     categoryId: initialData?.categoryId || categories[0]?.id || "",
     isFeatured: initialData?.isFeatured || false,
@@ -145,6 +151,49 @@ export function VideoForm({
         </div>
       )}
 
+      {/* Generate Branded Thumbnail */}
+      {initialData?.id && (
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            disabled={generatingThumb}
+            onClick={async () => {
+              setGeneratingThumb(true);
+              setThumbResult(null);
+              try {
+                const res = await fetch(
+                  `/api/admin/videos/${initialData.id}/generate-thumbnail`,
+                  { method: "POST" }
+                );
+                const data = await res.json();
+                if (res.ok) {
+                  setThumbResult(data.generatedThumbnailUrl);
+                } else {
+                  setThumbResult("Error: " + (data.error || "Failed"));
+                }
+              } catch {
+                setThumbResult("Error: Network failure");
+              } finally {
+                setGeneratingThumb(false);
+              }
+            }}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          >
+            {generatingThumb ? "Generating..." : "Generate 9:16 Thumbnail"}
+          </button>
+          {thumbResult && !thumbResult.startsWith("Error") && (
+            <img
+              src={thumbResult}
+              alt="Generated"
+              className="h-20 rounded border border-white/10"
+            />
+          )}
+          {thumbResult?.startsWith("Error") && (
+            <span className="text-red-400 text-xs">{thumbResult}</span>
+          )}
+        </div>
+      )}
+
       {/* Title */}
       <div>
         <label className="block text-sm text-zinc-400 mb-1">Title</label>
@@ -213,6 +262,45 @@ export function VideoForm({
           }
           className="w-full px-3 py-2 bg-[#1a1a20] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#f97316]"
         />
+      </div>
+
+      {/* Reel Start & Credit Start */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm text-zinc-400 mb-1">
+            Reel Start (seconds)
+          </label>
+          <input
+            type="number"
+            value={form.reelStart}
+            onChange={(e) =>
+              setForm({ ...form, reelStart: parseInt(e.target.value) || 0 })
+            }
+            min={0}
+            placeholder="Best part start time"
+            className="w-full px-3 py-2 bg-[#1a1a20] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#f97316]"
+          />
+          <p className="text-xs text-zinc-600 mt-1">Where reels start playing</p>
+        </div>
+        <div>
+          <label className="block text-sm text-zinc-400 mb-1">
+            Credits Start (seconds)
+          </label>
+          <input
+            type="number"
+            value={form.creditStart ?? ""}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                creditStart: e.target.value ? parseInt(e.target.value) : null,
+              })
+            }
+            min={0}
+            placeholder="Leave empty if none"
+            className="w-full px-3 py-2 bg-[#1a1a20] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#f97316]"
+          />
+          <p className="text-xs text-zinc-600 mt-1">Auto-stop before credits</p>
+        </div>
       </div>
 
       {/* Toggles */}

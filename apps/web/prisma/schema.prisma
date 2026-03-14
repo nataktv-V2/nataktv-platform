@@ -43,6 +43,9 @@ model Video {
   isTrending  Boolean  @default(false) @map("is_trending")
   views       Int      @default(0)
   sortOrder   Int      @default(0) @map("sort_order")
+  reelStart   Int      @default(0) @map("reel_start")
+  creditStart Int?     @map("credit_start")
+  generatedThumbnailUrl String? @map("generated_thumbnail_url")
   publishedAt DateTime? @map("published_at")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -50,6 +53,7 @@ model Video {
   language     Language       @relation(fields: [languageId], references: [id])
   category     Category       @relation(fields: [categoryId], references: [id])
   watchHistory WatchHistory[]
+  clips        Clip[]
 
   @@index([languageId])
   @@index([categoryId])
@@ -141,4 +145,19 @@ model WatchHistory {
   @@unique([userId, videoId])
   @@index([userId, watchedAt(sort: Desc)])
   @@map("watch_history")
+}
+
+model Clip {
+  id        String   @id @default(cuid())
+  videoId   String   @map("video_id")
+  title     String   @default("")
+  startTime Int      @map("start_time")
+  endTime   Int      @map("end_time")
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  video Video @relation(fields: [videoId], references: [id])
+
+  @@index([videoId])
+  @@map("clips")
 }

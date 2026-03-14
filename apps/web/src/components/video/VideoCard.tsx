@@ -5,6 +5,7 @@ type VideoCardProps = {
   id: string;
   title: string;
   thumbnailUrl: string;
+  generatedThumbnailUrl?: string | null;
   duration: number;
   language?: string;
   category?: string;
@@ -16,12 +17,12 @@ function formatDuration(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function VideoCard({ id, title, thumbnailUrl, duration, language, category }: VideoCardProps) {
+export function VideoCard({ id, title, thumbnailUrl, generatedThumbnailUrl, duration, language, category }: VideoCardProps) {
   return (
     <Link href={`/video/${id}`} className="group block flex-shrink-0 w-36 sm:w-44">
       <div className="relative aspect-[9/16] rounded-xl overflow-hidden bg-bg-surface">
         <Image
-          src={thumbnailUrl}
+          src={generatedThumbnailUrl || thumbnailUrl}
           alt={title}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"

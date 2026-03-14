@@ -7,6 +7,7 @@ type VideoPlayerProps = {
   youtubeId: string;
   title: string;
   videoId?: string;
+  creditStart?: number | null;
 };
 
 declare global {
@@ -43,11 +44,12 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function VideoPlayer({ youtubeId, title, videoId }: VideoPlayerProps) {
+export function VideoPlayer({ youtubeId, title, videoId, creditStart }: VideoPlayerProps) {
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
@@ -88,8 +90,10 @@ export function VideoPlayer({ youtubeId, title, videoId }: VideoPlayerProps) {
             setDuration(playerRef.current?.getDuration() || 0);
           },
           onStateChange: (event: { data: number }) => {
-            setIsPlaying(event.data === window.YT.PlayerState.PLAYING);
-            if (event.data === window.YT.PlayerState.PLAYING) {
+            const playing = event.data === window.YT.PlayerState.PLAYING;
+            setIsPlaying(playing);
+            if (playing) {
+              setHasStarted(true);
               hideControlsAfterDelay();
             }
           },
@@ -109,15 +113,19 @@ export function VideoPlayer({ youtubeId, title, videoId }: VideoPlayerProps) {
     };
   }, [youtubeId, hideControlsAfterDelay]);
 
-  // Update current time
+  // Update current time + auto-pause at credits
   useEffect(() => {
     const interval = setInterval(() => {
       if (playerRef.current && isPlaying) {
-        setCurrentTime(playerRef.current.getCurrentTime());
+        const time = playerRef.current.getCurrentTime();
+        setCurrentTime(time);
+        if (creditStart && time >= creditStart) {
+          playerRef.current.pauseVideo();
+        }
       }
     }, 500);
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, [isPlaying, creditStart]);
 
   // Save watch history every 30s
   useEffect(() => {
@@ -174,15 +182,20 @@ export function VideoPlayer({ youtubeId, title, videoId }: VideoPlayerProps) {
 
   return (
     <div
-      className="relative w-full aspect-video bg-black overflow-hidden [&>iframe]:!w-full [&>iframe]:!h-full [&>iframe]:absolute [&>iframe]:inset-0 [&>iframe]:pointer-events-none"
+      className="relative w-full aspect-video bg-black overflow-hidden [&>iframe]:!w-full [&>iframe]:!h-full [&>iframe]:absolute [&>iframe]:inset-0 [&>iframe]:pointer-events-none [&>iframe]:z-0"
       onClick={handleContainerClick}
     >
       {/* YouTube iframe container — YT API replaces this div with an iframe */}
       <div ref={containerRef} className="absolute inset-0" />
 
+      {/* Opaque overlay: hides YouTube native UI before first play and on pause */}
+      {!isPlaying && (
+        <div className="absolute inset-0 bg-black z-[1]" />
+      )}
+
       {/* Custom Controls Overlay */}
       <div
-        className={`absolute inset-0 transition-opacity duration-300 ${
+        className={`absolute inset-0 z-[2] transition-opacity duration-300 ${
           showControls ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
