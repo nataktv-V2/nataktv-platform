@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { GatedVideoPlayer } from "@/components/video/GatedVideoPlayer";
@@ -6,6 +7,26 @@ import { VideoCard } from "@/components/video/VideoCard";
 type Props = {
   params: Promise<{ id: string }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const video = await prisma.video.findUnique({
+    where: { id },
+    include: { language: true, category: true },
+  });
+  if (!video) return { title: "Video Not Found" };
+  return {
+    title: video.title,
+    description: video.description || `Watch ${video.title} on Natak TV — ${video.language.name} ${video.category.name}`,
+    openGraph: {
+      title: video.title,
+      description: video.description || `Watch ${video.title} on Natak TV`,
+      type: "video.other",
+      images: [{ url: video.thumbnailUrl || `https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg` }],
+    },
+    alternates: { canonical: `/video/${id}` },
+  };
+}
 
 export default async function VideoPage({ params }: Props) {
   const { id } = await params;
@@ -25,7 +46,7 @@ export default async function VideoPage({ params }: Props) {
   });
 
   return (
-    <div>
+    <div className="max-w-4xl mx-auto">
       {/* Player */}
       <GatedVideoPlayer youtubeId={video.youtubeId} title={video.title} videoId={video.id} />
 

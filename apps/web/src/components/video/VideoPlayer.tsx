@@ -80,6 +80,8 @@ export function VideoPlayer({ youtubeId, title, videoId }: VideoPlayerProps) {
           iv_load_policy: 3,
           fs: 0,
           playsinline: 1,
+          disablekb: 1,
+          cc_load_policy: 0,
         },
         events: {
           onReady: () => {
@@ -172,10 +174,10 @@ export function VideoPlayer({ youtubeId, title, videoId }: VideoPlayerProps) {
 
   return (
     <div
-      className="relative w-full aspect-video bg-black overflow-hidden"
+      className="relative w-full aspect-video bg-black overflow-hidden [&>iframe]:!w-full [&>iframe]:!h-full [&>iframe]:absolute [&>iframe]:inset-0 [&>iframe]:pointer-events-none"
       onClick={handleContainerClick}
     >
-      {/* YouTube iframe container */}
+      {/* YouTube iframe container — YT API replaces this div with an iframe */}
       <div ref={containerRef} className="absolute inset-0" />
 
       {/* Custom Controls Overlay */}

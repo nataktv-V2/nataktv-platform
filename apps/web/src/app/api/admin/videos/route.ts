@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { invalidateCache } from "@/lib/redis";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    await invalidateCache("videos:*");
     return NextResponse.json(video, { status: 201 });
   } catch (error) {
     console.error("Create video error:", error);

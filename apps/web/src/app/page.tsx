@@ -1,8 +1,39 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Natak TV",
+  url: "https://nataktv.com",
+  description:
+    "India's mobile-first streaming platform for short dramas, web series, and original shows.",
+  applicationCategory: "EntertainmentApplication",
+  operatingSystem: "Web",
+  offers: {
+    "@type": "Offer",
+    price: "199",
+    priceCurrency: "INR",
+    description: "Monthly subscription with ₹2 trial for 2 days",
+  },
+  provider: {
+    "@type": "Organization",
+    name: "INDIDINO VENTURES PRIVATE LIMITED",
+    url: "https://nataktv.com",
+  },
+};
 
 export default function LandingPage() {
   return (
     <main className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-bg-primary/80 backdrop-blur-md border-b border-border-subtle">
         <div className="flex items-center gap-2">

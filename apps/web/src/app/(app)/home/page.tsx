@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { VideoRow } from "@/components/video/VideoRow";
 import { ContinueWatching } from "@/components/video/ContinueWatching";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Browse",
+  description: "Browse trending dramas, short films, and web series on Natak TV. Filter by language and category.",
+  alternates: { canonical: "/home" },
+};
 
 type VideoWithRelations = {
   id: string;

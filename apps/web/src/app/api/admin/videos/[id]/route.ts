@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { invalidateCache } from "@/lib/redis";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
@@ -37,6 +38,7 @@ export async function PUT(
       },
     });
 
+    await invalidateCache("videos:*");
     return NextResponse.json(video);
   } catch (error) {
     console.error("Update video error:", error);
@@ -56,6 +58,7 @@ export async function DELETE(
     // Delete watch history first (foreign key)
     await prisma.watchHistory.deleteMany({ where: { videoId: id } });
     await prisma.video.delete({ where: { id } });
+    await invalidateCache("videos:*");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Delete video error:", error);

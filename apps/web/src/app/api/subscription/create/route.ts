@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createSubscription } from "@/lib/razorpay";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req.headers);
+    const { success } = rateLimit(`sub-create:${ip}`, { limit: 5, windowMs: 60_000 });
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
     const { uid } = await req.json();
     if (!uid) {
       return NextResponse.json({ error: "uid required" }, { status: 400 });

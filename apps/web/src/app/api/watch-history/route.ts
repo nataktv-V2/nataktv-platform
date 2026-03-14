@@ -62,15 +62,15 @@ export async function POST(req: NextRequest) {
         userId_videoId: { userId: user.id, videoId },
       },
       update: {
-        progress: progress || 0,
-        duration: duration || 0,
+        progress: progress ?? 0,
+        duration: duration ?? 0,
         watchedAt: new Date(),
       },
       create: {
         userId: user.id,
         videoId,
-        progress: progress || 0,
-        duration: duration || 0,
+        progress: progress ?? 0,
+        duration: duration ?? 0,
       },
     });
 

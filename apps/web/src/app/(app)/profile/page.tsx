@@ -142,9 +142,9 @@ export default function ProfilePage() {
       {/* Menu Items */}
       <div className="space-y-1">
         {[
-          { label: "Watch History", href: "#" },
-          { label: "Help & Support", href: "#" },
-          { label: "About Natak TV", href: "#" },
+          { label: "Watch History", href: "/home" },
+          { label: "Help & Support", href: "mailto:officialnataktv@gmail.com" },
+          { label: "About Natak TV", href: "/" },
         ].map((item) => (
           <a
             key={item.label}

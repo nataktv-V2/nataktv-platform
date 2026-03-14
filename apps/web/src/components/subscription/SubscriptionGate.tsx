@@ -47,8 +47,14 @@ export function SubscriptionGate({ children, fallback }: SubscriptionGateProps) 
   const { user, loading: authLoading } = useAuth();
   const { isSubscribed, loading: subLoading } = useSubscription();
 
-  // Show children while loading (avoids flash)
-  if (authLoading || subLoading) return <>{children}</>;
+  // Show loading skeleton while checking subscription
+  if (authLoading || subLoading) {
+    return (
+      <div className="relative w-full aspect-video bg-bg-surface flex items-center justify-center rounded-xl">
+        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   // Not logged in — show login prompt
   if (!user) {

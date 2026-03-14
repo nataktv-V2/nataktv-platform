@@ -8,9 +8,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Natak TV - Watch Indian Dramas & Short Films",
+  title: {
+    default: "Natak TV - Watch Indian Dramas & Short Films",
+    template: "%s | Natak TV",
+  },
   description:
-    "India's mobile-first streaming platform for short dramas, web series, and original shows in Hindi, Tamil, Telugu and more. Subscribe and start watching.",
+    "India's mobile-first streaming platform for short dramas, web series, and original shows in Hindi, Tamil, Telugu and more. Subscribe from ₹199/month.",
   keywords: [
     "natak tv",
     "indian dramas",
@@ -20,14 +23,34 @@ export const metadata: Metadata = {
     "tamil drama",
     "telugu drama",
     "streaming",
+    "online drama",
+    "indian web series",
   ],
+  authors: [{ name: "INDIDINO VENTURES PRIVATE LIMITED" }],
+  creator: "Natak TV",
+  publisher: "INDIDINO VENTURES PRIVATE LIMITED",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://nataktv.com"),
   openGraph: {
     title: "Natak TV - Watch Indian Dramas & Short Films",
     description:
-      "India's mobile-first streaming platform. Subscribe from ₹199/month.",
+      "India's mobile-first streaming platform. Short films, web series & originals. Subscribe from ₹199/month.",
     type: "website",
     locale: "en_IN",
     siteName: "Natak TV",
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Natak TV - Watch Indian Dramas & Short Films",
+    description:
+      "India's mobile-first streaming platform. Subscribe from ₹199/month.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "/",
   },
 };
 

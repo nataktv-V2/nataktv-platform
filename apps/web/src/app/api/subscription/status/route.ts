@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { cached, invalidateCache } from "@/lib/redis";
 
 export async function GET(req: NextRequest) {
   try {
@@ -8,10 +9,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "uid required" }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { firebaseUid: uid },
-      select: { id: true },
-    });
+    const user = await cached(`user:${uid}`, 300, () =>
+      prisma.user.findUnique({
+        where: { firebaseUid: uid },
+        select: { id: true },
+      })
+    );
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });

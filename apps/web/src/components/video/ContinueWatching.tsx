@@ -38,10 +38,10 @@ export function ContinueWatching() {
         if (Array.isArray(data)) {
           // Only show videos with some progress but not completed (< 95%)
           const inProgress = data.filter(
-            (entry: WatchHistoryEntry) =>
-              entry.progress > 0 &&
-              entry.duration > 0 &&
-              entry.progress / entry.duration < 0.95
+            (entry: WatchHistoryEntry) => {
+              const dur = entry.duration || entry.video.duration;
+              return entry.progress > 0 && dur > 0 && entry.progress / dur < 0.95;
+            }
           );
           setHistory(inProgress);
         }
@@ -56,11 +56,12 @@ export function ContinueWatching() {
       <h2 className="text-lg font-semibold mb-3 px-4">Continue Watching</h2>
       <div className="flex gap-3 overflow-x-auto px-4 hide-scrollbar">
         {history.map((entry) => {
+          const dur = entry.duration || entry.video.duration;
           const percent =
-            entry.duration > 0
-              ? Math.min((entry.progress / entry.duration) * 100, 100)
+            dur > 0
+              ? Math.min((entry.progress / dur) * 100, 100)
               : 0;
-          const remaining = entry.duration - entry.progress;
+          const remaining = dur - entry.progress;
 
           return (
             <Link

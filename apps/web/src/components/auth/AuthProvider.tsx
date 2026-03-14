@@ -84,7 +84,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithGoogle = async () => {
-    await signInWithPopup(auth, googleProvider);
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code;
+      // Silently ignore user-cancelled popups
+      if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return;
+      console.error("Google sign-in error:", err);
+    }
   };
 
   const signOut = async () => {
