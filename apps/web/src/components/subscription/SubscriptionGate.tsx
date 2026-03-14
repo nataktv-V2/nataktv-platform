@@ -1,0 +1,102 @@
+"use client";
+
+import { useAuth } from "@/components/auth/AuthProvider";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+
+type SubscriptionGateProps = {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+};
+
+type SubStatus = {
+  subscribed: boolean;
+  status: string | null;
+  trialEnd?: string;
+  currentPeriodEnd?: string;
+};
+
+export function useSubscription() {
+  const { user } = useAuth();
+  const [status, setStatus] = useState<SubStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user?.uid) {
+      setStatus(null);
+      setLoading(false);
+      return;
+    }
+
+    fetch(`/api/subscription/status?uid=${user.uid}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setStatus(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setStatus(null);
+        setLoading(false);
+      });
+  }, [user?.uid]);
+
+  return { status, loading, isSubscribed: status?.subscribed === true };
+}
+
+export function SubscriptionGate({ children, fallback }: SubscriptionGateProps) {
+  const { user, loading: authLoading } = useAuth();
+  const { isSubscribed, loading: subLoading } = useSubscription();
+
+  // Show children while loading (avoids flash)
+  if (authLoading || subLoading) return <>{children}</>;
+
+  // Not logged in — show login prompt
+  if (!user) {
+    return (
+      fallback || (
+        <div className="relative">
+          <div className="blur-sm pointer-events-none">{children}</div>
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl">
+            <div className="text-center p-6">
+              <p className="text-white font-semibold mb-2">Sign in to watch</p>
+              <Link
+                href="/subscribe"
+                className="inline-block bg-[#f97316] hover:bg-[#ea580c] text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                Sign In
+              </Link>
+            </div>
+          </div>
+        </div>
+      )
+    );
+  }
+
+  // Subscribed — show content
+  if (isSubscribed) return <>{children}</>;
+
+  // Not subscribed — show paywall
+  return (
+    fallback || (
+      <div className="relative">
+        <div className="blur-sm pointer-events-none">{children}</div>
+        <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl">
+          <div className="text-center p-6 max-w-xs">
+            <p className="text-white font-semibold mb-1">
+              Subscribe to watch
+            </p>
+            <p className="text-zinc-400 text-sm mb-4">
+              Start with a ₹2 trial for 2 days
+            </p>
+            <Link
+              href="/subscribe"
+              className="inline-block bg-[#f97316] hover:bg-[#ea580c] text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+            >
+              Subscribe Now — ₹199/mo
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  );
+}

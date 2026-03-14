@@ -1,0 +1,144 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          String   @id @default(cuid())
+  uniqueId    String   @unique @default(dbgenerated("'NTV-' || substr(gen_random_uuid()::text, 1, 6)")) @map("unique_id")
+  firebaseUid String   @unique @map("firebase_uid")
+  email       String   @unique
+  displayName String   @default("") @map("display_name")
+  photoUrl    String?  @map("photo_url")
+  role        Role     @default(USER)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  subscriptions Subscription[]
+  watchHistory  WatchHistory[]
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Video {
+  id          String   @id @default(cuid())
+  youtubeId   String   @map("youtube_id")
+  title       String
+  description String   @default("")
+  thumbnailUrl String  @default("") @map("thumbnail_url")
+  duration    Int      @default(0)
+  languageId  String   @map("language_id")
+  categoryId  String   @map("category_id")
+  tags        String[] @default([])
+  isFeatured  Boolean  @default(false) @map("is_featured")
+  isTrending  Boolean  @default(false) @map("is_trending")
+  views       Int      @default(0)
+  sortOrder   Int      @default(0) @map("sort_order")
+  publishedAt DateTime? @map("published_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  language     Language       @relation(fields: [languageId], references: [id])
+  category     Category       @relation(fields: [categoryId], references: [id])
+  watchHistory WatchHistory[]
+
+  @@index([languageId])
+  @@index([categoryId])
+  @@index([isFeatured])
+  @@index([isTrending])
+  @@index([createdAt(sort: Desc)])
+  @@map("videos")
+}
+
+model Language {
+  id     String  @id @default(cuid())
+  name   String  @unique
+  code   String  @unique
+  videos Video[]
+
+  @@map("languages")
+}
+
+model Category {
+  id     String  @id @default(cuid())
+  name   String  @unique
+  slug   String  @unique
+  videos Video[]
+
+  @@map("categories")
+}
+
+model Subscription {
+  id                     String             @id @default(cuid())
+  userId                 String             @map("user_id")
+  razorpaySubscriptionId String?            @unique @map("razorpay_subscription_id")
+  razorpayPlanId         String?            @map("razorpay_plan_id")
+  razorpayCustomerId     String?            @map("razorpay_customer_id")
+  status                 SubscriptionStatus @default(TRIAL)
+  trialStart             DateTime?          @map("trial_start")
+  trialEnd               DateTime?          @map("trial_end")
+  currentPeriodStart     DateTime?          @map("current_period_start")
+  currentPeriodEnd       DateTime?          @map("current_period_end")
+  amountPaise            Int                @default(19900) @map("amount_paise")
+  cancelledAt            DateTime?          @map("cancelled_at")
+  createdAt              DateTime           @default(now()) @map("created_at")
+  updatedAt              DateTime           @updatedAt @map("updated_at")
+
+  user     User      @relation(fields: [userId], references: [id])
+  payments Payment[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+model Payment {
+  id                String   @id @default(cuid())
+  subscriptionId    String   @map("subscription_id")
+  razorpayPaymentId String   @unique @map("razorpay_payment_id")
+  razorpaySignature String?  @map("razorpay_signature")
+  amountPaise       Int      @map("amount_paise")
+  currency          String   @default("INR")
+  status            String
+  paidAt            DateTime @map("paid_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@index([subscriptionId])
+  @@map("payments")
+}
+
+model WatchHistory {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  videoId   String   @map("video_id")
+  progress  Int      @default(0)
+  duration  Int      @default(0)
+  watchedAt DateTime @default(now()) @map("watched_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user  User  @relation(fields: [userId], references: [id])
+  video Video @relation(fields: [videoId], references: [id])
+
+  @@unique([userId, videoId])
+  @@index([userId, watchedAt(sort: Desc)])
+  @@map("watch_history")
+}
