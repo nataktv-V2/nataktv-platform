@@ -21,14 +21,14 @@ export default function ProfilePage() {
 
   // Poster data for animated rows
   const posters = [
-    { title: "Shs! Kisiko Batana Mat", img: "/posters/1.jpg", gradient: "from-rose-900 to-amber-800" },
-    { title: "New Dhulhan", img: "/posters/2.jpg", gradient: "from-red-900 to-pink-800" },
-    { title: "Khulja Sim-Sim", img: "/posters/3.jpg", gradient: "from-orange-900 to-yellow-800" },
-    { title: "Ghat Ghat Ka Paani", img: "/posters/4.jpg", gradient: "from-blue-900 to-cyan-800" },
-    { title: "Pyaar Ka Raaz", img: "/posters/5.jpg", gradient: "from-purple-900 to-pink-800" },
-    { title: "Choti Bahu", img: "/posters/6.jpg", gradient: "from-emerald-900 to-teal-800" },
-    { title: "Dil Ki Baazi", img: "/posters/7.jpg", gradient: "from-indigo-900 to-violet-800" },
-    { title: "Mohabbat Ke Rang", img: "/posters/8.jpg", gradient: "from-amber-900 to-red-800" },
+    { title: "Shs! Kisiko\nBatana Mat!", img: "/posters/1.jpg", bg: "linear-gradient(160deg, #b91c1c 0%, #f59e0b 50%, #92400e 100%)" },
+    { title: "New\nDhulhan", img: "/posters/2.jpg", bg: "linear-gradient(160deg, #dc2626 0%, #be185d 50%, #7f1d1d 100%)" },
+    { title: "Khulja\nSim-Sim", img: "/posters/3.jpg", bg: "linear-gradient(160deg, #ea580c 0%, #facc15 50%, #78350f 100%)" },
+    { title: "Ghat Ghat\nKa Paani", img: "/posters/4.jpg", bg: "linear-gradient(160deg, #1e40af 0%, #06b6d4 50%, #164e63 100%)" },
+    { title: "Pyaar Ka\nRaaz", img: "/posters/5.jpg", bg: "linear-gradient(160deg, #7e22ce 0%, #ec4899 50%, #581c87 100%)" },
+    { title: "Choti\nBahu", img: "/posters/6.jpg", bg: "linear-gradient(160deg, #047857 0%, #14b8a6 50%, #064e3b 100%)" },
+    { title: "Dil Ki\nBaazi", img: "/posters/7.jpg", bg: "linear-gradient(160deg, #3730a3 0%, #8b5cf6 50%, #312e81 100%)" },
+    { title: "Mohabbat\nKe Rang", img: "/posters/8.jpg", bg: "linear-gradient(160deg, #b45309 0%, #ef4444 50%, #7c2d12 100%)" },
   ];
 
   const categories = [
@@ -56,30 +56,32 @@ export default function ProfilePage() {
         </div>
 
         {/* Animated Poster Rows */}
-        <div className="flex-1 flex flex-col justify-center gap-3 py-4 overflow-hidden">
+        <div className="flex-1 flex flex-col justify-center gap-4 py-4 overflow-hidden">
           {/* Row 1 - scrolls left */}
           <div className="overflow-hidden">
             <div
-              className="flex gap-3"
-              style={{ animation: "scroll-left 25s linear infinite", width: "max-content" }}
+              className="flex gap-3 will-change-transform"
+              style={{ animation: "scroll-left 20s linear infinite", width: "max-content" }}
             >
               {[...posters, ...posters].map((poster, i) => (
                 <div
                   key={`r1-${i}`}
-                  className="relative w-28 sm:w-32 flex-shrink-0 rounded-xl overflow-hidden shadow-lg shadow-black/30"
-                  style={{ aspectRatio: "2/3" }}
+                  className="relative w-[120px] sm:w-[140px] flex-shrink-0 rounded-2xl overflow-hidden shadow-xl shadow-black/40 border border-white/5"
+                  style={{ aspectRatio: "2/3", background: poster.bg }}
                 >
-                  <div className={`absolute inset-0 bg-gradient-to-b ${poster.gradient}`} />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={poster.img}
                     alt={poster.title}
                     className="absolute inset-0 w-full h-full object-cover z-[1]"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-[2]" />
-                  <span className="absolute bottom-2 left-2 right-2 text-[10px] font-bold text-white leading-tight drop-shadow-lg z-[3]">
-                    {poster.title}
-                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-[2]" />
+                  <div className="absolute bottom-0 left-0 right-0 p-3 z-[3]">
+                    <span className="text-xs font-extrabold text-white leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] whitespace-pre-line">
+                      {poster.title}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -88,26 +90,28 @@ export default function ProfilePage() {
           {/* Row 2 - scrolls right */}
           <div className="overflow-hidden">
             <div
-              className="flex gap-3"
-              style={{ animation: "scroll-right 30s linear infinite", width: "max-content" }}
+              className="flex gap-3 will-change-transform"
+              style={{ animation: "scroll-right 25s linear infinite", width: "max-content" }}
             >
               {[...posters.slice(4), ...posters.slice(0, 4), ...posters.slice(4), ...posters.slice(0, 4)].map((poster, i) => (
                 <div
                   key={`r2-${i}`}
-                  className="relative w-28 sm:w-32 flex-shrink-0 rounded-xl overflow-hidden shadow-lg shadow-black/30"
-                  style={{ aspectRatio: "2/3" }}
+                  className="relative w-[120px] sm:w-[140px] flex-shrink-0 rounded-2xl overflow-hidden shadow-xl shadow-black/40 border border-white/5"
+                  style={{ aspectRatio: "2/3", background: poster.bg }}
                 >
-                  <div className={`absolute inset-0 bg-gradient-to-b ${poster.gradient}`} />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={poster.img}
                     alt={poster.title}
                     className="absolute inset-0 w-full h-full object-cover z-[1]"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-[2]" />
-                  <span className="absolute bottom-2 left-2 right-2 text-[10px] font-bold text-white leading-tight drop-shadow-lg z-[3]">
-                    {poster.title}
-                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-[2]" />
+                  <div className="absolute bottom-0 left-0 right-0 p-3 z-[3]">
+                    <span className="text-xs font-extrabold text-white leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] whitespace-pre-line">
+                      {poster.title}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
