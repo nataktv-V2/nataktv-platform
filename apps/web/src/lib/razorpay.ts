@@ -27,6 +27,11 @@ async function razorpayFetch(path: string, options: RequestInit = {}) {
 }
 
 export async function createSubscription(planId: string, customerEmail: string, customerName: string) {
+  // 2-day trial: delay subscription start by 2 days
+  // Razorpay charges a token auth amount during signup (refunded automatically)
+  // We add a ₹2 addon as upfront charge for the trial period
+  const trialEndTimestamp = Math.floor(Date.now() / 1000) + 2 * 24 * 60 * 60;
+
   return razorpayFetch("/subscriptions", {
     method: "POST",
     body: JSON.stringify({
@@ -34,6 +39,16 @@ export async function createSubscription(planId: string, customerEmail: string, 
       total_count: 120, // max cycles (10 years monthly)
       quantity: 1,
       customer_notify: 0, // we handle notifications
+      start_at: trialEndTimestamp, // subscription billing starts after 2 days
+      addons: [
+        {
+          item: {
+            name: "Trial Access - 2 Days",
+            amount: 200, // ₹2 in paise
+            currency: "INR",
+          },
+        },
+      ],
       notes: {
         email: customerEmail,
         name: customerName,
