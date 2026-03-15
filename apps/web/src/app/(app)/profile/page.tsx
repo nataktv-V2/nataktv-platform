@@ -21,14 +21,14 @@ export default function ProfilePage() {
 
   // Poster data for animated rows
   const posters = [
-    { title: "Shs! Kisiko\nBatana Mat!", img: "/posters/1.jpg", bg: "linear-gradient(160deg, #b91c1c 0%, #f59e0b 50%, #92400e 100%)" },
-    { title: "New\nDhulhan", img: "/posters/2.jpg", bg: "linear-gradient(160deg, #dc2626 0%, #be185d 50%, #7f1d1d 100%)" },
-    { title: "Khulja\nSim-Sim", img: "/posters/3.jpg", bg: "linear-gradient(160deg, #ea580c 0%, #facc15 50%, #78350f 100%)" },
-    { title: "Ghat Ghat\nKa Paani", img: "/posters/4.jpg", bg: "linear-gradient(160deg, #1e40af 0%, #06b6d4 50%, #164e63 100%)" },
-    { title: "Pyaar Ka\nRaaz", img: "/posters/5.jpg", bg: "linear-gradient(160deg, #7e22ce 0%, #ec4899 50%, #581c87 100%)" },
-    { title: "Choti\nBahu", img: "/posters/6.jpg", bg: "linear-gradient(160deg, #047857 0%, #14b8a6 50%, #064e3b 100%)" },
-    { title: "Dil Ki\nBaazi", img: "/posters/7.jpg", bg: "linear-gradient(160deg, #3730a3 0%, #8b5cf6 50%, #312e81 100%)" },
-    { title: "Mohabbat\nKe Rang", img: "/posters/8.jpg", bg: "linear-gradient(160deg, #b45309 0%, #ef4444 50%, #7c2d12 100%)" },
+    { title: "Shs! Kisiko\nBatana Mat!", img: "/posters/1.png", bg: "linear-gradient(160deg, #b91c1c 0%, #f59e0b 50%, #92400e 100%)" },
+    { title: "New\nDhulhan", img: "/posters/2.png", bg: "linear-gradient(160deg, #dc2626 0%, #be185d 50%, #7f1d1d 100%)" },
+    { title: "Khulja\nSim-Sim", img: "/posters/3.png", bg: "linear-gradient(160deg, #ea580c 0%, #facc15 50%, #78350f 100%)" },
+    { title: "Ghat Ghat\nKa Paani", img: "/posters/4.png", bg: "linear-gradient(160deg, #1e40af 0%, #06b6d4 50%, #164e63 100%)" },
+    { title: "Pati Patni\nAur Padosan", img: "/posters/5.png", bg: "linear-gradient(160deg, #7e22ce 0%, #ec4899 50%, #581c87 100%)" },
+    { title: "Shs! Kisiko\nBatana Mat!", img: "/posters/1.png", bg: "linear-gradient(160deg, #b91c1c 0%, #f59e0b 50%, #92400e 100%)" },
+    { title: "Khulja\nSim-Sim", img: "/posters/3.png", bg: "linear-gradient(160deg, #ea580c 0%, #facc15 50%, #78350f 100%)" },
+    { title: "New\nDhulhan", img: "/posters/2.png", bg: "linear-gradient(160deg, #dc2626 0%, #be185d 50%, #7f1d1d 100%)" },
   ];
 
   const categories = [
