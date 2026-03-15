@@ -51,20 +51,20 @@ export default function SubscribePage() {
         </p>
         <div className="flex items-center justify-center gap-2 sm:gap-4">
           {/* LEFT — Blurred + Locked thumbnail */}
-          <div className="relative w-[110px] sm:w-[130px] flex-shrink-0 rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-black/40" style={{ aspectRatio: "2/3" }}>
+          <div className="relative w-[130px] sm:w-[155px] flex-shrink-0 rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-black/40" style={{ aspectRatio: "2/3" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/posters/1.png"
               alt="Locked content"
               className="absolute inset-0 w-full h-full object-cover"
-              style={{ filter: "blur(8px) brightness(0.4) grayscale(0.5)", transform: "scale(1.1)" }}
+              style={{ filter: "blur(10px) saturate(0.7)", transform: "scale(1.15)" }}
             />
-            {/* Dark overlay */}
-            <div className="absolute inset-0 bg-black/50 z-[1]" />
+            {/* Light overlay to soften */}
+            <div className="absolute inset-0 bg-black/20 z-[1]" />
             {/* Lock icon */}
             <div className="absolute inset-0 flex items-center justify-center z-[2]">
-              <div className="w-12 h-12 rounded-full bg-black/60 border border-white/20 flex items-center justify-center backdrop-blur-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-zinc-400">
+              <div className="w-14 h-14 rounded-full bg-black/50 border border-white/20 flex items-center justify-center backdrop-blur-md">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7 text-white/80">
                   <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3A5.25 5.25 0 0 0 12 1.5Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clipRule="evenodd" />
                 </svg>
               </div>
@@ -90,7 +90,7 @@ export default function SubscribePage() {
           </div>
 
           {/* RIGHT — Clear + Unlocked thumbnail */}
-          <div className="relative w-[110px] sm:w-[130px] flex-shrink-0 rounded-2xl overflow-hidden border-2 border-[#f97316]/40 shadow-lg shadow-[#f97316]/10" style={{ aspectRatio: "2/3" }}>
+          <div className="relative w-[130px] sm:w-[155px] flex-shrink-0 rounded-2xl overflow-hidden border-2 border-[#f97316]/40 shadow-lg shadow-[#f97316]/10" style={{ aspectRatio: "2/3" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/posters/1.png"
