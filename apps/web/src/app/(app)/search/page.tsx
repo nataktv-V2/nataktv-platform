@@ -108,6 +108,7 @@ export default function SearchPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search shows, movies..."
+          autoFocus
           className="w-full bg-bg-surface border border-border-subtle rounded-full pl-10 pr-10 py-2 text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
         />
         {query && (

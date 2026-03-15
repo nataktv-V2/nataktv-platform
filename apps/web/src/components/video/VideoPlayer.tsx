@@ -8,6 +8,7 @@ type VideoPlayerProps = {
   title: string;
   videoId?: string;
   creditStart?: number | null;
+  reelStart?: number;
 };
 
 declare global {
@@ -44,7 +45,7 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function VideoPlayer({ youtubeId, title, videoId, creditStart }: VideoPlayerProps) {
+export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart }: VideoPlayerProps) {
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
@@ -86,7 +87,15 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart }: VideoPla
         },
         events: {
           onReady: () => {
-            setDuration(playerRef.current?.getDuration() || 0);
+            const totalDuration = playerRef.current?.getDuration() || 0;
+            // Use creditStart as effective end, reelStart as effective start
+            const effectiveEnd = (creditStart != null && creditStart > 0) ? creditStart : totalDuration;
+            const effectiveStart = reelStart || 0;
+            setDuration(effectiveEnd > effectiveStart ? effectiveEnd - effectiveStart : totalDuration);
+            // Seek to reelStart if set
+            if (effectiveStart > 0 && playerRef.current) {
+              playerRef.current.seekTo(effectiveStart, true);
+            }
           },
           onStateChange: (event: { data: number }) => {
             const playing = event.data === window.YT.PlayerState.PLAYING;
@@ -111,19 +120,22 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart }: VideoPla
     };
   }, [youtubeId, hideControlsAfterDelay]);
 
-  // Update current time + auto-pause at credits
+  // Update current time + auto-pause at credits + enforce reelStart boundary
   useEffect(() => {
+    const effectiveStart = reelStart || 0;
     const interval = setInterval(() => {
       if (playerRef.current && isPlaying) {
         const time = playerRef.current.getCurrentTime();
-        setCurrentTime(time);
-        if (creditStart && time >= creditStart) {
+        // Show time relative to reelStart
+        setCurrentTime(time - effectiveStart);
+        // Auto-pause at creditStart
+        if (creditStart != null && creditStart > 0 && time >= creditStart) {
           playerRef.current.pauseVideo();
         }
       }
     }, 500);
     return () => clearInterval(interval);
-  }, [isPlaying, creditStart]);
+  }, [isPlaying, creditStart, reelStart]);
 
   // Save watch history every 30s
   useEffect(() => {
@@ -164,11 +176,13 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart }: VideoPla
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!playerRef.current || !duration) return;
+    const effectiveStart = reelStart || 0;
     const rect = e.currentTarget.getBoundingClientRect();
     const fraction = (e.clientX - rect.left) / rect.width;
-    const newTime = fraction * duration;
-    playerRef.current.seekTo(newTime, true);
-    setCurrentTime(newTime);
+    const relativeTime = fraction * duration;
+    const absoluteTime = relativeTime + effectiveStart;
+    playerRef.current.seekTo(absoluteTime, true);
+    setCurrentTime(relativeTime);
   };
 
   const handleContainerClick = () => {

@@ -48,7 +48,7 @@ export default async function VideoPage({ params }: Props) {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Player */}
-      <GatedVideoPlayer youtubeId={video.youtubeId} title={video.title} videoId={video.id} creditStart={video.creditStart} />
+      <GatedVideoPlayer youtubeId={video.youtubeId} title={video.title} videoId={video.id} creditStart={video.creditStart} reelStart={video.reelStart} />
 
       {/* Video Info */}
       <div className="px-4 py-4">
