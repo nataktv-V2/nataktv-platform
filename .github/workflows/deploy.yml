@@ -1,0 +1,55 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+  PNPM_VERSION: "10"
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    # Only deploy after CI passes
+    needs: []
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            set -e
+
+            cd /opt/nataktv-platform
+
+            # Pull latest code
+            git pull origin main
+
+            # Install dependencies
+            pnpm install --frozen-lockfile
+
+            # Run database migrations
+            cd apps/web
+            pnpm db:migrate
+            cd ../..
+
+            # Build the app
+            pnpm build
+
+            # Restart with PM2
+            pm2 reload nataktv --update-env
+
+            echo "Deploy complete!"
