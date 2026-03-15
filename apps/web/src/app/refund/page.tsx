@@ -33,7 +33,24 @@ export default function RefundPolicyPage() {
 
         <div className="prose prose-invert prose-sm max-w-none space-y-6">
           <section>
-            <h2 className="text-xl font-semibold mb-3">1. Trial Period</h2>
+            <p className="text-zinc-300 leading-relaxed">
+              Natak TV believes in helping its customers as far as possible, and has therefore a liberal
+              cancellation policy. Under this policy:
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold mb-3">1. Cancellation</h2>
+            <ul className="list-disc pl-6 text-zinc-300 space-y-1">
+              <li>Cancellations will be considered only if the request is made within 1 day of buying the subscription.</li>
+              <li>You can cancel your subscription at any time from your profile page.</li>
+              <li>Upon cancellation, your access continues until the end of the current billing period.</li>
+              <li>No partial refunds are provided for unused days within a billing period.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold mb-3">2. Trial Period</h2>
             <p className="text-zinc-300 leading-relaxed">
               Natak TV offers a 2-day trial for ₹2. During the trial period, you have full access to all
               content. The trial payment of ₹2 is non-refundable.
@@ -41,23 +58,12 @@ export default function RefundPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">2. Subscription Cancellation</h2>
-            <ul className="list-disc pl-6 text-zinc-300 space-y-1">
-              <li>You can cancel your subscription at any time from your profile page.</li>
-              <li>Upon cancellation, your access continues until the end of the current billing period.</li>
-              <li>No partial refunds are provided for unused days within a billing period.</li>
-              <li>After cancellation, your account remains active but content access is restricted to free content (if any).</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold mb-3">3. Refund Eligibility</h2>
-            <p className="text-zinc-300 leading-relaxed mb-2">Refunds may be considered in the following cases:</p>
-            <ul className="list-disc pl-6 text-zinc-300 space-y-1">
-              <li><strong>Duplicate charges:</strong> If you were charged twice for the same billing period.</li>
-              <li><strong>Service unavailability:</strong> If the service was completely unavailable for more than 48 continuous hours during your billing period.</li>
-              <li><strong>Unauthorized transactions:</strong> If a payment was made without your authorization.</li>
-            </ul>
+            <h2 className="text-xl font-semibold mb-3">3. Refund Processing</h2>
+            <p className="text-zinc-300 leading-relaxed">
+              In case of any refunds approved by Natak TV, it will take 3–5 business days for the refund to
+              be credited to the end customer. Refunds will be credited to the original payment method via
+              Razorpay.
+            </p>
           </section>
 
           <section>
@@ -89,16 +95,7 @@ export default function RefundPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">6. Refund Processing</h2>
-            <ul className="list-disc pl-6 text-zinc-300 space-y-1">
-              <li>Eligible refund requests will be processed within 7-10 business days.</li>
-              <li>Refunds will be credited to the original payment method via Razorpay.</li>
-              <li>Bank processing times may add 3-5 additional business days.</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold mb-3">7. Contact</h2>
+            <h2 className="text-xl font-semibold mb-3">6. Contact</h2>
             <p className="text-zinc-300 leading-relaxed">
               For refund or cancellation queries:{" "}
               <a href="mailto:officialnataktv@gmail.com" className="text-accent hover:underline">

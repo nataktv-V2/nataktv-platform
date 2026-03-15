@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | Natak TV",
-  description: "Privacy Policy for Natak TV — how we collect, use, and protect your data.",
+  description: "Privacy Policy for Natak TV streaming platform.",
 };
 
 export default function PrivacyPolicyPage() {
@@ -33,82 +33,120 @@ export default function PrivacyPolicyPage() {
 
         <div className="prose prose-invert prose-sm max-w-none space-y-6">
           <section>
-            <h2 className="text-xl font-semibold mb-3">1. Introduction</h2>
             <p className="text-zinc-300 leading-relaxed">
-              INDIDINO VENTURES PRIVATE LIMITED (&quot;Company&quot;, &quot;we&quot;, &quot;us&quot;) operates the Natak TV platform
-              (website at nataktv.com and mobile application). This Privacy Policy explains how we collect,
-              use, and protect your personal information when you use our services.
+              Natak TV (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), operated by INDIDINO VENTURES
+              PRIVATE LIMITED, is committed to protecting your privacy. This Privacy Policy explains how we
+              collect, use, disclose, and safeguard your information when you use our website, mobile
+              application, and related services.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">2. Information We Collect</h2>
-            <p className="text-zinc-300 leading-relaxed mb-2">When you use Natak TV, we may collect:</p>
-            <ul className="list-disc pl-6 text-zinc-300 space-y-1">
-              <li><strong>Account Information:</strong> Name, email address, and profile photo provided via Google Sign-In.</li>
-              <li><strong>Payment Information:</strong> Subscription and payment details processed securely through Razorpay. We do not store your card details.</li>
-              <li><strong>Usage Data:</strong> Watch history, search queries, and content preferences to improve your experience.</li>
-              <li><strong>Device Information:</strong> Device type, operating system, and browser type for app optimization.</li>
+            <h2 className="text-xl font-semibold mb-3">1. Information We Collect</h2>
+            <ul className="list-disc pl-6 text-zinc-300 space-y-2">
+              <li>
+                <strong>Account information:</strong> When you register, we collect your name, email address,
+                and any other details you provide.
+              </li>
+              <li>
+                <strong>Payment information:</strong> Subscription payments are processed by Razorpay. We do
+                not store full card numbers on our servers; we may retain billing-related information (e.g.,
+                transaction IDs, plan type) as needed for accounting and support.
+              </li>
+              <li>
+                <strong>Usage data:</strong> We collect information about how you use the service, including
+                which content you watch, device type, and general usage patterns to improve the service and
+                personalize your experience.
+              </li>
+              <li>
+                <strong>Technical data:</strong> We may collect IP address, browser or app version, and
+                similar technical information for security, analytics, and troubleshooting.
+              </li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">3. How We Use Your Information</h2>
+            <h2 className="text-xl font-semibold mb-3">2. How We Use Your Information</h2>
+            <p className="text-zinc-300 leading-relaxed mb-2">We use the information we collect to:</p>
             <ul className="list-disc pl-6 text-zinc-300 space-y-1">
-              <li>To provide and maintain our streaming service</li>
-              <li>To process your subscription and payments</li>
-              <li>To personalize your content recommendations</li>
-              <li>To communicate service updates and offers</li>
-              <li>To improve our platform and user experience</li>
+              <li>Provide, maintain, and improve our services.</li>
+              <li>Process subscriptions and communicate about your account.</li>
+              <li>Send important service updates, and with your consent, marketing communications.</li>
+              <li>Understand usage and improve content, features, and performance.</li>
+              <li>Enforce our terms, prevent fraud, and protect the security of our platform.</li>
+              <li>Comply with applicable laws and respond to lawful requests.</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">4. Data Security</h2>
+            <h2 className="text-xl font-semibold mb-3">3. Sharing of Information</h2>
+            <p className="text-zinc-300 leading-relaxed mb-2">
+              We do not sell your personal information. We may share your information with:
+            </p>
+            <ul className="list-disc pl-6 text-zinc-300 space-y-1">
+              <li>
+                Service providers (e.g., hosting, payment processing, analytics) who assist us in operating
+                the service, under strict confidentiality and data-processing agreements.
+              </li>
+              <li>
+                Law enforcement or other authorities when required by law or to protect our rights and safety.
+              </li>
+              <li>Other parties only with your consent or as otherwise described in this policy.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold mb-3">4. Data Retention</h2>
             <p className="text-zinc-300 leading-relaxed">
-              We implement industry-standard security measures to protect your data. Authentication is handled
-              through Google Firebase, and payments are processed through Razorpay&apos;s PCI-DSS compliant
-              infrastructure. Your data is stored on secure servers with encryption at rest and in transit.
+              We retain your account and usage data for as long as your account is active and as needed to
+              provide the service, resolve disputes, enforce agreements, and comply with legal obligations.
+              You may request deletion of your account and associated data subject to applicable law.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">5. Third-Party Services</h2>
-            <p className="text-zinc-300 leading-relaxed mb-2">We use the following third-party services:</p>
-            <ul className="list-disc pl-6 text-zinc-300 space-y-1">
-              <li><strong>Google Firebase:</strong> Authentication and user management</li>
-              <li><strong>Razorpay:</strong> Payment processing</li>
-              <li><strong>YouTube:</strong> Video content delivery via embedded player</li>
-            </ul>
-            <p className="text-zinc-300 leading-relaxed mt-2">
-              Each service has its own privacy policy governing the use of your data.
+            <h2 className="text-xl font-semibold mb-3">5. Your Rights</h2>
+            <p className="text-zinc-300 leading-relaxed">
+              Depending on your location, you may have the right to access, correct, or delete your personal
+              data, object to or restrict certain processing, and data portability. To exercise these rights
+              or ask questions, contact us at{" "}
+              <a href="mailto:officialnataktv@gmail.com" className="text-accent hover:underline">
+                officialnataktv@gmail.com
+              </a>.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">6. Your Rights</h2>
-            <p className="text-zinc-300 leading-relaxed mb-2">You have the right to:</p>
-            <ul className="list-disc pl-6 text-zinc-300 space-y-1">
-              <li>Access your personal data</li>
-              <li>Request correction of inaccurate data</li>
-              <li>Request deletion of your account and data</li>
-              <li>Withdraw consent for data processing</li>
-              <li>Export your data in a portable format</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold mb-3">7. Data Retention</h2>
+            <h2 className="text-xl font-semibold mb-3">6. Children&apos;s Privacy</h2>
             <p className="text-zinc-300 leading-relaxed">
-              We retain your data for as long as your account is active. Upon account deletion, your personal
-              data will be removed within 30 days, except where required by law for tax or legal compliance.
+              We do not knowingly collect personal information from children under 13 (or the applicable age
+              of digital consent) without verified parental consent. See our{" "}
+              <Link href="/terms" className="text-accent hover:underline">Terms and Conditions</Link>{" "}
+              for our child safety commitment.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">8. Contact Us</h2>
+            <h2 className="text-xl font-semibold mb-3">7. Security</h2>
             <p className="text-zinc-300 leading-relaxed">
-              For privacy-related queries, contact us at:{" "}
+              We implement appropriate technical and organizational measures to protect your personal
+              information against unauthorized access, alteration, disclosure, or destruction.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold mb-3">8. Changes to This Policy</h2>
+            <p className="text-zinc-300 leading-relaxed">
+              We may update this Privacy Policy from time to time. We will indicate the &quot;Last
+              updated&quot; date and, where required, notify you of material changes. Continued use of the
+              service after changes constitutes acceptance of the updated policy.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold mb-3">9. Contact</h2>
+            <p className="text-zinc-300 leading-relaxed">
+              For privacy-related questions or requests, contact us at:{" "}
               <a href="mailto:officialnataktv@gmail.com" className="text-accent hover:underline">
                 officialnataktv@gmail.com
               </a>
