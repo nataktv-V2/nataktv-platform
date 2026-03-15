@@ -17,8 +17,7 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
+        # version auto-detected from package.json packageManager field
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
