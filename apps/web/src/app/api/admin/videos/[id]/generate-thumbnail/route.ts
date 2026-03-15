@@ -35,9 +35,9 @@ export async function POST(
       );
     }
 
-    // Target: 9:16 portrait (720x1280)
-    const targetWidth = 720;
-    const targetHeight = 1280;
+    // Target: 9:16 portrait in 4K (2160x3840)
+    const targetWidth = 2160;
+    const targetHeight = 3840;
 
     // Smart crop to 9:16 using attention-based strategy
     const cropped = await sharp(imageBuffer)
@@ -81,15 +81,15 @@ export async function POST(
 
     // Limit to 3 lines
     const displayLines = lines.slice(0, 3);
-    const lineHeight = 48;
-    const textStartY = targetHeight - 80 - (displayLines.length - 1) * lineHeight;
+    const lineHeight = 144;
+    const textStartY = targetHeight - 240 - (displayLines.length - 1) * lineHeight;
 
     const textElements = displayLines
       .map(
         (line, i) =>
           `<text x="${targetWidth / 2}" y="${textStartY + i * lineHeight}"
             text-anchor="middle" font-family="Arial, Helvetica, sans-serif"
-            font-size="40" font-weight="bold" fill="white"
+            font-size="120" font-weight="bold" fill="white"
             style="text-shadow: 0 2px 8px rgba(0,0,0,0.8)">
             ${escapeXml(line)}
           </text>`
@@ -98,9 +98,9 @@ export async function POST(
 
     // Add "NATAK TV" branding at top
     const brandingSvg = `
-      <text x="${targetWidth / 2}" y="60"
+      <text x="${targetWidth / 2}" y="180"
         text-anchor="middle" font-family="Arial, Helvetica, sans-serif"
-        font-size="24" font-weight="bold" fill="#f97316" letter-spacing="3">
+        font-size="72" font-weight="bold" fill="#f97316" letter-spacing="9">
         NATAK TV
       </text>
     `;
@@ -118,7 +118,7 @@ export async function POST(
         { input: Buffer.from(gradientSvg), blend: "over" },
         { input: Buffer.from(textOverlaySvg), blend: "over" },
       ])
-      .jpeg({ quality: 85 })
+      .jpeg({ quality: 92 })
       .toBuffer();
 
     // Save to public/thumbnails
