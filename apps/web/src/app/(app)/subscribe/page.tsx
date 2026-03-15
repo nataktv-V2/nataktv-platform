@@ -43,46 +43,38 @@ export default function SubscribePage() {
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-center mb-2">
-        Unlimited entertainment
-      </h1>
-      <p className="text-zinc-400 text-center mb-8">
-        One plan. All content. No ads.
-      </p>
+    <div className="max-w-md mx-auto px-4 py-6">
+      {/* Hero Price Section */}
+      <div className="text-center mb-6">
+        <p className="text-[#f97316] text-sm font-semibold tracking-wider uppercase mb-3">
+          Start your trial today
+        </p>
+        <div className="flex items-baseline justify-center gap-1">
+          <span className="text-6xl sm:text-7xl font-extrabold text-white">₹2</span>
+        </div>
+        <p className="text-zinc-300 text-lg mt-1">for 2 days of full access</p>
+        <p className="text-zinc-500 text-sm mt-2">
+          then ₹199/month · cancel anytime
+        </p>
+      </div>
 
       {/* Plan Card */}
-      <div className="bg-[#121216] border-2 border-[#f97316] rounded-2xl p-6 mb-6">
-        <div className="flex items-baseline gap-1 mb-1">
-          <span className="text-3xl font-bold">₹199</span>
-          <span className="text-zinc-400">/month</span>
-        </div>
-        <p className="text-[#f97316] text-sm font-medium mb-4">
-          Start with a ₹2 trial for 2 days
-        </p>
+      <div className="bg-[#121216] border border-white/10 rounded-2xl p-5 mb-5">
+        <h2 className="font-semibold text-sm text-zinc-300 uppercase tracking-wider mb-4">
+          What you get
+        </h2>
         <ul className="space-y-3 mb-6">
           {[
-            "Unlimited access to all content",
-            "Stream in HD quality",
-            "Watch on any device",
-            "New shows added regularly",
-            "No ads, ever",
-            "Cancel anytime",
+            { icon: "🎬", text: "Unlimited access to all content" },
+            { icon: "📱", text: "Watch on any device" },
+            { icon: "✨", text: "New shows added regularly" },
+            { icon: "🚫", text: "No ads, ever" },
+            { icon: "📺", text: "Stream in HD quality" },
+            { icon: "🔓", text: "Cancel anytime, no questions" },
           ].map((feature) => (
-            <li key={feature} className="flex items-start gap-2 text-sm">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              {feature}
+            <li key={feature.text} className="flex items-center gap-3 text-sm text-zinc-300">
+              <span className="text-base">{feature.icon}</span>
+              {feature.text}
             </li>
           ))}
         </ul>
@@ -95,24 +87,40 @@ export default function SubscribePage() {
           <RazorpayCheckout
             onSuccess={() => router.push("/home")}
             onError={(err) => setError(err)}
-            className="w-full bg-[#f97316] hover:bg-[#ea580c] text-white py-3 rounded-xl font-semibold transition-colors"
+            className="w-full bg-[#f97316] hover:bg-[#ea580c] text-white py-3.5 rounded-xl font-bold text-base transition-colors shadow-lg shadow-[#f97316]/20"
           >
-            Start ₹2 Trial
+            Start ₹2 Trial →
           </RazorpayCheckout>
         ) : (
           <button
             onClick={() => signInWithGoogle()}
-            className="w-full bg-[#f97316] hover:bg-[#ea580c] text-white py-3 rounded-xl font-semibold transition-colors"
+            className="w-full bg-[#f97316] hover:bg-[#ea580c] text-white py-3.5 rounded-xl font-bold text-base transition-colors shadow-lg shadow-[#f97316]/20"
           >
-            Sign in & Subscribe
+            Sign in & Start Trial →
           </button>
         )}
       </div>
 
+      {/* Trust Signals */}
+      <div className="flex justify-center gap-6 mb-5 text-zinc-500 text-xs">
+        <div className="flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-green-500">
+            <path fillRule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clipRule="evenodd" />
+          </svg>
+          Secure payment
+        </div>
+        <div className="flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-green-500">
+            <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
+          </svg>
+          Powered by Razorpay
+        </div>
+      </div>
+
       {/* Fine print */}
-      <p className="text-zinc-500 text-xs text-center">
+      <p className="text-zinc-600 text-[10px] text-center leading-relaxed">
         ₹2 for 2-day trial, then ₹199/month. Auto-renews via Razorpay.
-        Cancel anytime from your profile.
+        Cancel anytime from your profile. No refund for partial months.
       </p>
     </div>
   );
