@@ -41,7 +41,7 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="flex flex-col min-h-screen overflow-hidden -mt-14 -mb-16">
+      <div className="flex flex-col h-screen overflow-hidden fixed inset-0 bg-[#0a0a0c] z-50">
         {/* Logo + Tagline */}
         <div className="pt-20 pb-4 text-center z-10">
           <div className="flex items-center justify-center gap-1.5 mb-2">
@@ -57,11 +57,11 @@ export default function ProfilePage() {
 
         {/* Animated Poster Rows */}
         <div className="flex-1 flex flex-col justify-center gap-4 py-4 overflow-hidden">
-          {/* Row 1 - scrolls left */}
+          {/* Row 1 - scrolls left to right */}
           <div className="overflow-hidden">
             <div
               className="flex gap-3 will-change-transform"
-              style={{ animation: "scroll-left 20s linear infinite", width: "max-content" }}
+              style={{ animation: "scroll-right 20s linear infinite", width: "max-content" }}
             >
               {[...posters, ...posters].map((poster, i) => (
                 <div
@@ -87,11 +87,11 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Row 2 - scrolls right */}
+          {/* Row 2 - scrolls right to left */}
           <div className="overflow-hidden">
             <div
               className="flex gap-3 will-change-transform"
-              style={{ animation: "scroll-right 25s linear infinite", width: "max-content" }}
+              style={{ animation: "scroll-left 25s linear infinite", width: "max-content" }}
             >
               {[...posters.slice(4), ...posters.slice(0, 4), ...posters.slice(4), ...posters.slice(0, 4)].map((poster, i) => (
                 <div
