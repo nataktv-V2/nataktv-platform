@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { cached, invalidateCache } from "@/lib/redis";
+import { cached } from "@/lib/redis";
 
 export async function GET(req: NextRequest) {
   try {

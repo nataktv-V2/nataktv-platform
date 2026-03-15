@@ -143,6 +143,7 @@ export function VideoForm({
       {/* Preview */}
       {previewUrl && (
         <div className="rounded-lg overflow-hidden border border-white/10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={previewUrl}
             alt="Preview"
@@ -182,6 +183,7 @@ export function VideoForm({
             {generatingThumb ? "Generating..." : "Generate 9:16 Thumbnail"}
           </button>
           {thumbResult && !thumbResult.startsWith("Error") && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={thumbResult}
               alt="Generated"

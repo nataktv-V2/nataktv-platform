@@ -49,7 +49,6 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart }: VideoPla
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [hasStarted, setHasStarted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
@@ -93,7 +92,6 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart }: VideoPla
             const playing = event.data === window.YT.PlayerState.PLAYING;
             setIsPlaying(playing);
             if (playing) {
-              setHasStarted(true);
               hideControlsAfterDelay();
             }
           },

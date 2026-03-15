@@ -1,6 +1,14 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
+  "globalEnv": [
+    "RAZORPAY_PLAN_ID",
+    "RAZORPAY_WEBHOOK_SECRET",
+    "RAZORPAY_KEY_SECRET",
+    "FIREBASE_SERVICE_ACCOUNT_KEY",
+    "NODE_ENV",
+    "REDIS_URL"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

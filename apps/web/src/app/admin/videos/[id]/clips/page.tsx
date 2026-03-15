@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 
 type Clip = {
@@ -26,7 +26,6 @@ function formatTime(seconds: number) {
 
 export default function ClipsPage() {
   const params = useParams();
-  const router = useRouter();
   const videoId = params.id as string;
 
   const [video, setVideo] = useState<Video | null>(null);

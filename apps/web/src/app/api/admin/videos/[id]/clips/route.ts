@@ -45,8 +45,7 @@ export async function POST(
 }
 
 export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  req: NextRequest
 ) {
   try {
     const body = await req.json();
@@ -65,8 +64,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  req: NextRequest
 ) {
   try {
     const { clipId } = await req.json();
