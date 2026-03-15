@@ -1,8 +1,7 @@
 name: Deploy
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:  # Manual trigger only — enable push trigger after DigitalOcean is set up
 
 concurrency:
   group: deploy-production

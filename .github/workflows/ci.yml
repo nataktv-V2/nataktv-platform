@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  NODE_VERSION: "20"
-  PNPM_VERSION: "10"
-
 jobs:
   lint-and-build:
     name: Lint & Build
@@ -22,12 +18,12 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: ${{ env.PNPM_VERSION }}
+          version: 10
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 20
           cache: "pnpm"
 
       - name: Install dependencies
