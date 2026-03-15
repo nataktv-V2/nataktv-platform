@@ -60,7 +60,7 @@ export default function LandingPage() {
             How it works
           </Link>
           <Link
-            href="/home"
+            href="/subscribe"
             className="bg-accent hover:bg-accent-hover text-white px-5 py-2 rounded-full text-sm font-semibold transition-colors"
           >
             Subscribe
@@ -87,7 +87,7 @@ export default function LandingPage() {
         </p>
         <div className="flex gap-4">
           <Link
-            href="/home"
+            href="/subscribe"
             className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-full font-semibold transition-colors"
           >
             Start watching
@@ -163,7 +163,7 @@ export default function LandingPage() {
           access.
         </p>
         <Link
-          href="/home"
+          href="/subscribe"
           className="bg-accent hover:bg-accent-hover text-white px-10 py-4 rounded-full font-semibold text-lg transition-colors inline-block"
         >
           Get started
@@ -171,14 +171,22 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border-subtle py-10 px-6 text-center">
-        <p className="text-text-muted text-sm">
-          Subscription video streaming for mobile. Subscribe, browse, and watch.
-        </p>
-        <p className="text-text-muted text-xs mt-4">
-          © {new Date().getFullYear()} INDIDINO VENTURES PRIVATE LIMITED. All
-          rights reserved.
-        </p>
+      <footer className="border-t border-border-subtle py-10 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-wrap justify-center gap-4 mb-6 text-sm">
+            <Link href="/privacy" className="text-text-muted hover:text-accent transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="text-text-muted hover:text-accent transition-colors">Terms & Conditions</Link>
+            <Link href="/refund" className="text-text-muted hover:text-accent transition-colors">Refund Policy</Link>
+            <Link href="/delete-account" className="text-text-muted hover:text-accent transition-colors">Delete Account</Link>
+          </div>
+          <p className="text-text-muted text-sm text-center">
+            Subscription video streaming for mobile. Subscribe, browse, and watch.
+          </p>
+          <p className="text-text-muted text-xs mt-4 text-center">
+            © {new Date().getFullYear()} INDIDINO VENTURES PRIVATE LIMITED. All
+            rights reserved.
+          </p>
+        </div>
       </footer>
     </main>
   );

@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function AppNavbar() {
+  const pathname = usePathname();
+  const isSearchPage = pathname === "/search";
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-bg-primary/90 backdrop-blur-md border-b border-border-subtle">
       <div className="flex items-center justify-between px-4 h-14 max-w-5xl mx-auto">
@@ -16,15 +20,17 @@ export function AppNavbar() {
             </span>
           </span>
         </Link>
-        <Link
-          href="/search"
-          className="flex items-center gap-2 bg-bg-surface border border-border-subtle rounded-full px-4 py-1.5 text-sm text-text-muted hover:border-border-default transition-colors flex-1 mx-4 max-w-sm"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-            <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clipRule="evenodd" />
-          </svg>
-          Search shows, movies...
-        </Link>
+        {!isSearchPage && (
+          <Link
+            href="/search"
+            className="flex items-center gap-2 bg-bg-surface border border-border-subtle rounded-full px-4 py-1.5 text-sm text-text-muted hover:border-border-default transition-colors flex-1 mx-4 max-w-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+              <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clipRule="evenodd" />
+            </svg>
+            Search shows, movies...
+          </Link>
+        )}
       </div>
     </header>
   );

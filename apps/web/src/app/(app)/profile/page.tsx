@@ -38,6 +38,17 @@ export default function ProfilePage() {
           </svg>
           Continue with Google
         </button>
+
+        {/* Legal links */}
+        <div className="flex flex-wrap justify-center gap-3 mt-8 text-xs text-zinc-500">
+          <Link href="/privacy" className="hover:text-[#f97316] transition-colors">Privacy Policy</Link>
+          <span>·</span>
+          <Link href="/terms" className="hover:text-[#f97316] transition-colors">Terms</Link>
+          <span>·</span>
+          <Link href="/refund" className="hover:text-[#f97316] transition-colors">Refund Policy</Link>
+          <span>·</span>
+          <Link href="/delete-account" className="hover:text-[#f97316] transition-colors">Delete Account</Link>
+        </div>
       </div>
     );
   }

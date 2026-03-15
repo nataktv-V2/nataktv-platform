@@ -9,6 +9,7 @@ type VideoCardProps = {
   duration: number;
   language?: string;
   category?: string;
+  fullWidth?: boolean;
 };
 
 function formatDuration(seconds: number) {
@@ -17,9 +18,9 @@ function formatDuration(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function VideoCard({ id, title, thumbnailUrl, generatedThumbnailUrl, duration, language }: VideoCardProps) {
+export function VideoCard({ id, title, thumbnailUrl, generatedThumbnailUrl, duration, language, fullWidth }: VideoCardProps) {
   return (
-    <Link href={`/video/${id}`} className="group block flex-shrink-0 w-36 sm:w-44">
+    <Link href={`/video/${id}`} className={`group block flex-shrink-0 ${fullWidth ? "w-full" : "w-36 sm:w-44"}`}>
       <div className="relative aspect-[9/16] rounded-xl overflow-hidden bg-bg-surface">
         <Image
           src={generatedThumbnailUrl || thumbnailUrl}
