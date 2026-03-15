@@ -51,7 +51,7 @@ export default function SubscribePage() {
         </p>
         <div className="flex items-center justify-center gap-2 sm:gap-4">
           {/* LEFT — Blurred + Locked thumbnail */}
-          <div className="relative w-[130px] sm:w-[155px] flex-shrink-0 rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-black/40" style={{ aspectRatio: "2/3" }}>
+          <div className="relative w-[140px] sm:w-[165px] flex-shrink-0 rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-black/40" style={{ aspectRatio: "2/3" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/posters/1.png"
@@ -61,9 +61,9 @@ export default function SubscribePage() {
             />
             {/* Light overlay to soften */}
             <div className="absolute inset-0 bg-black/20 z-[1]" />
-            {/* Lock icon */}
+            {/* Lock icon — animated wiggle */}
             <div className="absolute inset-0 flex items-center justify-center z-[2]">
-              <div className="w-14 h-14 rounded-full bg-black/50 border border-white/20 flex items-center justify-center backdrop-blur-md">
+              <div className="w-14 h-14 rounded-full bg-black/50 border border-white/20 flex items-center justify-center backdrop-blur-md" style={{ animation: "lock-wiggle 2s ease-in-out infinite" }}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7 text-white/80">
                   <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3A5.25 5.25 0 0 0 12 1.5Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clipRule="evenodd" />
                 </svg>
@@ -77,20 +77,20 @@ export default function SubscribePage() {
 
           {/* CENTER — Arrow with ₹2 */}
           <div className="flex flex-col items-center gap-1 flex-shrink-0 px-1">
-            {/* ₹2 badge */}
-            <div className="bg-[#f97316] text-white text-sm sm:text-base font-extrabold px-3 py-1.5 rounded-full shadow-lg shadow-[#f97316]/30 whitespace-nowrap">
+            {/* ₹2 badge — pulsing glow */}
+            <div className="bg-[#f97316] text-white text-sm sm:text-base font-extrabold px-3 py-1.5 rounded-full whitespace-nowrap" style={{ animation: "pulse-glow 2s ease-in-out infinite" }}>
               Just ₹2
             </div>
-            {/* Arrow */}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-[#f97316]">
+            {/* Arrow — bouncing right */}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-[#f97316]" style={{ animation: "arrow-bounce 1.2s ease-in-out infinite" }}>
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />
             </svg>
             <span className="text-[10px] text-zinc-500 font-medium">2-day trial</span>
           </div>
 
-          {/* RIGHT — Clear + Unlocked thumbnail */}
-          <div className="relative w-[130px] sm:w-[155px] flex-shrink-0 rounded-2xl overflow-hidden border-2 border-[#f97316]/40 shadow-lg shadow-[#f97316]/10" style={{ aspectRatio: "2/3" }}>
+          {/* RIGHT — Clear + Unlocked thumbnail — floating animation */}
+          <div className="relative w-[140px] sm:w-[165px] flex-shrink-0 rounded-2xl overflow-hidden border-2 border-[#f97316]/40" style={{ aspectRatio: "2/3", animation: "float-up 3s ease-in-out infinite, pulse-glow 3s ease-in-out infinite" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/posters/1.png"
@@ -130,14 +130,24 @@ export default function SubscribePage() {
           <RazorpayCheckout
             onSuccess={() => router.push("/home")}
             onError={(err) => setError(err)}
-            className="w-full bg-[#f97316] hover:bg-[#ea580c] text-white py-4 rounded-2xl font-bold text-lg transition-colors shadow-lg shadow-[#f97316]/25"
+            className="w-full text-white py-4 rounded-2xl font-bold text-lg transition-colors"
+            style={{
+              background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
+              backgroundSize: "200% 100%",
+              animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
+            }}
           >
             Start ₹2 Trial →
           </RazorpayCheckout>
         ) : (
           <button
             onClick={() => signInWithGoogle()}
-            className="w-full bg-[#f97316] hover:bg-[#ea580c] text-white py-4 rounded-2xl font-bold text-lg transition-colors shadow-lg shadow-[#f97316]/25"
+            className="w-full text-white py-4 rounded-2xl font-bold text-lg transition-colors"
+            style={{
+              background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
+              backgroundSize: "200% 100%",
+              animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
+            }}
           >
             Sign in & Start Trial →
           </button>
