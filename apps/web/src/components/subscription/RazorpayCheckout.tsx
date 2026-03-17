@@ -17,6 +17,7 @@ type RazorpayCheckoutProps = {
   onError?: (error: string) => void;
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 };
 
 function loadRazorpayScript(): Promise<boolean> {
@@ -38,6 +39,7 @@ export function RazorpayCheckout({
   onError,
   children,
   className,
+  style,
 }: RazorpayCheckoutProps) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -120,6 +122,7 @@ export function RazorpayCheckout({
       onClick={handleClick}
       disabled={loading || !user}
       className={className}
+      style={style}
     >
       {loading ? (
         <span className="flex items-center justify-center gap-2">

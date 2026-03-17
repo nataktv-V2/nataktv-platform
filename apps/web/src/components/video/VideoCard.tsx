@@ -10,6 +10,7 @@ type VideoCardProps = {
   language?: string;
   category?: string;
   fullWidth?: boolean;
+  createdAt?: string;
 };
 
 function formatDuration(seconds: number) {
@@ -18,7 +19,9 @@ function formatDuration(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function VideoCard({ id, title, thumbnailUrl, generatedThumbnailUrl, duration, language, fullWidth }: VideoCardProps) {
+export function VideoCard({ id, title, thumbnailUrl, generatedThumbnailUrl, duration, language, fullWidth, createdAt }: VideoCardProps) {
+  const isNew = createdAt ? (Date.now() - new Date(createdAt).getTime()) < 7 * 24 * 60 * 60 * 1000 : false;
+
   return (
     <Link href={`/video/${id}`} className={`group block flex-shrink-0 ${fullWidth ? "w-full" : "w-36 sm:w-44"}`}>
       <div className="relative aspect-[9/16] rounded-xl overflow-hidden bg-bg-surface">
@@ -29,6 +32,9 @@ export function VideoCard({ id, title, thumbnailUrl, generatedThumbnailUrl, dura
           className="object-cover group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 640px) 144px, 176px"
         />
+        {isNew && (
+          <span className="absolute top-2 left-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded z-[1]">NEW</span>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         <div className="absolute bottom-2 left-2 right-2">
           <p className="text-white text-xs font-medium line-clamp-2 leading-tight">{title}</p>

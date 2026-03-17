@@ -15,7 +15,7 @@ export default function VisualFeed1() {
       {/* Full bleed thumbnail */}
       <div className="relative" style={{ height: 700 }}>
         <Image
-          src="https://img.youtube.com/vi/eZkwCc4KpGc/maxresdefault.jpg"
+          src="/thumbnails/ads/gaon-ki-biwi.jpg"
           alt="Gaon Ki Biwi"
           fill
           style={{ objectFit: "cover" }}
@@ -25,7 +25,7 @@ export default function VisualFeed1() {
         <div
           className="absolute bottom-0 left-0 right-0"
           style={{
-            height: 300,
+            height: 350,
             background: "linear-gradient(to top, #0a0a0c, transparent)",
           }}
         />
@@ -51,7 +51,7 @@ export default function VisualFeed1() {
 
       {/* Bottom section */}
       <div className="flex-1 flex flex-col items-center justify-center px-10">
-        <h2 className="font-bold text-center mb-3" style={{ fontSize: 48, color: "#f4f4f5" }}>
+        <h2 className="font-bold text-center mb-3" style={{ fontSize: 48, color: "#f4f4f5", fontFamily: "var(--font-poppins), Inter, sans-serif", fontWeight: 800, textShadow: "0 2px 20px rgba(0,0,0,0.8), 0 1px 6px rgba(0,0,0,0.9)" }}>
           Gaon Ki Biwi
         </h2>
         <button
@@ -59,11 +59,12 @@ export default function VisualFeed1() {
           style={{
             fontSize: 26,
             padding: "16px 56px",
-            backgroundColor: "#f97316",
+            background: "linear-gradient(135deg, #f97316, #ea580c)",
+            boxShadow: "0 4px 24px rgba(249,115,22,0.4)",
             color: "#fff",
           }}
         >
-          Watch Now — ₹2 Trial
+          Play Gaon Ki Biwi — ₹2
         </button>
       </div>
     </div>

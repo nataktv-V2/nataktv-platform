@@ -6,6 +6,7 @@ type Video = {
   thumbnailUrl: string;
   generatedThumbnailUrl?: string | null;
   duration: number;
+  createdAt?: Date | string;
   language?: { name: string };
   category?: { name: string };
 };
@@ -32,6 +33,7 @@ export function VideoRow({ title, videos }: VideoRowProps) {
             duration={video.duration}
             language={video.language?.name}
             category={video.category?.name}
+            createdAt={video.createdAt instanceof Date ? video.createdAt.toISOString() : video.createdAt}
           />
         ))}
       </div>

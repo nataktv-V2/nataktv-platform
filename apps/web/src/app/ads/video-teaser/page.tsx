@@ -3,7 +3,7 @@
 import { NatakLogo } from "@/components/ads/NatakLogo";
 
 // Single-show dramatic teaser — Gaon Ki Biwi
-const show = { id: "eZkwCc4KpGc", title: "Gaon Ki Biwi" };
+const show = { img: "/thumbnails/ads/gaon-ki-biwi.jpg", title: "Gaon Ki Biwi" };
 
 export default function VideoTeaser() {
   return (
@@ -93,9 +93,11 @@ export default function VideoTeaser() {
       <div
         className="teaser-bg absolute inset-0"
         style={{
-          backgroundImage: `url(https://img.youtube.com/vi/${show.id}/maxresdefault.jpg)`,
+          backgroundImage: `url(${show.img})`,
           backgroundSize: "cover",
           backgroundPosition: "center top",
+          willChange: "transform, filter",
+          backfaceVisibility: "hidden",
         }}
       />
 
@@ -133,6 +135,8 @@ export default function VideoTeaser() {
             fontSize: 80,
             color: "#f4f4f5",
             textShadow: "0 4px 40px rgba(0,0,0,0.9)",
+            fontFamily: "var(--font-poppins), Inter, sans-serif",
+            fontWeight: 800,
           }}
         >
           {show.title}
@@ -153,9 +157,9 @@ export default function VideoTeaser() {
           style={{
             fontSize: 40,
             padding: "28px 90px",
-            backgroundColor: "#f97316",
+            background: "linear-gradient(135deg, #f97316, #ea580c)",
             color: "#fff",
-            boxShadow: "0 4px 40px rgba(249,115,22,0.5)",
+            boxShadow: "0 4px 24px rgba(249,115,22,0.4)",
           }}
         >
           Watch Now

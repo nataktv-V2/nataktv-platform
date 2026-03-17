@@ -4,7 +4,7 @@ import { NatakLogo } from "@/components/ads/NatakLogo";
 
 // Bold positioning — targets Male 18-35
 // Structure: 5s hook → 1.5s promo → 5s CTA (15s total, loops)
-const show = { id: "-Jts8lNYLJo", title: "Ghat Ghat Ka Paani" };
+const show = { img: "/thumbnails/ads/ghat-ghat-ka-paani.jpg", title: "Ghat Ghat Ka Paani" };
 
 export default function VideoBold() {
   return (
@@ -91,9 +91,11 @@ export default function VideoBold() {
       <div
         className="b-bg absolute inset-0"
         style={{
-          backgroundImage: `url(https://img.youtube.com/vi/${show.id}/maxresdefault.jpg)`,
+          backgroundImage: `url(${show.img})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
+          willChange: "transform, filter",
+          backfaceVisibility: "hidden",
         }}
       />
 
@@ -113,7 +115,7 @@ export default function VideoBold() {
         <div className="b-bar mb-5" style={{ height: 6, backgroundColor: "#ef4444", borderRadius: 3 }} />
         <h3
           className="b-hook font-black text-center"
-          style={{ fontSize: 52, color: "#f4f4f5", textTransform: "uppercase", letterSpacing: 3 }}
+          style={{ fontSize: 52, color: "#f4f4f5", textTransform: "uppercase", letterSpacing: 3, fontFamily: "var(--font-poppins), Inter, sans-serif", fontWeight: 800 }}
         >
           Aap Satisfied Nahi Ho?
         </h3>
@@ -123,7 +125,7 @@ export default function VideoBold() {
       <div className="b-title absolute inset-0 z-10 flex items-center justify-center">
         <h2
           className="font-black text-center px-10"
-          style={{ fontSize: 68, color: "#f4f4f5", textShadow: "0 4px 40px rgba(0,0,0,0.9)" }}
+          style={{ fontSize: 68, color: "#f4f4f5", textShadow: "0 4px 40px rgba(0,0,0,0.9)", fontFamily: "var(--font-poppins), Inter, sans-serif", fontWeight: 800 }}
         >
           {show.title}
         </h2>
@@ -151,9 +153,9 @@ export default function VideoBold() {
         </div>
         <button
           className="b-btn rounded-full font-bold"
-          style={{ fontSize: 36, padding: "24px 80px", backgroundColor: "#ef4444", color: "#fff", boxShadow: "0 4px 40px rgba(239,68,68,0.5)" }}
+          style={{ fontSize: 36, padding: "24px 80px", background: "linear-gradient(135deg, #ef4444, #dc2626)", color: "#fff", boxShadow: "0 4px 24px rgba(239,68,68,0.4)" }}
         >
-          Watch Now
+          Watch Now — Free
         </button>
       </div>
     </div>

@@ -1,18 +1,49 @@
+import Image from "next/image";
 import { NatakLogo } from "@/components/ads/NatakLogo";
 
 export default function EmotionFeed() {
   const emotions = [
-    { face: "😍", label: "Romance", show: "Kalyanam to Kadhal", color: "#E91E63" },
-    { face: "😂", label: "Comedy", show: "Hurry Burry", color: "#FFC107" },
-    { face: "😱", label: "Suspense", show: "LSD - Love Shadi Dhokha", color: "#7B1FA2" },
-    { face: "🔥", label: "Drama", show: "Gaon Ki Biwi", color: "#FF6D00" },
-    { face: "🥹", label: "Emotions", show: "Sweet & Salt", color: "#10b981" },
-    { face: "🤯", label: "Mystery", show: "Dohra", color: "#ef4444" },
+    {
+      label: "Romance",
+      img: "/thumbnails/ads/kalyanam-to-kadhal.jpg",
+      color: "#E91E63",
+      tint: "rgba(233,30,99,0.45)",
+    },
+    {
+      label: "Comedy",
+      img: "/thumbnails/ads/love-guru.jpg",
+      color: "#FFC107",
+      tint: "rgba(255,193,7,0.4)",
+    },
+    {
+      label: "Thriller",
+      img: "/thumbnails/ads/ghat-ghat-ka-paani.jpg",
+      color: "#7B1FA2",
+      tint: "rgba(123,31,162,0.45)",
+    },
+    {
+      label: "Drama",
+      img: "/thumbnails/ads/gaon-ki-biwi.jpg",
+      color: "#FF6D00",
+      tint: "rgba(255,109,0,0.4)",
+    },
+    {
+      label: "Emotions",
+      img: "/thumbnails/ads/love-shadi-dhokha.jpg",
+      color: "#10b981",
+      tint: "rgba(16,185,129,0.4)",
+    },
+    {
+      label: "Mystery",
+      img: "/thumbnails/ads/hey-leela.jpg",
+      color: "#ef4444",
+      tint: "rgba(239,68,68,0.45)",
+    },
   ];
 
   return (
     <div
-      className="relative overflow-hidden flex flex-col items-center justify-center"
+      className="relative overflow-hidden"
       style={{
         width: 1080,
         height: 1080,
@@ -20,93 +51,112 @@ export default function EmotionFeed() {
         fontFamily: "Inter, sans-serif",
       }}
     >
-      {/* Multi-glow background */}
+      {/* 3x2 Thumbnail Grid — full bleed background */}
       <div
-        className="absolute top-1/4 left-1/4 rounded-full blur-[120px] opacity-15"
-        style={{ width: 400, height: 400, background: "radial-gradient(circle, #E91E63, transparent)" }}
-      />
-      <div
-        className="absolute bottom-1/4 right-1/4 rounded-full blur-[120px] opacity-15"
-        style={{ width: 400, height: 400, background: "radial-gradient(circle, #FFC107, transparent)" }}
-      />
-
-      {/* Logo */}
-      <div className="mb-6">
-        <NatakLogo size="lg" />
-      </div>
-
-      {/* Big emotion faces */}
-      <div className="flex gap-2 mb-6">
-        {emotions.map((e, i) => (
-          <div
-            key={i}
-            className="flex items-center justify-center"
-            style={{
-              width: 100,
-              height: 100,
-              fontSize: 64,
-              borderRadius: 24,
-              backgroundColor: `${e.color}12`,
-              border: `2px solid ${e.color}30`,
-            }}
-          >
-            {e.face}
-          </div>
-        ))}
-      </div>
-
-      {/* Headline */}
-      <h1 className="text-center font-bold mb-3" style={{ fontSize: 56, color: "#f4f4f5" }}>
-        Kya feel karoge{" "}
-        <span
-          style={{
-            background: "linear-gradient(to right, #FFC107, #E91E63)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          aaj?
-        </span>
-      </h1>
-
-      <p className="text-center mb-8" style={{ fontSize: 26, color: "#a1a1aa", maxWidth: 700 }}>
-        Har mood ke liye ek show — choose your emotion
-      </p>
-
-      {/* Emotion → Show mapping */}
-      <div className="grid grid-cols-3 gap-3 mb-8" style={{ width: 780 }}>
-        {emotions.map((e) => (
-          <div
-            key={e.label}
-            className="rounded-xl p-4 text-center"
-            style={{
-              background: `linear-gradient(135deg, ${e.color}15, ${e.color}05)`,
-              border: `1px solid ${e.color}20`,
-            }}
-          >
-            <span style={{ fontSize: 36 }}>{e.face}</span>
-            <p className="font-semibold mt-2" style={{ fontSize: 18, color: e.color }}>
-              {e.label}
-            </p>
-            <p style={{ fontSize: 14, color: "#a1a1aa", marginTop: 4 }}>
-              {e.show}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* CTA */}
-      <button
-        className="rounded-full font-bold"
+        className="absolute inset-0 grid"
         style={{
-          fontSize: 28,
-          padding: "16px 56px",
-          backgroundColor: "#f97316",
-          color: "#fff",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gridTemplateRows: "repeat(2, 1fr)",
         }}
       >
-        Pick Your Mood
-      </button>
+        {emotions.map((e) => (
+          <div key={e.label} className="relative overflow-hidden">
+            {/* Show thumbnail */}
+            <Image
+              src={e.img}
+              alt={e.label}
+              fill
+              style={{ objectFit: "cover" }}
+              unoptimized
+            />
+            {/* Colored tint overlay */}
+            <div
+              className="absolute inset-0"
+              style={{ backgroundColor: e.tint }}
+            />
+            {/* Dark vignette per cell */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%)",
+              }}
+            />
+            {/* Mood label */}
+            <div className="absolute inset-0 flex items-end justify-center pb-4">
+              <span
+                style={{
+                  fontSize: 32,
+                  fontWeight: 800,
+                  color: "#fff",
+                  textShadow: "0 2px 12px rgba(0,0,0,0.7)",
+                  fontFamily: "var(--font-poppins), Inter, sans-serif",
+                  letterSpacing: 1,
+                  textTransform: "uppercase",
+                }}
+              >
+                {e.label}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Dark center gradient for headline readability */}
+      <div
+        className="absolute inset-0 flex items-center justify-center"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 50% at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
+        }}
+      />
+
+      {/* Center content: Logo + Headline + CTA */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        {/* Logo */}
+        <div className="mb-4">
+          <NatakLogo size="lg" />
+        </div>
+
+        {/* Headline */}
+        <h1
+          className="text-center"
+          style={{
+            fontSize: 64,
+            color: "#f4f4f5",
+            fontFamily: "var(--font-poppins), Inter, sans-serif",
+            fontWeight: 800,
+            lineHeight: 1.1,
+            textShadow: "0 4px 20px rgba(0,0,0,0.6)",
+          }}
+        >
+          Kya feel karoge{" "}
+          <span
+            style={{
+              background: "linear-gradient(to right, #FFC107, #E91E63)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            aaj?
+          </span>
+        </h1>
+
+        {/* CTA */}
+        <button
+          className="rounded-full font-bold mt-6"
+          style={{
+            fontSize: 28,
+            padding: "16px 56px",
+            background: "linear-gradient(135deg, #f97316, #ea580c)",
+            boxShadow: "0 4px 24px rgba(249,115,22,0.4)",
+            color: "#fff",
+            textShadow: "0 1px 4px rgba(0,0,0,0.3)",
+          }}
+        >
+          Pick Your Mood
+        </button>
+      </div>
     </div>
   );
 }

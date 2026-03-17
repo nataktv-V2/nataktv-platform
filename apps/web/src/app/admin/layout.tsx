@@ -89,6 +89,24 @@ export default function AdminLayout({
               >
                 Users
               </Link>
+              <Link
+                href="/admin/categories"
+                className="px-3 py-1.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+              >
+                Categories
+              </Link>
+              <Link
+                href="/admin/languages"
+                className="px-3 py-1.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+              >
+                Languages
+              </Link>
+              <Link
+                href="/admin/notifications"
+                className="px-3 py-1.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+              >
+                Notify
+              </Link>
             </nav>
             <div className="ml-auto">
               <Link

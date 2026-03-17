@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 
 type Language = { id: string; name: string; code: string };
 type Category = { id: string; name: string; slug: string };
@@ -19,6 +19,35 @@ type VideoData = {
   reelStart: number;
   creditStart: number | null;
 };
+
+// YT types are declared in VideoPlayer.tsx — we just reference window.YT here
+type HiddenYTPlayer = {
+  getDuration: () => number;
+  destroy: () => void;
+};
+
+// Convert seconds to mm:ss or h:mm:ss display
+function secondsToTime(totalSeconds: number): string {
+  if (!totalSeconds || totalSeconds <= 0) return "0:00";
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+// Parse time string (mm:ss, h:mm:ss, or raw seconds) to total seconds
+function timeToSeconds(input: string): number {
+  const trimmed = input.trim();
+  if (!trimmed) return 0;
+  // If it's just a number, treat as seconds
+  if (/^\d+$/.test(trimmed)) return parseInt(trimmed);
+  // Split by colon
+  const parts = trimmed.split(":").map((p) => parseInt(p) || 0);
+  if (parts.length === 3) return (parts[0] ?? 0) * 3600 + (parts[1] ?? 0) * 60 + (parts[2] ?? 0); // h:mm:ss
+  if (parts.length === 2) return (parts[0] ?? 0) * 60 + (parts[1] ?? 0); // mm:ss
+  return 0;
+}
 
 function extractYouTubeId(input: string): string {
   // Handle full URLs
@@ -45,6 +74,8 @@ export function VideoForm({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [autoFilling, setAutoFilling] = useState(false);
+  const [autoFillStatus, setAutoFillStatus] = useState("");
   const [generatingThumb, setGeneratingThumb] = useState(false);
   const [thumbResult, setThumbResult] = useState<string | null>(null);
   const [youtubeInput, setYoutubeInput] = useState(
@@ -62,20 +93,93 @@ export function VideoForm({
     isFeatured: initialData?.isFeatured || false,
     isTrending: initialData?.isTrending || false,
   });
+  const hiddenPlayerRef = useRef<HTMLDivElement>(null);
 
   const youtubeId = extractYouTubeId(youtubeInput);
   const previewUrl = youtubeId
     ? `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`
     : "";
 
+  // Load YouTube IFrame API script
+  const ensureYTAPI = useCallback((): Promise<void> => {
+    return new Promise((resolve) => {
+      if (window.YT && window.YT.Player) {
+        resolve();
+        return;
+      }
+      const existing = document.querySelector('script[src="https://www.youtube.com/iframe_api"]');
+      if (!existing) {
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
+      }
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        prev?.();
+        resolve();
+      };
+    });
+  }, []);
+
+  // Get video duration via hidden YouTube player
+  const getYouTubeDuration = useCallback(async (vid: string): Promise<number> => {
+    await ensureYTAPI();
+    return new Promise((resolve) => {
+      if (!hiddenPlayerRef.current) { resolve(0); return; }
+      // Clear previous content
+      hiddenPlayerRef.current.innerHTML = "";
+      const el = document.createElement("div");
+      hiddenPlayerRef.current.appendChild(el);
+
+      const timeout = setTimeout(() => { resolve(0); }, 15000); // 15s timeout
+
+      const player = new window.YT.Player(el, {
+        videoId: vid,
+        playerVars: { controls: 0, autoplay: 0, mute: 1 },
+        events: {
+          onReady: () => {
+            const p = player as unknown as HiddenYTPlayer;
+            // Duration might need a moment to be available
+            const checkDuration = () => {
+              const dur = p.getDuration();
+              if (dur > 0) {
+                clearTimeout(timeout);
+                p.destroy();
+                resolve(Math.floor(dur));
+              } else {
+                setTimeout(checkDuration, 500);
+              }
+            };
+            setTimeout(checkDuration, 1000);
+          },
+        },
+      } as Record<string, unknown>);
+    });
+  }, [ensureYTAPI]);
+
+  // Calculate smart creditStart based on duration
+  const calculateCreditStart = (duration: number): number | null => {
+    if (duration <= 0) return null;
+    // Short videos (<5 min): credits ~15s
+    if (duration < 300) return Math.max(0, duration - 15);
+    // Medium videos (5-30 min): credits ~30-45s
+    if (duration < 1800) return Math.max(0, duration - 40);
+    // Long videos (30+ min): credits ~60-90s
+    return Math.max(0, duration - 75);
+  };
+
   const handleAutoFill = async () => {
     if (!youtubeId) return;
+    setAutoFilling(true);
+    setAutoFillStatus("Fetching video info...");
+
     // Auto-fill thumbnail
     setForm((f) => ({
       ...f,
       thumbnailUrl: `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`,
     }));
-    // Try to fetch title via oEmbed
+
+    // Fetch title via oEmbed
     try {
       const res = await fetch(
         `https://www.youtube.com/oembed?url=https://youtube.com/watch?v=${youtubeId}&format=json`
@@ -85,8 +189,33 @@ export function VideoForm({
         setForm((f) => ({ ...f, title: data.title || f.title }));
       }
     } catch {
-      // oEmbed failed, user fills manually
+      // oEmbed failed
     }
+
+    // Get duration via YouTube player
+    setAutoFillStatus("Detecting duration (loading player)...");
+    try {
+      const dur = await getYouTubeDuration(youtubeId);
+      if (dur > 0) {
+        const credit = calculateCreditStart(dur);
+        setForm((f) => ({
+          ...f,
+          duration: dur,
+          reelStart: 0,
+          creditStart: credit,
+        }));
+        const mins = Math.floor(dur / 60);
+        const secs = dur % 60;
+        setAutoFillStatus(
+          `✅ Duration: ${mins}m ${secs}s | Credits skip at ${credit ? `${Math.floor(credit / 60)}m ${credit % 60}s` : "none"}`
+        );
+      } else {
+        setAutoFillStatus("⚠️ Could not detect duration — fill manually");
+      }
+    } catch {
+      setAutoFillStatus("⚠️ Duration detection failed — fill manually");
+    }
+    setAutoFilling(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -113,6 +242,9 @@ export function VideoForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Hidden YouTube player for duration detection */}
+      <div ref={hiddenPlayerRef} className="absolute -left-[9999px] w-1 h-1 overflow-hidden" />
+
       {/* YouTube URL/ID */}
       <div>
         <label className="block text-sm text-zinc-400 mb-1">
@@ -130,13 +262,19 @@ export function VideoForm({
           <button
             type="button"
             onClick={handleAutoFill}
-            className="px-4 py-2 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg text-sm font-medium transition-colors"
+            disabled={autoFilling}
+            className="px-4 py-2 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
           >
-            Auto-fill
+            {autoFilling ? "Detecting..." : "Auto-fill"}
           </button>
         </div>
         {youtubeId && (
           <p className="text-xs text-zinc-500 mt-1">ID: {youtubeId}</p>
+        )}
+        {autoFillStatus && (
+          <p className={`text-xs mt-1 ${autoFillStatus.startsWith("✅") ? "text-green-400" : autoFillStatus.startsWith("⚠️") ? "text-yellow-400" : "text-zinc-400"}`}>
+            {autoFillStatus}
+          </p>
         )}
       </div>
 
@@ -254,54 +392,54 @@ export function VideoForm({
       {/* Duration */}
       <div>
         <label className="block text-sm text-zinc-400 mb-1">
-          Duration (seconds)
+          Duration <span className="text-zinc-600">— auto-detected</span>
         </label>
         <input
-          type="number"
-          value={form.duration}
+          type="text"
+          value={secondsToTime(form.duration)}
           onChange={(e) =>
-            setForm({ ...form, duration: parseInt(e.target.value) || 0 })
+            setForm({ ...form, duration: timeToSeconds(e.target.value) })
           }
+          placeholder="16:44 or 1:23:45"
           className="w-full px-3 py-2 bg-[#1a1a20] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#f97316]"
         />
+        <p className="text-xs text-zinc-600 mt-1">Format: mm:ss or h:mm:ss ({form.duration}s)</p>
       </div>
 
       {/* Reel Start & Credit Start */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm text-zinc-400 mb-1">
-            Reel Start (seconds)
+            Reel Start <span className="text-zinc-600">— auto: 0:00</span>
           </label>
           <input
-            type="number"
-            value={form.reelStart}
+            type="text"
+            value={secondsToTime(form.reelStart)}
             onChange={(e) =>
-              setForm({ ...form, reelStart: parseInt(e.target.value) || 0 })
+              setForm({ ...form, reelStart: timeToSeconds(e.target.value) })
             }
-            min={0}
-            placeholder="Best part start time"
+            placeholder="0:00"
             className="w-full px-3 py-2 bg-[#1a1a20] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#f97316]"
           />
-          <p className="text-xs text-zinc-600 mt-1">Where reels start playing</p>
+          <p className="text-xs text-zinc-600 mt-1">Where reels start ({form.reelStart}s)</p>
         </div>
         <div>
           <label className="block text-sm text-zinc-400 mb-1">
-            Credits Start (seconds)
+            Credits Start <span className="text-zinc-600">— auto-detected</span>
           </label>
           <input
-            type="number"
-            value={form.creditStart ?? ""}
+            type="text"
+            value={form.creditStart != null ? secondsToTime(form.creditStart) : ""}
             onChange={(e) =>
               setForm({
                 ...form,
-                creditStart: e.target.value ? parseInt(e.target.value) : null,
+                creditStart: e.target.value.trim() ? timeToSeconds(e.target.value) : null,
               })
             }
-            min={0}
             placeholder="Leave empty if none"
             className="w-full px-3 py-2 bg-[#1a1a20] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#f97316]"
           />
-          <p className="text-xs text-zinc-600 mt-1">Auto-stop before credits</p>
+          <p className="text-xs text-zinc-600 mt-1">Auto-stop before credits {form.creditStart != null ? `(${form.creditStart}s)` : ""}</p>
         </div>
       </div>
 

@@ -23,12 +23,20 @@ export default async function AdminVideos() {
         <h1 className="text-2xl font-bold text-white">
           Videos ({videos.length})
         </h1>
-        <Link
-          href="/admin/videos/new"
-          className="px-4 py-2 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg text-sm font-medium transition-colors"
-        >
-          + Add Video
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href="/admin/videos/bulk"
+            className="px-4 py-2 bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 rounded-lg text-sm font-medium transition-colors"
+          >
+            Bulk Upload
+          </Link>
+          <Link
+            href="/admin/videos/new"
+            className="px-4 py-2 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg text-sm font-medium transition-colors"
+          >
+            + Add Video
+          </Link>
+        </div>
       </div>
 
       {videos.length === 0 ? (

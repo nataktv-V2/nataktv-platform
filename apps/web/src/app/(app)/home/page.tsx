@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { VideoRow } from "@/components/video/VideoRow";
+import { VideoCard } from "@/components/video/VideoCard";
 import { ContinueWatching } from "@/components/video/ContinueWatching";
+import { HomeTags } from "@/components/layout/HomeTags";
 
 export const metadata: Metadata = {
   title: "Browse",
@@ -15,6 +18,7 @@ type VideoWithRelations = {
   thumbnailUrl: string;
   generatedThumbnailUrl?: string | null;
   duration: number;
+  createdAt: Date;
   language: { name: string };
   category: { name: string };
 };
@@ -22,17 +26,29 @@ type VideoWithRelations = {
 type LanguageWithVideos = { id: string; name: string; videos: VideoWithRelations[] };
 type CategoryWithVideos = { id: string; name: string; videos: VideoWithRelations[] };
 
-async function getHomeData() {
+async function getHomeData(tag?: string) {
   try {
-    const [trending, featured, languages, categories] = await Promise.all([
+    // Build filter based on tag
+    const tagFilter = tag
+      ? {
+          OR: [
+            { category: { slug: { equals: tag, mode: "insensitive" as const } } },
+            { category: { name: { equals: tag, mode: "insensitive" as const } } },
+            { language: { code: { equals: tag, mode: "insensitive" as const } } },
+            { language: { name: { equals: tag, mode: "insensitive" as const } } },
+          ],
+        }
+      : {};
+
+    const [trending, featured, languages, categories, allFiltered] = await Promise.all([
       prisma.video.findMany({
-        where: { isTrending: true },
+        where: { isTrending: true, ...tagFilter },
         include: { language: true, category: true },
         orderBy: { views: "desc" },
         take: 10,
       }),
       prisma.video.findMany({
-        where: { isFeatured: true },
+        where: { isFeatured: true, ...tagFilter },
         include: { language: true, category: true },
         orderBy: { sortOrder: "asc" },
         take: 10,
@@ -40,6 +56,7 @@ async function getHomeData() {
       prisma.language.findMany({
         include: {
           videos: {
+            where: tag ? { OR: [{ category: { slug: { equals: tag, mode: "insensitive" } } }, { category: { name: { equals: tag, mode: "insensitive" } } }] } : {},
             include: { language: true, category: true },
             orderBy: { createdAt: "desc" },
             take: 10,
@@ -49,55 +66,134 @@ async function getHomeData() {
       prisma.category.findMany({
         include: {
           videos: {
+            where: tag ? { OR: [{ language: { code: { equals: tag, mode: "insensitive" } } }, { language: { name: { equals: tag, mode: "insensitive" } } }] } : {},
             include: { language: true, category: true },
             orderBy: { createdAt: "desc" },
             take: 10,
           },
         },
       }),
+      // If tag is active, also get a flat list of all matching videos for grid view
+      tag
+        ? prisma.video.findMany({
+            where: tagFilter,
+            include: { language: true, category: true },
+            orderBy: { createdAt: "desc" },
+            take: 50,
+          })
+        : Promise.resolve([]),
     ]);
-    return { trending, featured, languages, categories, error: false };
+    return { trending, featured, languages, categories, allFiltered, error: false };
   } catch {
     return {
       trending: [] as VideoWithRelations[],
       featured: [] as VideoWithRelations[],
       languages: [] as LanguageWithVideos[],
       categories: [] as CategoryWithVideos[],
+      allFiltered: [] as VideoWithRelations[],
       error: true,
     };
   }
 }
 
-export default async function HomePage() {
-  const { trending, featured, languages, categories, error } = await getHomeData();
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tag?: string }>;
+}) {
+  const { tag } = await searchParams;
+  const { trending, featured, languages, categories, allFiltered, error } = await getHomeData(tag);
 
   return (
-    <div className="py-4">
-      {/* Trending */}
-      <VideoRow title="🔥 Hot & Trending" videos={trending} />
+    <div className="py-2">
+      {/* Tag Filters */}
+      <Suspense fallback={null}>
+        <HomeTags />
+      </Suspense>
 
-      {/* Featured */}
-      <VideoRow title="⭐ Featured Picks" videos={featured} />
+      {/* If tag is active, show filtered grid */}
+      {tag && allFiltered.length > 0 ? (
+        <div className="px-4 pb-4">
+          <h2 className="text-lg font-semibold mb-3 capitalize">{tag}</h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+            {allFiltered.map((video) => (
+              <VideoCard
+                key={video.id}
+                id={video.id}
+                title={video.title}
+                thumbnailUrl={video.thumbnailUrl}
+                generatedThumbnailUrl={video.generatedThumbnailUrl}
+                duration={video.duration}
+                language={video.language?.name}
+                createdAt={video.createdAt instanceof Date ? video.createdAt.toISOString() : String(video.createdAt)}
+                fullWidth
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Trending */}
+          <VideoRow title="🔥 Hot & Trending" videos={trending} />
 
-      {/* Continue Watching — client component, fetches per user */}
-      <ContinueWatching />
+          {/* Featured */}
+          <VideoRow title="⭐ Featured Picks" videos={featured} />
 
-      {/* By Category */}
-      {categories
-        .filter((cat) => cat.videos.length > 0)
-        .map((cat) => (
-          <VideoRow key={cat.id} title={cat.name} videos={cat.videos} />
-        ))}
+          {/* Continue Watching — client component, fetches per user */}
+          <ContinueWatching />
 
-      {/* By Language */}
-      {languages
-        .filter((lang) => lang.videos.length > 0)
-        .map((lang) => (
-          <VideoRow key={lang.id} title={`${lang.name} Shows`} videos={lang.videos} />
-        ))}
+          {/* By Category — show as 3-col grid rows */}
+          {categories
+            .filter((cat) => cat.videos.length > 0)
+            .map((cat) => (
+              <section key={cat.id} className="mb-6">
+                <h2 className="text-lg font-semibold mb-3 px-4">{cat.name}</h2>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 px-4">
+                  {cat.videos.slice(0, 6).map((video) => (
+                    <VideoCard
+                      key={video.id}
+                      id={video.id}
+                      title={video.title}
+                      thumbnailUrl={video.thumbnailUrl}
+                      generatedThumbnailUrl={video.generatedThumbnailUrl}
+                      duration={video.duration}
+                      language={video.language?.name}
+                      createdAt={video.createdAt instanceof Date ? video.createdAt.toISOString() : String(video.createdAt)}
+                      fullWidth
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+
+          {/* By Language — show as 3-col grid rows */}
+          {languages
+            .filter((lang) => lang.videos.length > 0)
+            .map((lang) => (
+              <section key={lang.id} className="mb-6">
+                <h2 className="text-lg font-semibold mb-3 px-4">{lang.name} Shows</h2>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 px-4">
+                  {lang.videos.slice(0, 6).map((video) => (
+                    <VideoCard
+                      key={video.id}
+                      id={video.id}
+                      title={video.title}
+                      thumbnailUrl={video.thumbnailUrl}
+                      generatedThumbnailUrl={video.generatedThumbnailUrl}
+                      duration={video.duration}
+                      language={video.language?.name}
+                      createdAt={video.createdAt instanceof Date ? video.createdAt.toISOString() : String(video.createdAt)}
+                      fullWidth
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+        </>
+      )}
 
       {/* Empty state */}
-      {trending.length === 0 && featured.length === 0 && (
+      {trending.length === 0 && featured.length === 0 && !tag && (
         <div className="text-center py-20 px-4">
           <p className="text-text-muted text-lg mb-2">
             {error ? "Database not connected" : "No videos yet"}
@@ -107,6 +203,13 @@ export default async function HomePage() {
               ? "Set up PostgreSQL and run 'pnpm db:migrate && pnpm db:seed' to get started."
               : "Content will appear here once videos are added."}
           </p>
+        </div>
+      )}
+
+      {/* Tag empty state */}
+      {tag && allFiltered.length === 0 && (
+        <div className="text-center py-16 px-4">
+          <p className="text-zinc-500">No videos found for &ldquo;{tag}&rdquo;</p>
         </div>
       )}
     </div>

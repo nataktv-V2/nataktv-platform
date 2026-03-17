@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { GatedVideoPlayer } from "@/components/video/GatedVideoPlayer";
+import { VideoPageClient } from "@/components/video/VideoPageClient";
+import { ShareButton } from "@/components/video/ShareButton";
+import { FavouriteButton } from "@/components/video/FavouriteButton";
 import { VideoCard } from "@/components/video/VideoCard";
 
 type Props = {
@@ -48,11 +50,33 @@ export default async function VideoPage({ params }: Props) {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Player */}
-      <GatedVideoPlayer youtubeId={video.youtubeId} title={video.title} videoId={video.id} creditStart={video.creditStart} reelStart={video.reelStart} />
+      <VideoPageClient
+        youtubeId={video.youtubeId}
+        title={video.title}
+        videoId={video.id}
+        creditStart={video.creditStart}
+        reelStart={video.reelStart}
+        nextVideo={
+          related[0]
+            ? {
+                id: related[0].id,
+                title: related[0].title,
+                thumbnailUrl: related[0].thumbnailUrl,
+                generatedThumbnailUrl: related[0].generatedThumbnailUrl,
+              }
+            : null
+        }
+      />
 
       {/* Video Info */}
       <div className="px-4 py-4">
-        <h1 className="text-lg font-bold mb-1">{video.title}</h1>
+        <div className="flex items-center justify-between mb-1">
+          <h1 className="text-lg font-bold">{video.title}</h1>
+          <div className="flex items-center gap-2">
+            <FavouriteButton videoId={video.id} />
+            <ShareButton videoId={video.id} title={video.title} />
+          </div>
+        </div>
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xs bg-accent/20 text-accent px-2 py-0.5 rounded-full">
             {video.language.name}
@@ -70,7 +94,7 @@ export default async function VideoPage({ params }: Props) {
       {related.length > 0 && (
         <div className="px-4 pb-8">
           <h2 className="text-base font-semibold mb-3">More like this</h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
             {related.map((v) => (
               <VideoCard
                 key={v.id}
@@ -80,6 +104,8 @@ export default async function VideoPage({ params }: Props) {
                 generatedThumbnailUrl={v.generatedThumbnailUrl}
                 duration={v.duration}
                 language={v.language.name}
+                createdAt={v.createdAt.toISOString()}
+                fullWidth
               />
             ))}
           </div>

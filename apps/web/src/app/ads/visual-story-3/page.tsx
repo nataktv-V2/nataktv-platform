@@ -13,7 +13,7 @@ export default function VisualStory3() {
       }}
     >
       <Image
-        src="https://img.youtube.com/vi/pCbuY1jnKbk/maxresdefault.jpg"
+        src="/thumbnails/ads/love-guru.jpg"
         alt="Love Guru"
         fill
         style={{ objectFit: "cover" }}
@@ -48,14 +48,14 @@ export default function VisualStory3() {
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center pb-16 px-10">
-        <h2 className="font-bold text-center mb-6" style={{ fontSize: 64, color: "#f4f4f5" }}>
+        <h2 className="font-bold text-center mb-6" style={{ fontSize: 64, color: "#f4f4f5", fontFamily: "var(--font-poppins), Inter, sans-serif", fontWeight: 800, textShadow: "0 2px 20px rgba(0,0,0,0.8), 0 1px 6px rgba(0,0,0,0.9)" }}>
           Love Guru
         </h2>
         <button
           className="rounded-full font-bold"
-          style={{ fontSize: 34, padding: "22px 72px", backgroundColor: "#f97316", color: "#fff" }}
+          style={{ fontSize: 34, padding: "22px 72px", background: "linear-gradient(135deg, #f97316, #ea580c)", boxShadow: "0 4px 24px rgba(249,115,22,0.4)", color: "#fff" }}
         >
-          Watch Now
+          Swipe Up to Watch
         </button>
       </div>
     </div>

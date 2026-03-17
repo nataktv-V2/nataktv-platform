@@ -4,7 +4,7 @@ import { NatakLogo } from "@/components/ads/NatakLogo";
 
 // Female-specific positioning — targets Female 18-35
 // Structure: 5s hook → 1.5s promo → 5s CTA (15s total, loops)
-const show = { id: "eZkwCc4KpGc", title: "Gaon Ki Biwi" };
+const show = { img: "/thumbnails/ads/gaon-ki-biwi.jpg", title: "Gaon Ki Biwi" };
 
 export default function VideoFemale() {
   return (
@@ -87,9 +87,11 @@ export default function VideoFemale() {
       <div
         className="f-bg absolute inset-0"
         style={{
-          backgroundImage: `url(https://img.youtube.com/vi/${show.id}/maxresdefault.jpg)`,
+          backgroundImage: `url(${show.img})`,
           backgroundSize: "cover",
           backgroundPosition: "center top",
+          willChange: "transform, filter",
+          backfaceVisibility: "hidden",
         }}
       />
 
@@ -124,7 +126,7 @@ export default function VideoFemale() {
       <div className="f-title absolute inset-0 z-10 flex items-center justify-center">
         <h2
           className="font-bold text-center px-12"
-          style={{ fontSize: 84, color: "#f4f4f5", textShadow: "0 4px 40px rgba(0,0,0,0.9)" }}
+          style={{ fontSize: 84, color: "#f4f4f5", textShadow: "0 4px 40px rgba(0,0,0,0.9)", fontFamily: "var(--font-poppins), Inter, sans-serif", fontWeight: 800 }}
         >
           {show.title}
         </h2>
@@ -152,9 +154,9 @@ export default function VideoFemale() {
         </p>
         <button
           className="f-btn rounded-full font-bold"
-          style={{ fontSize: 40, padding: "28px 90px", backgroundColor: "#f97316", color: "#fff", boxShadow: "0 4px 40px rgba(249,115,22,0.5)" }}
+          style={{ fontSize: 40, padding: "28px 90px", background: "linear-gradient(135deg, #f97316, #ea580c)", boxShadow: "0 4px 24px rgba(249,115,22,0.4)", color: "#fff" }}
         >
-          Abhi Dekho
+          Apni Kahaani Dekho
         </button>
       </div>
     </div>

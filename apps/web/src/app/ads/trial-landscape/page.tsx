@@ -1,9 +1,10 @@
 import { NatakLogo } from "@/components/ads/NatakLogo";
+import Image from "next/image";
 
 export default function TrialLandscape() {
   return (
     <div
-      className="relative overflow-hidden flex items-center"
+      className="relative overflow-hidden"
       style={{
         width: 1200,
         height: 628,
@@ -11,9 +12,27 @@ export default function TrialLandscape() {
         fontFamily: "Inter, sans-serif",
       }}
     >
+      {/* Right side: full-bleed show image */}
+      <div className="absolute right-0 top-0 bottom-0" style={{ width: 650 }}>
+        <Image
+          src="/thumbnails/ads/gaon-ki-biwi.jpg"
+          alt="Gaon Ki Biwi"
+          fill
+          style={{ objectFit: "cover" }}
+          unoptimized
+        />
+        {/* Left fade gradient */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(90deg, #0a0a0c 0%, rgba(10,10,12,0.7) 30%, transparent 70%)",
+          }}
+        />
+      </div>
+
       {/* Orange glow */}
       <div
-        className="absolute right-1/4 top-1/2 -translate-y-1/2 rounded-full blur-[100px] opacity-20"
+        className="absolute left-1/3 top-1/2 -translate-y-1/2 rounded-full blur-[100px] opacity-20"
         style={{
           width: 400,
           height: 400,
@@ -22,71 +41,39 @@ export default function TrialLandscape() {
       />
 
       {/* Left content */}
-      <div className="flex flex-col pl-16" style={{ maxWidth: 650 }}>
+      <div className="relative flex flex-col justify-center h-full pl-16" style={{ maxWidth: 580 }}>
         <div className="mb-5">
           <NatakLogo size="md" />
         </div>
 
+        <div className="flex items-baseline gap-3 mb-3">
+          <span className="line-through" style={{ fontSize: 32, color: "rgba(255,255,255,0.35)" }}>₹199</span>
+          <span className="font-black" style={{ fontSize: 100, color: "#f97316", lineHeight: 1, textShadow: "0 0 40px rgba(249,115,22,0.3)" }}>₹2</span>
+        </div>
+
         <h1
-          className="font-bold leading-tight mb-3"
-          style={{ fontSize: 44, color: "#f4f4f5" }}
+          className="leading-tight mb-3"
+          style={{ fontSize: 40, color: "#f4f4f5", fontFamily: "var(--font-poppins), Inter, sans-serif", fontWeight: 800 }}
         >
-          ₹2 mein start karo
+          2 din FREE trial
         </h1>
 
-        <p className="mb-5" style={{ fontSize: 20, color: "#a1a1aa" }}>
-          2 din ka trial, phir sirf ₹199/month. Cancel anytime.
+        <p className="mb-5" style={{ fontSize: 20, color: "rgba(255,255,255,0.5)" }}>
+          100+ web series • Hindi, Tamil, Telugu
         </p>
 
-        <div className="flex gap-5 mb-5">
-          {["HD Quality", "No Ads", "Cancel Anytime"].map((f) => (
-            <div key={f} className="flex items-center gap-2">
-              <span style={{ color: "#10b981", fontSize: 18 }}>&#10003;</span>
-              <span style={{ color: "#f4f4f5", fontSize: 16 }}>{f}</span>
-            </div>
-          ))}
-        </div>
-
-        <div>
-          <button
-            className="rounded-full font-bold"
-            style={{
-              fontSize: 20,
-              padding: "14px 48px",
-              backgroundColor: "#f97316",
-              color: "#fff",
-            }}
-          >
-            Try for ₹2
-          </button>
-        </div>
-      </div>
-
-      {/* Right - price display */}
-      <div
-        className="absolute right-12 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center rounded-3xl"
-        style={{
-          width: 380,
-          height: 440,
-          background: "linear-gradient(135deg, rgba(249,115,22,0.1), rgba(249,115,22,0.05))",
-          border: "1px solid rgba(249,115,22,0.2)",
-        }}
-      >
-        <span
-          className="line-through"
-          style={{ fontSize: 36, color: "#a1a1aa" }}
+        <button
+          className="rounded-full font-bold self-start"
+          style={{
+            fontSize: 22,
+            padding: "14px 52px",
+            background: "linear-gradient(135deg, #f97316, #ea580c)",
+            boxShadow: "0 4px 24px rgba(249,115,22,0.4)",
+            color: "#fff",
+          }}
         >
-          ₹199
-        </span>
-        <span
-          className="font-black"
-          style={{ fontSize: 120, color: "#f97316", lineHeight: 1 }}
-        >
-          ₹2
-        </span>
-        <p style={{ fontSize: 20, color: "#a1a1aa", marginTop: 8 }}>
-          2-day trial
-        </p>
+          Start Free Trial
+        </button>
       </div>
     </div>
   );

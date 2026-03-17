@@ -14,6 +14,7 @@ type WatchHistoryEntry = {
     id: string;
     title: string;
     thumbnailUrl: string;
+    generatedThumbnailUrl?: string | null;
     duration: number;
     language: { name: string };
     category: { name: string };
@@ -71,7 +72,7 @@ export function ContinueWatching() {
             >
               <div className="relative aspect-[9/16] rounded-xl overflow-hidden bg-[#121216]">
                 <Image
-                  src={entry.video.thumbnailUrl}
+                  src={entry.video.generatedThumbnailUrl || entry.video.thumbnailUrl}
                   alt={entry.video.title}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"

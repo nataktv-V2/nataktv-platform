@@ -5,7 +5,7 @@ import Image from "next/image";
 // Users instinctively click play → lands on app/website
 // Feed format (1080x1080)
 export default function ThumbStart1() {
-  const show = { id: "eZkwCc4KpGc", title: "Gaon Ki Biwi" };
+  const show = { img: "/thumbnails/ads/gaon-ki-biwi.jpg", title: "Gaon Ki Biwi" };
 
   return (
     <div
@@ -19,7 +19,7 @@ export default function ThumbStart1() {
     >
       {/* Thumbnail */}
       <Image
-        src={`https://img.youtube.com/vi/${show.id}/maxresdefault.jpg`}
+        src={show.img}
         alt={show.title}
         fill
         style={{ objectFit: "cover" }}
@@ -96,7 +96,7 @@ export default function ThumbStart1() {
         className="absolute bottom-0 left-0 right-0 z-10 px-8 pb-8 pt-20"
         style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85) 30%, transparent)" }}
       >
-        <h2 className="font-bold" style={{ fontSize: 42, color: "#fff" }}>
+        <h2 className="font-bold" style={{ fontSize: 42, color: "#fff", fontFamily: "var(--font-poppins), Inter, sans-serif", fontWeight: 800, textShadow: "0 2px 20px rgba(0,0,0,0.8), 0 1px 6px rgba(0,0,0,0.9)" }}>
           {show.title}
         </h2>
         <p style={{ fontSize: 24, color: "#a1a1aa", marginTop: 4 }}>

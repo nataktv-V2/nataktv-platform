@@ -4,7 +4,7 @@ import Image from "next/image";
 // Thumb-start ad — Story format (1080x1920)
 // Looks like a paused video reel with play button
 export default function ThumbStart2() {
-  const show = { id: "pCbuY1jnKbk", title: "Love Guru" };
+  const show = { img: "/thumbnails/ads/love-guru.jpg", title: "Love Guru" };
 
   return (
     <div
@@ -18,7 +18,7 @@ export default function ThumbStart2() {
     >
       {/* Thumbnail */}
       <Image
-        src={`https://img.youtube.com/vi/${show.id}/maxresdefault.jpg`}
+        src={show.img}
         alt={show.title}
         fill
         style={{ objectFit: "cover" }}
@@ -94,7 +94,7 @@ export default function ThumbStart2() {
         className="absolute bottom-0 left-0 right-0 z-10 flex flex-col items-center px-10 pb-16 pt-32"
         style={{ background: "linear-gradient(to top, rgba(0,0,0,0.9) 40%, transparent)" }}
       >
-        <h2 className="font-bold text-center mb-4" style={{ fontSize: 64, color: "#fff" }}>
+        <h2 className="font-bold text-center mb-4" style={{ fontSize: 64, color: "#fff", fontFamily: "var(--font-poppins), Inter, sans-serif", fontWeight: 800, textShadow: "0 2px 20px rgba(0,0,0,0.8), 0 1px 6px rgba(0,0,0,0.9)" }}>
           {show.title}
         </h2>
         <p className="text-center mb-8" style={{ fontSize: 30, color: "#a1a1aa" }}>
@@ -105,9 +105,9 @@ export default function ThumbStart2() {
           style={{
             fontSize: 34,
             padding: "22px 72px",
-            backgroundColor: "#f97316",
+            background: "linear-gradient(135deg, #f97316, #ea580c)",
             color: "#fff",
-            boxShadow: "0 4px 30px rgba(249,115,22,0.5)",
+            boxShadow: "0 4px 24px rgba(249,115,22,0.4)",
           }}
         >
           Watch Now

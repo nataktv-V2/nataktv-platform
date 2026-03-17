@@ -1,6 +1,6 @@
 # Natak TV — Ad Creatives Progress
 
-> Last updated: 2026-03-14
+> Last updated: 2026-03-15
 
 ---
 
@@ -18,11 +18,6 @@
 1. **Soft** — Emotional story-based (targeting Females)
 2. **Bold** — "Aap satisfied nahi ho" (targeting Males)
 3. **Female** — Female-specific angle
-
-### Hook Categories
-- Watchman talking → targets Elderly
-- Authority Based (Police scene) → "Seekho" educational hook
-- Political → Talking to crowd
 
 ### Funnel Targets
 - Impressions → 20-30% STW → 2%+ Clicks → 20-30% Downloads
@@ -42,16 +37,53 @@
 
 ---
 
+## Visual Upgrade Log (2026-03-15)
+
+All 28 ads received a comprehensive upgrade:
+
+### Changes Applied
+| Upgrade | Scope | Status |
+|---------|-------|--------|
+| **Poppins typography** | All 28 ads — headlines use `var(--font-poppins)` weight 800 | ✅ Done |
+| **Gradient CTA buttons** | All ads — `linear-gradient(135deg, #f97316, #ea580c)` + box-shadow | ✅ Done |
+| **Social proof badges** | 8 key ads — "50K+ users", "Rated 4.8★", "New episodes weekly" etc. | ✅ Done |
+| **Urgency badges** | trial-feed ("Offer ends Sunday"), trial-story ("Limited Time Offer") | ✅ Done |
+| **Differentiated CTA copy** | All static ads — no more repetitive "Abhi Dekho" | ✅ Done |
+| **Emoji removal** | drama-feed, drama-story → colored dots; emotion-feed, emotion-story → text labels | ✅ Done |
+| **Text shadows** | visual-feed 1/2/3, visual-story 1/2/3 — show titles readable on any thumbnail | ✅ Done |
+| **GPU hints** | video-soft/bold/female/teaser — `willChange` + `backfaceVisibility` | ✅ Done |
+| **AdScaler component** | Auto-scales fixed-size ads to fit browser viewport | ✅ Done |
+| **AI thumbnail script** | `scripts/generate-thumbnails.mjs` — ready to run when Pollinations API recovers | ⏳ Pending |
+
+### CTA Copy Mapping
+| Ad | Old CTA | New CTA |
+|---|---|---|
+| trial-feed | Try for ₹2 | Start Free Trial — ₹2 |
+| trial-story | Try for ₹2 | Unlock 100+ Shows — ₹2 |
+| launch-feed | Start Watching | Join 50K+ Viewers |
+| launch-story | Start Watching | Explore Free for ₹2 |
+| content-feed | Abhi Dekho | Browse All Shows |
+| drama-feed | Abhi Dekho | Binge Now — ₹2 Only |
+| visual-feed-1 | Watch Now | Play Gaon Ki Biwi — ₹2 |
+| visual-story-1/2/3 | Watch Now | Swipe Up to Watch |
+| video-bold | Watch Now | Watch Now — Free |
+| video-soft | Abhi Dekho | Start Watching — ₹2 |
+| video-female | Abhi Dekho | Apni Kahaani Dekho |
+
+---
+
 ## Files Overview
 
 ### Shared Components
 | File | Purpose |
 |------|---------|
 | `components/ads/NatakLogo.tsx` | Reusable logo — gradient "Natak" + purple "TV" badge. Sizes: sm/md/lg/xl |
-| `app/ads/layout.tsx` | Clean layout (no app shell, just renders children) |
+| `components/ads/AdScaler.tsx` | Auto-scales fixed-size ad pages to fit browser viewport via DOM manipulation |
+| `app/ads/layout.tsx` | Loads Poppins font + wraps children in AdScaler |
 | `app/ads/page.tsx` | Gallery index — lists all ad variants with links |
+| `scripts/generate-thumbnails.mjs` | AI thumbnail generator via Pollinations API (free, no key) |
 
-### Active Ads (in gallery)
+### Active Ads
 
 #### Static — Single Show Feed (1080x1080)
 | Route | Drama | YouTube ID | Status |
@@ -60,8 +92,6 @@
 | `/ads/visual-feed-2` | Kalyanam to Kadhal | W4jdt5QVmFQ | Done |
 | `/ads/visual-feed-3` | Hey Leela | Ds1X74cvKtI | Done |
 
-**Format:** Full-bleed YouTube thumbnail → gradient overlay → NatakLogo (top-left) → ₹2 coin badge (top-right) → drama title → "Watch Now" CTA
-
 #### Static — Single Show Story (1080x1920)
 | Route | Drama | YouTube ID | Status |
 |-------|-------|------------|--------|
@@ -69,14 +99,27 @@
 | `/ads/visual-story-2` | Love Shadi Dhokha | v-sD6hE-AKc | Done |
 | `/ads/visual-story-3` | Love Guru | pCbuY1jnKbk | Done |
 
-**Format:** Same as feed but 1080x1920 portrait, larger title + CTA
-
 #### Static — Multi-Show Collage (1080x1080)
 | Route | Shows | Status |
 |-------|-------|--------|
 | `/ads/visual-collage` | Gaon Ki Biwi, Kalyanam to Kadhal, Hey Leela, Hurry Burry | Done |
 
-**Format:** 2x2 grid of thumbnails, NatakLogo + ₹2 badge top, CTA bottom
+#### Static — Theme Banners (all formats)
+| Route | Theme | Format | Status |
+|-------|-------|--------|--------|
+| `/ads/trial-feed` | Trial Hook (₹2) | 1080x1080 | Done |
+| `/ads/trial-story` | Trial Hook (₹2) | 1080x1920 | Done |
+| `/ads/trial-landscape` | Trial Hook (₹2) | 1200x628 | Done |
+| `/ads/launch-feed` | Launch / Intro | 1080x1080 | Done |
+| `/ads/launch-story` | Launch / Intro | 1080x1920 | Done |
+| `/ads/launch-landscape` | Launch / Intro | 1200x628 | Done |
+| `/ads/content-feed` | Content Discovery | 1080x1080 | Done |
+| `/ads/content-story` | Content Discovery | 1080x1920 | Done |
+| `/ads/content-landscape` | Content Discovery | 1200x628 | Done |
+| `/ads/drama-feed` | Drama Names | 1080x1080 | Done |
+| `/ads/drama-story` | Drama Names | 1080x1920 | Done |
+| `/ads/emotion-feed` | Emotion/Mood | 1080x1080 | Done |
+| `/ads/emotion-story` | Emotion/Mood | 1080x1920 | Done |
 
 #### Video — Multi-Show Carousel
 | Route | Format | Duration | Status |
@@ -84,16 +127,10 @@
 | `/ads/video-feed` | 1080x1080 | ~15s | Done |
 | `/ads/video-story` | 1080x1920 | ~15s | Done |
 
-**Format:** 5 shows cycling with Ken Burns zoom + fade/circle-wipe transitions, ends with CTA overlay (logo + "100+ Shows" + "Watch Now — ₹2")
-
-**Shows used:** Gaon Ki Biwi, Kalyanam to Kadhal, Hey Leela, Ghat Ghat Ka Paani, Love Shadi Dhokha
-
 #### Video — Single Show Teaser
 | Route | Drama | Format | Duration | Status |
 |-------|-------|--------|----------|--------|
 | `/ads/video-teaser` | Gaon Ki Biwi | 1080x1920 | 8s loop | Done |
-
-**Format:** Dramatic blur→reveal zoom, coin bounce, title drop, CTA slide-up. Infinite loop.
 
 #### Video — 3 Positioning Angles (5s Hook → 1.5s Promo → 5s CTA)
 | Route | Positioning | Target | Drama | Format | Status |
@@ -102,58 +139,11 @@
 | `/ads/video-bold` | Bold | Male 18-35 | Ghat Ghat Ka Paani | 1080x1080 | Done |
 | `/ads/video-female` | Female-specific | Female 18-35 | Gaon Ki Biwi | 1080x1920 | Done |
 
-**Structure:** 5s emotional/bold hook text → 1.5s drama title flash → 5s CTA (logo + ₹2 coin + button). 15s loop.
-
-**Hook copy:**
-- Soft: "Kya pyaar mein sab maaf hai?" → "Dekhiye ek aisi kahaani..."
-- Bold: "AAP SATISFIED NAHI HO?" (red accent bar)
-- Female: "Har aurat ki ek kahaani hai" → "Jo kabhi kisine nahi suni..."
-
 #### Thumb-Start Ads (Fake Play Button — High CTR)
 | Route | Drama | Format | Status |
 |-------|-------|--------|--------|
 | `/ads/thumb-start-1` | Gaon Ki Biwi | 1080x1080 | Done |
 | `/ads/thumb-start-2` | Love Guru | 1080x1920 | Done |
-
-**Format:** Full-bleed thumbnail with centered play button overlay, fake progress bar, fake timestamp. Looks like a paused video — users click instinctively. NatakLogo + ₹2 badge + title at bottom.
-
-### Deprecated Ads (files exist, removed from gallery)
-These were text-heavy banners — replaced by visual-first approach per user feedback.
-
-| Route | Theme | Why Deprecated |
-|-------|-------|----------------|
-| `/ads/launch-feed` | Launch / Intro | Text-only, no visuals |
-| `/ads/launch-story` | Launch / Intro | Text-only |
-| `/ads/launch-landscape` | Launch / Intro | Text-only |
-| `/ads/trial-feed` | Trial Hook | Text-only |
-| `/ads/trial-story` | Trial Hook | Text-only |
-| `/ads/trial-landscape` | Trial Hook | Text-only |
-| `/ads/content-feed` | Content Discovery | Text-only |
-| `/ads/content-story` | Content Discovery | Text-only |
-| `/ads/content-landscape` | Content Discovery | Text-only |
-| `/ads/drama-feed` | Drama Names | Early version, replaced |
-| `/ads/drama-story` | Drama Names | Early version, replaced |
-| `/ads/emotion-feed` | Emotion | Early version, replaced |
-| `/ads/emotion-story` | Emotion | Early version, replaced |
-
----
-
-## Planned (Next)
-
-All positioning video ads and thumb-start ads are complete. Potential next:
-- More thumb-start variants with different dramas
-- 30-second extended versions of the positioned video ads
-- A/B test variants with different hook copy
-- Landscape format (1200x628) versions for Facebook link ads
-
----
-
-## Documentation Files
-| File | Content |
-|------|---------|
-| `docs/meta-ads-copy.md` | 3 campaign ad copy sets (Awareness, Trial, Regional) with Hindi/English/Tamil/Telugu |
-| `docs/meta-ads-design-specs.md` | Brand colors, logo specs, typography, CTA button specs, Meta compliance |
-| `docs/ads-progress.md` | This file — tracks all ad work, status, and strategy |
 
 ---
 
@@ -175,14 +165,27 @@ All positioning video ads and thumb-start ads are complete. Potential next:
 
 ---
 
+## AI Thumbnail Generation
+
+Script: `scripts/generate-thumbnails.mjs`
+- Uses Pollinations.ai (free, no API key)
+- Generates 7 show thumbnails to `public/thumbnails/ads/`
+- Run: `node scripts/generate-thumbnails.mjs`
+- Shows: Gaon Ki Biwi, Kalyanam to Kadhal, Hey Leela, Ghat Ghat Ka Paani, Love Shadi Dhokha, Love Guru, Hurry Burry
+- Status: Script ready, API was down on 2026-03-15. Retry later.
+
+Alternative: Use Bing Image Creator (bing.com/images/create) manually with the prompts in the script.
+
+---
+
 ## Master Roadmap (from notes)
 1. ~~Remove Test Credentials~~
 2. Google Login
 3. Make Login Page Better (Visual AI)
 4. Razorpay wall UP
 5. Autopay Setup
-6. **Make Ads (Video Ads)** ← IN PROGRESS
-7. **Make Thumb Start Meta ADS** ← UP NEXT
+6. ~~**Make Ads (Video Ads)**~~ ✅ DONE
+7. ~~**Make Thumb Start Meta ADS**~~ ✅ DONE
 8. Make Thumbnail for Rest
 9. Upload Rest 50 vids
 10. Smaller Thumbnail & Update Home UI

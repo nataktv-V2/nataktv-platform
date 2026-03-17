@@ -3,11 +3,11 @@
 import { NatakLogo } from "@/components/ads/NatakLogo";
 
 const shows = [
-  { id: "eZkwCc4KpGc", title: "Gaon Ki Biwi" },
-  { id: "W4jdt5QVmFQ", title: "Kalyanam to Kadhal" },
-  { id: "Ds1X74cvKtI", title: "Hey Leela" },
-  { id: "-Jts8lNYLJo", title: "Ghat Ghat Ka Paani" },
-  { id: "v-sD6hE-AKc", title: "Love Shadi Dhokha" },
+  { img: "/thumbnails/ads/gaon-ki-biwi.jpg", title: "Gaon Ki Biwi" },
+  { img: "/thumbnails/ads/kalyanam-to-kadhal.jpg", title: "Kalyanam to Kadhal" },
+  { img: "/thumbnails/ads/hey-leela.jpg", title: "Hey Leela" },
+  { img: "/thumbnails/ads/ghat-ghat-ka-paani.jpg", title: "Ghat Ghat Ka Paani" },
+  { img: "/thumbnails/ads/love-shadi-dhokha.jpg", title: "Love Shadi Dhokha" },
 ];
 
 export default function VideoFeed() {
@@ -80,14 +80,16 @@ export default function VideoFeed() {
 
       {/* Each show frame */}
       {shows.map((show, i) => (
-        <div key={show.id} className={`show-frame show-frame-${i}`}>
+        <div key={show.title} className={`show-frame show-frame-${i}`}>
           {/* Background image with Ken Burns */}
           <div
             className="show-bg absolute inset-0"
             style={{
-              backgroundImage: `url(https://img.youtube.com/vi/${show.id}/maxresdefault.jpg)`,
+              backgroundImage: `url(${show.img})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
+              willChange: "transform, filter",
+              backfaceVisibility: "hidden",
             }}
           />
           {/* Dark gradient overlay */}
@@ -101,7 +103,7 @@ export default function VideoFeed() {
           <div className="show-title absolute bottom-0 left-0 right-0 flex flex-col items-center pb-32">
             <h2
               className="font-bold text-center"
-              style={{ fontSize: 56, color: "#f4f4f5", textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}
+              style={{ fontSize: 56, color: "#f4f4f5", textShadow: "0 2px 20px rgba(0,0,0,0.8)", fontFamily: "var(--font-poppins), Inter, sans-serif" }}
             >
               {show.title}
             </h2>
@@ -144,9 +146,10 @@ export default function VideoFeed() {
           style={{
             fontSize: 34,
             padding: "22px 72px",
-            backgroundColor: "#f97316",
+            background: "linear-gradient(135deg, #f97316, #ea580c)",
             color: "#fff",
-            boxShadow: "0 4px 30px rgba(249,115,22,0.4)",
+            boxShadow: "0 4px 24px rgba(249,115,22,0.4)",
+            fontFamily: "var(--font-poppins), Inter, sans-serif",
           }}
         >
           Watch Now — ₹2

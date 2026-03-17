@@ -4,7 +4,7 @@ import { NatakLogo } from "@/components/ads/NatakLogo";
 
 // Soft / Emotional positioning — targets Female 18-35
 // Structure: 5s hook → 1.5s promo → 5s CTA (15s total, loops)
-const show = { id: "v-sD6hE-AKc", title: "Love Shadi Dhokha" };
+const show = { img: "/thumbnails/ads/love-shadi-dhokha.jpg", title: "Love Shadi Dhokha" };
 
 export default function VideoSoft() {
   return (
@@ -81,9 +81,11 @@ export default function VideoSoft() {
       <div
         className="s-bg absolute inset-0"
         style={{
-          backgroundImage: `url(https://img.youtube.com/vi/${show.id}/maxresdefault.jpg)`,
+          backgroundImage: `url(${show.img})`,
           backgroundSize: "cover",
           backgroundPosition: "center top",
+          willChange: "transform, filter",
+          backfaceVisibility: "hidden",
         }}
       />
 
@@ -112,7 +114,7 @@ export default function VideoSoft() {
       <div className="s-promo absolute inset-0 z-10 flex items-center justify-center">
         <h2
           className="font-bold text-center px-12"
-          style={{ fontSize: 88, color: "#f4f4f5", textShadow: "0 4px 40px rgba(0,0,0,0.9)" }}
+          style={{ fontSize: 88, color: "#f4f4f5", textShadow: "0 4px 40px rgba(0,0,0,0.9)", fontFamily: "var(--font-poppins), Inter, sans-serif", fontWeight: 800 }}
         >
           {show.title}
         </h2>
@@ -132,7 +134,7 @@ export default function VideoSoft() {
         >
           ₹2
         </div>
-        <p className="mb-3" style={{ fontSize: 38, color: "#f4f4f5", fontWeight: 700 }}>
+        <p className="mb-3" style={{ fontSize: 38, color: "#f4f4f5", fontWeight: 700, fontFamily: "var(--font-poppins), Inter, sans-serif" }}>
           Sirf ₹2 mein shuru karo
         </p>
         <p className="mb-10" style={{ fontSize: 28, color: "#a1a1aa" }}>
@@ -140,9 +142,9 @@ export default function VideoSoft() {
         </p>
         <button
           className="s-btn rounded-full font-bold"
-          style={{ fontSize: 40, padding: "28px 90px", backgroundColor: "#f97316", color: "#fff", boxShadow: "0 4px 40px rgba(249,115,22,0.5)" }}
+          style={{ fontSize: 40, padding: "28px 90px", background: "linear-gradient(135deg, #f97316, #ea580c)", boxShadow: "0 4px 24px rgba(249,115,22,0.4)", color: "#fff" }}
         >
-          Abhi Dekho
+          Start Watching — ₹2
         </button>
       </div>
     </div>

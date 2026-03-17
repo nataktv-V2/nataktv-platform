@@ -15,11 +15,13 @@ model User {
   displayName String   @default("") @map("display_name")
   photoUrl    String?  @map("photo_url")
   role        Role     @default(USER)
+  fcmToken    String?  @map("fcm_token")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   subscriptions Subscription[]
   watchHistory  WatchHistory[]
+  favourites    Favourite[]
 
   @@map("users")
 }
@@ -54,6 +56,7 @@ model Video {
   category     Category       @relation(fields: [categoryId], references: [id])
   watchHistory WatchHistory[]
   clips        Clip[]
+  favourites   Favourite[]
 
   @@index([languageId])
   @@index([categoryId])
@@ -160,4 +163,18 @@ model Clip {
 
   @@index([videoId])
   @@map("clips")
+}
+
+model Favourite {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  videoId   String   @map("video_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user  User  @relation(fields: [userId], references: [id])
+  video Video @relation(fields: [videoId], references: [id])
+
+  @@unique([userId, videoId])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("favourites")
 }

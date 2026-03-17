@@ -1,133 +1,137 @@
+import Image from "next/image";
 import { NatakLogo } from "@/components/ads/NatakLogo";
 
 export default function DramaStory() {
-  const shows = [
-    { title: "Gaon Ki Biwi", genre: "Drama", emotion: "😍", mood: "#E91E63", tagline: "Gaon ki kahani, dil ki zubaani" },
-    { title: "Kalyanam to Kadhal", genre: "Tamil Romance", emotion: "💕", mood: "#FFC107", tagline: "Shaadi se mohabbat tak" },
-    { title: "Hey Leela", genre: "Romantic Series", emotion: "🔥", mood: "#FF6D00", tagline: "Pyaar ka naya andaaz" },
-    { title: "Love Out for Delivery", genre: "Rom-Com", emotion: "😂", mood: "#f97316", tagline: "Pyaar ki delivery, har roz" },
-    { title: "Shikari Rikshawala", genre: "Crime Thriller", emotion: "😱", mood: "#7B1FA2", tagline: "Sawari nahi, shikaar" },
-    { title: "Sweet & Salt", genre: "Drama", emotion: "🥹", mood: "#10b981", tagline: "Rishton ka asli swaad" },
-    { title: "Hurry Burry", genre: "Comedy", emotion: "🤣", mood: "#3b82f6", tagline: "Hassi rok nahi paoge" },
-    { title: "Dohra", genre: "Mystery", emotion: "🤯", mood: "#ef4444", tagline: "Sach ya dhoka?" },
+  const thumbnailShows = [
+    { img: "/thumbnails/ads/gaon-ki-biwi.jpg", title: "Gaon Ki Biwi" },
+    { img: "/thumbnails/ads/kalyanam-to-kadhal.jpg", title: "Kalyanam to Kadhal" },
+    { img: "/thumbnails/ads/hey-leela.jpg", title: "Hey Leela" },
+    { img: "/thumbnails/ads/love-guru.jpg", title: "Love Guru" },
   ];
 
   return (
     <div
-      className="relative overflow-hidden flex flex-col items-center"
+      className="relative overflow-hidden"
       style={{
         width: 1080,
         height: 1920,
-        backgroundColor: "#0a0a0c",
-        fontFamily: "Inter, sans-serif",
-        paddingTop: 80,
+        fontFamily: "var(--font-poppins), Inter, sans-serif",
       }}
     >
-      {/* Glow effects */}
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/3 rounded-full blur-[160px] opacity-20"
-        style={{ width: 600, height: 600, background: "radial-gradient(circle, #E91E63, transparent)" }}
+      {/* Full-bleed background — Ghat Ghat Ka Paani */}
+      <Image
+        src="/thumbnails/ads/ghat-ghat-ka-paani.jpg"
+        alt="Ghat Ghat Ka Paani"
+        fill
+        style={{ objectFit: "cover" }}
+        unoptimized
       />
+
+      {/* Heavy bottom gradient overlay */}
       <div
-        className="absolute bottom-0 right-0 rounded-full blur-[140px] opacity-15"
-        style={{ width: 500, height: 500, background: "radial-gradient(circle, #FFC107, transparent)" }}
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.88) 72%, #000 88%)",
+        }}
       />
 
-      {/* Logo */}
-      <div className="mb-10">
-        <NatakLogo size="xl" />
-      </div>
+      {/* Content layer */}
+      <div className="absolute inset-0 flex flex-col" style={{ padding: "60px 48px" }}>
+        {/* Top: Logo */}
+        <div>
+          <NatakLogo size="xl" />
+        </div>
 
-      {/* Expressive faces row */}
-      <div className="flex gap-3 mb-6">
-        {["😍", "😂", "😱", "🔥", "🥹", "🤯"].map((e, i) => (
-          <div
-            key={i}
-            className="flex items-center justify-center rounded-full"
-            style={{
-              width: 80,
-              height: 80,
-              fontSize: 48,
-              backgroundColor: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.1)",
-            }}
-          >
-            {e}
-          </div>
-        ))}
-      </div>
+        {/* Spacer to push content to center-bottom */}
+        <div className="flex-1" />
 
-      {/* Headline */}
-      <h1 className="text-center font-bold mb-3" style={{ fontSize: 64, color: "#f4f4f5", padding: "0 60px" }}>
-        Har emotion,{" "}
-        <span
+        {/* Center: Headline */}
+        <h1
+          className="text-center"
           style={{
-            background: "linear-gradient(to right, #FFC107, #FF6D00, #E91E63)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
+            fontSize: 72,
+            color: "#fff",
+            fontWeight: 800,
+            lineHeight: 1.15,
+            marginBottom: 60,
+            textShadow: "0 4px 24px rgba(0,0,0,0.6)",
           }}
         >
-          ek app mein
-        </span>
-      </h1>
-
-      <p className="text-center mb-10" style={{ fontSize: 30, color: "#a1a1aa", padding: "0 80px" }}>
-        Romance se thriller tak — real shows, real emotions
-      </p>
-
-      {/* Show list with emotions */}
-      <div className="flex flex-col gap-4 mb-10" style={{ width: 900 }}>
-        {shows.map((show) => (
-          <div
-            key={show.title}
-            className="rounded-2xl p-5 flex items-center gap-5"
+          Har emotion,{" "}
+          <span
             style={{
-              background: `linear-gradient(135deg, ${show.mood}15, ${show.mood}05)`,
-              border: `1px solid ${show.mood}25`,
+              background: "linear-gradient(to right, #FFC107, #FF6D00, #E91E63)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
             }}
           >
-            <span style={{ fontSize: 52 }}>{show.emotion}</span>
-            <div className="flex-1">
-              <p className="font-bold" style={{ fontSize: 26, color: "#f4f4f5" }}>
+            ek app mein
+          </span>
+        </h1>
+
+        {/* 4 show thumbnails with titles */}
+        <div className="flex justify-center" style={{ gap: 24, marginBottom: 48 }}>
+          {thumbnailShows.map((show) => (
+            <div key={show.title} className="flex flex-col items-center" style={{ gap: 10 }}>
+              <div
+                className="relative overflow-hidden rounded-xl"
+                style={{
+                  width: 220,
+                  height: 124,
+                  border: "2px solid rgba(255,255,255,0.15)",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+                }}
+              >
+                <Image
+                  src={show.img}
+                  alt={show.title}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  unoptimized
+                />
+              </div>
+              <p
+                className="font-semibold text-center"
+                style={{
+                  fontSize: 18,
+                  color: "rgba(255,255,255,0.85)",
+                  maxWidth: 220,
+                }}
+              >
                 {show.title}
               </p>
-              <p style={{ fontSize: 18, color: "#a1a1aa" }}>{show.tagline}</p>
             </div>
-            <span
-              className="rounded-full font-medium"
-              style={{
-                fontSize: 16,
-                padding: "6px 16px",
-                backgroundColor: `${show.mood}20`,
-                color: show.mood,
-              }}
-            >
-              {show.genre}
-            </span>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="flex justify-center" style={{ marginBottom: 48 }}>
+          <button
+            className="rounded-full font-bold"
+            style={{
+              fontSize: 36,
+              padding: "22px 72px",
+              background: "linear-gradient(135deg, #f97316, #ea580c)",
+              boxShadow: "0 4px 24px rgba(249,115,22,0.4)",
+              color: "#fff",
+              letterSpacing: "0.5px",
+            }}
+          >
+            Binge Now — ₹2 Only
+          </button>
+        </div>
+
+        {/* Swipe up hint */}
+        <div className="flex flex-col items-center" style={{ gap: 8, marginBottom: 20 }}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.5 }}>
+            <path d="M12 4l-6 6h4v8h4v-8h4l-6-6z" fill="#fff" />
+          </svg>
+          <p style={{ fontSize: 22, color: "rgba(255,255,255,0.45)", letterSpacing: "2px", textTransform: "uppercase" as const }}>
+            Swipe up to start watching
+          </p>
+        </div>
       </div>
-
-      {/* CTA */}
-      <button
-        className="rounded-full font-bold"
-        style={{
-          fontSize: 34,
-          padding: "22px 72px",
-          backgroundColor: "#f97316",
-          color: "#fff",
-        }}
-      >
-        Abhi Dekho — ₹2 Trial
-      </button>
-
-      {/* Swipe hint */}
-      <p
-        className="absolute bottom-16 text-center"
-        style={{ fontSize: 24, color: "#a1a1aa" }}
-      >
-        Swipe up to start watching
-      </p>
     </div>
   );
 }

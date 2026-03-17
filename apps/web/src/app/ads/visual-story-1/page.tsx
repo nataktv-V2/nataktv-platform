@@ -14,7 +14,7 @@ export default function VisualStory1() {
     >
       {/* Full bleed thumbnail - takes most of the frame */}
       <Image
-        src="https://img.youtube.com/vi/-Jts8lNYLJo/maxresdefault.jpg"
+        src="/thumbnails/ads/ghat-ghat-ka-paani.jpg"
         alt="Ghat Ghat Ka Paani"
         fill
         style={{ objectFit: "cover" }}
@@ -61,7 +61,7 @@ export default function VisualStory1() {
 
       {/* Bottom content */}
       <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center pb-16 px-10">
-        <h2 className="font-bold text-center mb-6" style={{ fontSize: 64, color: "#f4f4f5" }}>
+        <h2 className="font-bold text-center mb-6" style={{ fontSize: 64, color: "#f4f4f5", fontFamily: "var(--font-poppins), Inter, sans-serif", fontWeight: 800, textShadow: "0 2px 20px rgba(0,0,0,0.8), 0 1px 6px rgba(0,0,0,0.9)" }}>
           Ghat Ghat Ka Paani
         </h2>
         <button
@@ -69,11 +69,12 @@ export default function VisualStory1() {
           style={{
             fontSize: 34,
             padding: "22px 72px",
-            backgroundColor: "#f97316",
+            background: "linear-gradient(135deg, #f97316, #ea580c)",
+            boxShadow: "0 4px 24px rgba(249,115,22,0.4)",
             color: "#fff",
           }}
         >
-          Watch Now
+          Swipe Up to Watch
         </button>
       </div>
     </div>

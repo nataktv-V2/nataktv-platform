@@ -9,6 +9,7 @@ type Video = {
   thumbnailUrl: string;
   generatedThumbnailUrl?: string | null;
   duration: number;
+  createdAt?: string;
   language: { name: string };
   category: { name: string };
 };
@@ -199,6 +200,7 @@ export default function SearchPage() {
               generatedThumbnailUrl={video.generatedThumbnailUrl}
               duration={video.duration}
               language={video.language?.name}
+              createdAt={video.createdAt}
               fullWidth
             />
           ))}

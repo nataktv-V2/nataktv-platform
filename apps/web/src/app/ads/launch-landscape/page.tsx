@@ -1,11 +1,10 @@
 import { NatakLogo } from "@/components/ads/NatakLogo";
+import Image from "next/image";
 
 export default function LaunchLandscape() {
-  const categories = ["Short Films", "Web Series", "Drama", "Comedy"];
-
   return (
     <div
-      className="relative overflow-hidden flex items-center"
+      className="relative overflow-hidden"
       style={{
         width: 1200,
         height: 628,
@@ -13,92 +12,73 @@ export default function LaunchLandscape() {
         fontFamily: "Inter, sans-serif",
       }}
     >
-      {/* Background glow */}
-      <div
-        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/4 rounded-full blur-[120px] opacity-20"
-        style={{
-          width: 500,
-          height: 500,
-          background: "linear-gradient(135deg, #E91E63, #7B1FA2)",
-        }}
-      />
+      {/* Right side: 2x2 show thumbnails grid */}
+      <div className="absolute right-0 top-0 bottom-0 grid grid-cols-2 grid-rows-2" style={{ width: 600 }}>
+        {["/thumbnails/ads/gaon-ki-biwi.jpg", "/thumbnails/ads/kalyanam-to-kadhal.jpg", "/thumbnails/ads/ghat-ghat-ka-paani.jpg", "/thumbnails/ads/love-guru.jpg"].map((img) => (
+          <div key={img} className="relative overflow-hidden">
+            <Image
+              src={img}
+              alt=""
+              fill
+              style={{ objectFit: "cover" }}
+              unoptimized
+            />
+          </div>
+        ))}
+        {/* Left fade */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(90deg, #0a0a0c 0%, rgba(10,10,12,0.6) 40%, transparent 80%)",
+          }}
+        />
+      </div>
 
       {/* Left content */}
-      <div className="flex flex-col justify-center pl-16 pr-8" style={{ maxWidth: 750 }}>
-        <div className="mb-6">
-          <NatakLogo size="lg" />
+      <div className="relative flex flex-col justify-center h-full pl-16" style={{ maxWidth: 600 }}>
+        <div className="mb-5">
+          <NatakLogo size="md" />
         </div>
 
         <h1
-          className="font-bold leading-tight mb-4"
-          style={{ fontSize: 48, color: "#f4f4f5" }}
+          className="leading-tight mb-3"
+          style={{ fontSize: 46, color: "#f4f4f5", fontFamily: "var(--font-poppins), Inter, sans-serif", fontWeight: 800 }}
         >
           Indian Drama,{" "}
-          <span
-            style={{
-              background: "linear-gradient(to right, #FF6D00, #E91E63)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            One Subscription.
-          </span>
+          <span style={{ color: "#f97316" }}>One Subscription.</span>
         </h1>
 
-        <p className="mb-6" style={{ fontSize: 22, color: "#a1a1aa" }}>
-          Web series, short films & originals — from ₹199/month
+        <p className="mb-4" style={{ fontSize: 20, color: "rgba(255,255,255,0.5)" }}>
+          100+ web series • from ₹199/month
         </p>
 
-        <div className="flex gap-3 mb-6">
-          {categories.map((cat) => (
-            <span
-              key={cat}
-              className="rounded-full font-medium"
-              style={{
-                fontSize: 16,
-                padding: "6px 18px",
-                backgroundColor: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                color: "#f4f4f5",
-              }}
-            >
-              {cat}
-            </span>
-          ))}
-        </div>
-
-        <div>
-          <button
-            className="rounded-full font-bold"
+        <div className="flex items-center gap-3 mb-5">
+          <div
+            className="rounded-full font-semibold"
             style={{
-              fontSize: 20,
-              padding: "14px 48px",
-              backgroundColor: "#f97316",
-              color: "#fff",
+              fontSize: 14,
+              padding: "5px 16px",
+              backgroundColor: "rgba(249,115,22,0.15)",
+              border: "1px solid rgba(249,115,22,0.4)",
+              color: "#f97316",
             }}
           >
-            Start Watching
-          </button>
+            Rated 4.8 ★
+          </div>
         </div>
-      </div>
 
-      {/* Right decorative element */}
-      <div
-        className="absolute right-12 top-1/2 -translate-y-1/2 rounded-2xl"
-        style={{
-          width: 320,
-          height: 480,
-          background: "linear-gradient(135deg, rgba(249,115,22,0.15), rgba(233,30,99,0.15))",
-          border: "1px solid rgba(255,255,255,0.08)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 64, marginBottom: 8 }}>🎬</div>
-          <p style={{ color: "#a1a1aa", fontSize: 18 }}>100+ Shows</p>
-        </div>
+        <button
+          className="rounded-full font-bold self-start"
+          style={{
+            fontSize: 22,
+            padding: "14px 52px",
+            background: "linear-gradient(135deg, #f97316, #ea580c)",
+            boxShadow: "0 4px 24px rgba(249,115,22,0.4)",
+            color: "#fff",
+          }}
+        >
+          Join 50K+ Viewers
+        </button>
       </div>
     </div>
   );

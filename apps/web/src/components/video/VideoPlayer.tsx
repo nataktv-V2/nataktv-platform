@@ -9,6 +9,7 @@ type VideoPlayerProps = {
   videoId?: string;
   creditStart?: number | null;
   reelStart?: number;
+  onEnded?: () => void;
 };
 
 declare global {
@@ -37,6 +38,8 @@ type YTPlayer = {
   getDuration: () => number;
   getPlayerState: () => number;
   destroy: () => void;
+  mute: () => void;
+  unMute: () => void;
 };
 
 function formatTime(seconds: number) {
@@ -45,7 +48,7 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart }: VideoPlayerProps) {
+export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart, onEnded }: VideoPlayerProps) {
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
@@ -54,6 +57,7 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart 
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const endedFiredRef = useRef(false);
 
   const hideControlsAfterDelay = useCallback(() => {
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
@@ -103,6 +107,10 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart 
             if (playing) {
               hideControlsAfterDelay();
             }
+            if (event.data === window.YT.PlayerState.ENDED && !endedFiredRef.current) {
+              endedFiredRef.current = true;
+              onEnded?.();
+            }
           },
         },
       });
@@ -131,6 +139,10 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart 
         // Auto-pause at creditStart
         if (creditStart != null && creditStart > 0 && time >= creditStart) {
           playerRef.current.pauseVideo();
+          if (!endedFiredRef.current) {
+            endedFiredRef.current = true;
+            onEnded?.();
+          }
         }
       }
     }, 500);
