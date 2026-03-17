@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -98,6 +99,44 @@ export default function LandingPage() {
           >
             See what&apos;s on
           </Link>
+        </div>
+      </section>
+
+      {/* Thumbnail Showcase */}
+      <section className="py-10 overflow-hidden">
+        <div className="flex gap-4 animate-scroll-left">
+          {[
+            "cmmqncn5k000fkr2w09s7l1t9","cmmqncn65000hkr2wv48vqv1x","cmmqncn68000jkr2wanuthpwy",
+            "cmmqncn6a000lkr2wfzc4uvkp","cmmqncn6c000nkr2wk2kv3kse","cmmqncn6e000pkr2w95rhl37m",
+            "cmmqncn6f000rkr2weg8uo6s9","cmmqncn6g000tkr2wvc0syamo","cmmqo69p90001krkw7ayhvxdv",
+            "cmmqo69pc0003krkwbecfc13x","cmmrwzpu8001zkrp0f67lfm8z","cmmrwzpu90021krp0rk1yvpqk",
+            "cmmrwzpu90022krp0bsilgdp9","cmmrwzpua0025krp0wwcpye7e","cmmrwzpua0026krp01bo01lii",
+            "cmmrwzpua0027krp0a92jt8ix",
+            // duplicated for seamless loop
+            "cmmqncn5k000fkr2w09s7l1t9","cmmqncn65000hkr2wv48vqv1x","cmmqncn68000jkr2wanuthpwy",
+            "cmmqncn6a000lkr2wfzc4uvkp","cmmqncn6c000nkr2wk2kv3kse","cmmqncn6e000pkr2w95rhl37m",
+            "cmmqncn6f000rkr2weg8uo6s9","cmmqncn6g000tkr2wvc0syamo",
+          ].map((id, i) => (
+            <div key={i} className="flex-shrink-0 w-52 sm:w-64 rounded-xl overflow-hidden border border-border-subtle" style={{ aspectRatio: "9/16" }}>
+              <Image src={`/thumbnails/${id}.jpg`} alt="Natak TV" width={208} height={370} className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-4 mt-4 animate-scroll-right">
+          {[
+            "cmmrwzpub0028krp0epbndka8","cmmrwzpuc0029krp0x3cebhed","cmmrwzpuc002akrp0xc0isp9e",
+            "cmmrwzpuc002bkrp0j6uoqq0m","cmmrwzpue0035krp0zobx4hbz","cmmqncn6c000nkr2wk2kv3kse",
+            "cmmqo69p90001krkw7ayhvxdv","cmmrwzpu8001zkrp0f67lfm8z","cmmrwzpu90021krp0rk1yvpqk",
+            "cmmqncn5k000fkr2w09s7l1t9","cmmqncn65000hkr2wv48vqv1x","cmmqncn6e000pkr2w95rhl37m",
+            // duplicated for seamless loop
+            "cmmrwzpub0028krp0epbndka8","cmmrwzpuc0029krp0x3cebhed","cmmrwzpuc002akrp0xc0isp9e",
+            "cmmrwzpuc002bkrp0j6uoqq0m","cmmrwzpue0035krp0zobx4hbz","cmmqncn6c000nkr2wk2kv3kse",
+            "cmmqo69p90001krkw7ayhvxdv","cmmrwzpu8001zkrp0f67lfm8z",
+          ].map((id, i) => (
+            <div key={i} className="flex-shrink-0 w-52 sm:w-64 rounded-xl overflow-hidden border border-border-subtle" style={{ aspectRatio: "9/16" }}>
+              <Image src={`/thumbnails/${id}.jpg`} alt="Natak TV" width={208} height={370} className="w-full h-full object-cover" />
+            </div>
+          ))}
         </div>
       </section>
 
