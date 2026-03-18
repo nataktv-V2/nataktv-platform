@@ -106,35 +106,65 @@ export default function LandingPage() {
       <section className="py-10 overflow-hidden">
         <div className="flex gap-4 animate-scroll-left">
           {[
-            "cmmqncn5k000fkr2w09s7l1t9","cmmqncn65000hkr2wv48vqv1x","cmmqncn68000jkr2wanuthpwy",
-            "cmmqncn6a000lkr2wfzc4uvkp","cmmqncn6c000nkr2wk2kv3kse","cmmqncn6e000pkr2w95rhl37m",
-            "cmmqncn6f000rkr2weg8uo6s9","cmmqncn6g000tkr2wvc0syamo","cmmqo69p90001krkw7ayhvxdv",
-            "cmmqo69pc0003krkwbecfc13x","cmmrwzpu8001zkrp0f67lfm8z","cmmrwzpu90021krp0rk1yvpqk",
-            "cmmrwzpu90022krp0bsilgdp9","cmmrwzpua0025krp0wwcpye7e","cmmrwzpua0026krp01bo01lii",
-            "cmmrwzpua0027krp0a92jt8ix",
+            { title: "Shs! Kisiko Batana Mat!", img: "/posters/1.png" },
+            { title: "Gaon Ki Biwi", img: "/thumbnails/ads/gaon-ki-biwi.jpg" },
+            { title: "New Dhulhan", img: "/posters/2.png" },
+            { title: "Hey Leela", img: "/thumbnails/ads/hey-leela.jpg" },
+            { title: "Khulja Sim-Sim", img: "/posters/3.png" },
+            { title: "Love Shadi Dhokha", img: "/thumbnails/ads/love-shadi-dhokha.jpg" },
+            { title: "Ghat Ghat Ka Paani", img: "/posters/4.png" },
+            { title: "Love Guru", img: "/thumbnails/ads/love-guru.jpg" },
+            { title: "Pati Patni Aur Padosan", img: "/posters/5.png" },
+            { title: "Hurry Burry", img: "/thumbnails/ads/hurry-burry.jpg" },
+            { title: "Kalyanam To Kadhal", img: "/thumbnails/ads/kalyanam-to-kadhal.jpg" },
+            { title: "Ghat Ghat Ka Paani", img: "/thumbnails/ads/ghat-ghat-ka-paani.jpg" },
             // duplicated for seamless loop
-            "cmmqncn5k000fkr2w09s7l1t9","cmmqncn65000hkr2wv48vqv1x","cmmqncn68000jkr2wanuthpwy",
-            "cmmqncn6a000lkr2wfzc4uvkp","cmmqncn6c000nkr2wk2kv3kse","cmmqncn6e000pkr2w95rhl37m",
-            "cmmqncn6f000rkr2weg8uo6s9","cmmqncn6g000tkr2wvc0syamo",
-          ].map((id, i) => (
-            <div key={i} className="flex-shrink-0 w-52 sm:w-64 rounded-xl overflow-hidden border border-border-subtle" style={{ aspectRatio: "9/16" }}>
-              <Image src={`/thumbnails/${id}.jpg`} alt="Natak TV" width={208} height={370} className="w-full h-full object-cover" />
+            { title: "Shs! Kisiko Batana Mat!", img: "/posters/1.png" },
+            { title: "Gaon Ki Biwi", img: "/thumbnails/ads/gaon-ki-biwi.jpg" },
+            { title: "New Dhulhan", img: "/posters/2.png" },
+            { title: "Hey Leela", img: "/thumbnails/ads/hey-leela.jpg" },
+            { title: "Khulja Sim-Sim", img: "/posters/3.png" },
+            { title: "Love Shadi Dhokha", img: "/thumbnails/ads/love-shadi-dhokha.jpg" },
+            { title: "Ghat Ghat Ka Paani", img: "/posters/4.png" },
+            { title: "Love Guru", img: "/thumbnails/ads/love-guru.jpg" },
+          ].map((item, i) => (
+            <div key={i} className="relative flex-shrink-0 w-52 sm:w-64 rounded-xl overflow-hidden border border-border-subtle" style={{ aspectRatio: "9/16" }}>
+              <Image src={item.img} alt={item.title} width={256} height={455} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-3">
+                <span className="text-white text-sm font-bold drop-shadow-lg">{item.title}</span>
+              </div>
             </div>
           ))}
         </div>
         <div className="flex gap-4 mt-4 animate-scroll-right">
           {[
-            "cmmrwzpub0028krp0epbndka8","cmmrwzpuc0029krp0x3cebhed","cmmrwzpuc002akrp0xc0isp9e",
-            "cmmrwzpuc002bkrp0j6uoqq0m","cmmrwzpue0035krp0zobx4hbz","cmmqncn6c000nkr2wk2kv3kse",
-            "cmmqo69p90001krkw7ayhvxdv","cmmrwzpu8001zkrp0f67lfm8z","cmmrwzpu90021krp0rk1yvpqk",
-            "cmmqncn5k000fkr2w09s7l1t9","cmmqncn65000hkr2wv48vqv1x","cmmqncn6e000pkr2w95rhl37m",
+            { title: "Ghat Ghat Ka Paani", img: "/posters/4.png" },
+            { title: "Hurry Burry", img: "/thumbnails/ads/hurry-burry.jpg" },
+            { title: "Pati Patni Aur Padosan", img: "/posters/5.png" },
+            { title: "Gaon Ki Biwi", img: "/thumbnails/ads/gaon-ki-biwi.jpg" },
+            { title: "Shs! Kisiko Batana Mat!", img: "/posters/1.png" },
+            { title: "Kalyanam To Kadhal", img: "/thumbnails/ads/kalyanam-to-kadhal.jpg" },
+            { title: "Khulja Sim-Sim", img: "/posters/3.png" },
+            { title: "Love Guru", img: "/thumbnails/ads/love-guru.jpg" },
+            { title: "New Dhulhan", img: "/posters/2.png" },
+            { title: "Hey Leela", img: "/thumbnails/ads/hey-leela.jpg" },
             // duplicated for seamless loop
-            "cmmrwzpub0028krp0epbndka8","cmmrwzpuc0029krp0x3cebhed","cmmrwzpuc002akrp0xc0isp9e",
-            "cmmrwzpuc002bkrp0j6uoqq0m","cmmrwzpue0035krp0zobx4hbz","cmmqncn6c000nkr2wk2kv3kse",
-            "cmmqo69p90001krkw7ayhvxdv","cmmrwzpu8001zkrp0f67lfm8z",
-          ].map((id, i) => (
-            <div key={i} className="flex-shrink-0 w-52 sm:w-64 rounded-xl overflow-hidden border border-border-subtle" style={{ aspectRatio: "9/16" }}>
-              <Image src={`/thumbnails/${id}.jpg`} alt="Natak TV" width={208} height={370} className="w-full h-full object-cover" />
+            { title: "Ghat Ghat Ka Paani", img: "/posters/4.png" },
+            { title: "Hurry Burry", img: "/thumbnails/ads/hurry-burry.jpg" },
+            { title: "Pati Patni Aur Padosan", img: "/posters/5.png" },
+            { title: "Gaon Ki Biwi", img: "/thumbnails/ads/gaon-ki-biwi.jpg" },
+            { title: "Shs! Kisiko Batana Mat!", img: "/posters/1.png" },
+            { title: "Kalyanam To Kadhal", img: "/thumbnails/ads/kalyanam-to-kadhal.jpg" },
+            { title: "Khulja Sim-Sim", img: "/posters/3.png" },
+            { title: "Love Guru", img: "/thumbnails/ads/love-guru.jpg" },
+          ].map((item, i) => (
+            <div key={i} className="relative flex-shrink-0 w-52 sm:w-64 rounded-xl overflow-hidden border border-border-subtle" style={{ aspectRatio: "9/16" }}>
+              <Image src={item.img} alt={item.title} width={256} height={455} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-3">
+                <span className="text-white text-sm font-bold drop-shadow-lg">{item.title}</span>
+              </div>
             </div>
           ))}
         </div>
