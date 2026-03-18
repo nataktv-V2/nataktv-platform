@@ -61,7 +61,7 @@ export default function LandingPage() {
             How it works
           </Link>
           <Link
-            href="/subscribe"
+            href="/home"
             className="bg-accent hover:bg-accent-hover text-white px-5 py-2 rounded-full text-sm font-semibold transition-colors"
           >
             Subscribe
@@ -88,7 +88,7 @@ export default function LandingPage() {
         </p>
         <div className="flex gap-4">
           <Link
-            href="/subscribe"
+            href="/home"
             className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-full font-semibold transition-colors"
           >
             Start watching
@@ -234,7 +234,7 @@ export default function LandingPage() {
           access.
         </p>
         <Link
-          href="/subscribe"
+          href="/home"
           className="bg-accent hover:bg-accent-hover text-white px-10 py-4 rounded-full font-semibold text-lg transition-colors inline-block"
         >
           Get started
