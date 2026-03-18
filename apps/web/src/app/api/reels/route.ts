@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get("limit") || "5"), 20);
     const cursor = searchParams.get("cursor") || undefined; // last reel id
 
-    const cacheKey = `reels:${limit}:${cursor || "start"}`;
+    const cacheKey = `reels:all`;
 
     const result = await cached(cacheKey, 300, async () => {
       // Get clips with their parent video info
@@ -19,8 +19,6 @@ export async function GET(req: NextRequest) {
           },
         },
         orderBy: { sortOrder: "asc" },
-        // Fetch extra to know if there are more
-        take: limit * 2,
       });
 
       // Get videos that have no clips (standalone reels)
@@ -31,12 +29,11 @@ export async function GET(req: NextRequest) {
       const videoIdsWithClips = videosWithClips.map((c) => c.videoId);
 
       const standaloneVideos = await prisma.video.findMany({
-        where: {
-          id: { notIn: videoIdsWithClips.length > 0 ? videoIdsWithClips : undefined },
-        },
+        where: videoIdsWithClips.length > 0
+          ? { id: { notIn: videoIdsWithClips } }
+          : {},
         include: { language: true, category: true },
         orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-        take: limit * 2,
       });
 
       // Unified feed items

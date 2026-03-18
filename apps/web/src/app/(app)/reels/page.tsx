@@ -266,10 +266,10 @@ export default function ReelsPage() {
     });
   }, [activeIndex]);
 
-  // Intersection observer for snap scrolling — uses MutationObserver to handle new items
+  // Intersection observer for snap scrolling
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || videos.length === 0) return;
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -285,21 +285,11 @@ export default function ReelsPage() {
       { root: container, threshold: 0.7 }
     );
 
-    // Observe all current items
-    const observeAll = () => {
-      container.querySelectorAll("[data-index]").forEach((el) => io.observe(el));
-    };
-    observeAll();
+    // Observe all current reel items
+    container.querySelectorAll("[data-index]").forEach((el) => io.observe(el));
 
-    // Watch for new children (from pagination) and observe them too
-    const mo = new MutationObserver(() => observeAll());
-    mo.observe(container, { childList: true });
-
-    return () => {
-      io.disconnect();
-      mo.disconnect();
-    };
-  }, []); // Only run once — MutationObserver handles dynamic items
+    return () => io.disconnect();
+  }, [videos]); // Re-run when videos change (pagination adds new items)
 
   // Toggle play/pause on tap
   const handleTap = useCallback(
