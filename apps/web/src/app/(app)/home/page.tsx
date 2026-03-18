@@ -142,9 +142,10 @@ export default async function HomePage({
           {/* Continue Watching — client component, fetches per user */}
           <ContinueWatching />
 
-          {/* By Category — show as 3-col grid rows */}
+          {/* By Category — show as 3-col grid rows, sorted by video count */}
           {categories
             .filter((cat) => cat.videos.length > 0)
+            .sort((a, b) => b.videos.length - a.videos.length)
             .map((cat) => (
               <section key={cat.id} className="mb-6">
                 <h2 className="text-lg font-semibold mb-3 px-4">{cat.name}</h2>
