@@ -13,13 +13,9 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio",
-    "cap:sync": "npx cap sync android",
-    "cap:open": "npx cap open android"
+    "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@capacitor/android": "^6.2.1",
-    "@capacitor/core": "^6.2.1",
     "@prisma/client": "^6.6.0",
     "firebase": "^11.6.0",
     "firebase-admin": "^13.0.0",
@@ -31,7 +27,6 @@
     "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.2.1",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.0",

@@ -16,5 +16,8 @@
   "packageManager": "pnpm@10.32.1",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
   }
 }
