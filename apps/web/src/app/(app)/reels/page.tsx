@@ -29,12 +29,12 @@ type YTReelPlayer = {
   unMute: () => void;
 };
 
-// Only keep 1 player on each side of active (3 total max, down from 5)
-const PLAYER_BUFFER = 1;
+// Keep 2 players on each side of active (5 total max)
+const PLAYER_BUFFER = 2;
 // How many reels before the end to trigger fetching more
-const LOAD_MORE_THRESHOLD = 2;
+const LOAD_MORE_THRESHOLD = 3;
 // Reels to fetch per page
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 export default function ReelsPage() {
   const [videos, setVideos] = useState<ReelItem[]>([]);
@@ -50,6 +50,7 @@ export default function ReelsPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playersRef = useRef<Record<number, YTReelPlayer>>({});
   const nextCursorRef = useRef<string | undefined>(undefined);
+  const activeIndexRef = useRef(0);
   const { isSubscribed, loading: subLoading } = useSubscription();
 
   // Load YouTube API
@@ -111,6 +112,11 @@ export default function ReelsPage() {
     setLoadingMore(false);
   }, [loadingMore, hasMore, fetchReels]);
 
+  // Keep ref in sync
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
+
   // Trigger load-more when active index is near the end
   useEffect(() => {
     if (videos.length > 0 && activeIndex >= videos.length - LOAD_MORE_THRESHOLD) {
@@ -146,7 +152,7 @@ export default function ReelsPage() {
           onReady: () => {
             const player = playersRef.current[i];
             if (!player) return;
-            if (i === activeIndex) {
+            if (i === activeIndexRef.current) {
               player.unMute();
               player.playVideo();
             } else {
@@ -182,7 +188,7 @@ export default function ReelsPage() {
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [videos, activeIndex]
+    [videos]
   );
 
   // Helper: destroy a player and recreate placeholder div
@@ -260,12 +266,12 @@ export default function ReelsPage() {
     });
   }, [activeIndex]);
 
-  // Intersection observer for snap scrolling
+  // Intersection observer for snap scrolling — uses MutationObserver to handle new items
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const observer = new IntersectionObserver(
+    const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
@@ -279,9 +285,21 @@ export default function ReelsPage() {
       { root: container, threshold: 0.7 }
     );
 
-    container.querySelectorAll("[data-index]").forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, [videos]);
+    // Observe all current items
+    const observeAll = () => {
+      container.querySelectorAll("[data-index]").forEach((el) => io.observe(el));
+    };
+    observeAll();
+
+    // Watch for new children (from pagination) and observe them too
+    const mo = new MutationObserver(() => observeAll());
+    mo.observe(container, { childList: true });
+
+    return () => {
+      io.disconnect();
+      mo.disconnect();
+    };
+  }, []); // Only run once — MutationObserver handles dynamic items
 
   // Toggle play/pause on tap
   const handleTap = useCallback(
