@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { GatedVideoPlayer } from "./GatedVideoPlayer";
 
@@ -30,7 +30,11 @@ export function VideoPageClient({
   nextVideo,
 }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [countdown, setCountdown] = useState<number | null>(null);
+
+  // Resume from ?t=<seconds> query param (continue watching)
+  const startAt = searchParams.get("t") ? parseInt(searchParams.get("t")!, 10) : undefined;
 
   const handleEnded = () => {
     if (nextVideo) setCountdown(5);
@@ -54,6 +58,7 @@ export function VideoPageClient({
         videoId={videoId}
         creditStart={creditStart}
         reelStart={reelStart}
+        startAt={startAt}
         onEnded={handleEnded}
       />
 

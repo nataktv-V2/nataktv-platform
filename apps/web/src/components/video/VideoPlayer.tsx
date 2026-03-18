@@ -9,6 +9,7 @@ type VideoPlayerProps = {
   videoId?: string;
   creditStart?: number | null;
   reelStart?: number;
+  startAt?: number;
   onEnded?: () => void;
 };
 
@@ -48,7 +49,7 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart, onEnded }: VideoPlayerProps) {
+export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart, startAt, onEnded }: VideoPlayerProps) {
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
@@ -58,6 +59,32 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart,
   const [showControls, setShowControls] = useState(true);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const endedFiredRef = useRef(false);
+  const hasResumedRef = useRef(false);
+
+  // Save current playback progress to the API
+  const saveProgress = useCallback(() => {
+    if (!user?.uid || !videoId || !playerRef.current) return;
+    try {
+      const progress = Math.floor(playerRef.current.getCurrentTime());
+      const dur = Math.floor(playerRef.current.getDuration());
+      if (progress <= 0) return;
+      navigator.sendBeacon?.(
+        "/api/watch-history",
+        new Blob(
+          [JSON.stringify({ uid: user.uid, videoId, progress, duration: dur })],
+          { type: "application/json" }
+        )
+      ) ||
+        fetch("/api/watch-history", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uid: user.uid, videoId, progress, duration: dur }),
+          keepalive: true,
+        }).catch(() => {});
+    } catch {
+      // Ignore errors during save
+    }
+  }, [user?.uid, videoId]);
 
   const hideControlsAfterDelay = useCallback(() => {
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
@@ -96,8 +123,12 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart,
             const effectiveEnd = (creditStart != null && creditStart > 0) ? creditStart : totalDuration;
             const effectiveStart = reelStart || 0;
             setDuration(effectiveEnd > effectiveStart ? effectiveEnd - effectiveStart : totalDuration);
-            // Seek to reelStart if set
-            if (effectiveStart > 0 && playerRef.current) {
+            // Resume from startAt (continue watching) or reelStart
+            if (startAt && startAt > effectiveStart && !hasResumedRef.current && playerRef.current) {
+              hasResumedRef.current = true;
+              playerRef.current.seekTo(startAt, true);
+              setCurrentTime(startAt - effectiveStart);
+            } else if (effectiveStart > 0 && playerRef.current) {
               playerRef.current.seekTo(effectiveStart, true);
             }
           },
@@ -107,8 +138,13 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart,
             if (playing) {
               hideControlsAfterDelay();
             }
+            // Save progress when paused
+            if (event.data === window.YT.PlayerState.PAUSED) {
+              saveProgress();
+            }
             if (event.data === window.YT.PlayerState.ENDED && !endedFiredRef.current) {
               endedFiredRef.current = true;
+              saveProgress();
               onEnded?.();
             }
           },
@@ -149,22 +185,26 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart,
     return () => clearInterval(interval);
   }, [isPlaying, creditStart, reelStart]);
 
-  // Save watch history every 30s
+  // Save watch history every 15s while playing
   useEffect(() => {
     if (!user?.uid || !videoId || !isPlaying) return;
-    const interval = setInterval(() => {
-      if (playerRef.current) {
-        const progress = Math.floor(playerRef.current.getCurrentTime());
-        const dur = Math.floor(playerRef.current.getDuration());
-        fetch("/api/watch-history", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ uid: user.uid, videoId, progress, duration: dur }),
-        }).catch(() => {});
-      }
-    }, 30000);
+    const interval = setInterval(() => saveProgress(), 15000);
     return () => clearInterval(interval);
-  }, [user?.uid, videoId, isPlaying]);
+  }, [user?.uid, videoId, isPlaying, saveProgress]);
+
+  // Save progress on page unload / tab switch
+  useEffect(() => {
+    const handleBeforeUnload = () => saveProgress();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") saveProgress();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [saveProgress]);
 
   const togglePlay = () => {
     if (!playerRef.current) return;

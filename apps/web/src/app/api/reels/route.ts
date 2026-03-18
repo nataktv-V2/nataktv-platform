@@ -5,9 +5,12 @@ import { cached } from "@/lib/redis";
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const limit = Math.min(parseInt(searchParams.get("limit") || "20"), 50);
+    const limit = Math.min(parseInt(searchParams.get("limit") || "5"), 20);
+    const cursor = searchParams.get("cursor") || undefined; // last reel id
 
-    const result = await cached(`reels:${limit}`, 300, async () => {
+    const cacheKey = `reels:${limit}:${cursor || "start"}`;
+
+    const result = await cached(cacheKey, 300, async () => {
       // Get clips with their parent video info
       const clips = await prisma.clip.findMany({
         include: {
@@ -16,7 +19,8 @@ export async function GET(req: NextRequest) {
           },
         },
         orderBy: { sortOrder: "asc" },
-        take: limit,
+        // Fetch extra to know if there are more
+        take: limit * 2,
       });
 
       // Get videos that have no clips (standalone reels)
@@ -32,7 +36,7 @@ export async function GET(req: NextRequest) {
         },
         include: { language: true, category: true },
         orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-        take: limit,
+        take: limit * 2,
       });
 
       // Unified feed items
@@ -49,11 +53,11 @@ export async function GET(req: NextRequest) {
         videoId: string;
       };
 
-      const reels: ReelItem[] = [];
+      const allReels: ReelItem[] = [];
 
       // Add clips
       for (const clip of clips) {
-        reels.push({
+        allReels.push({
           id: clip.id,
           youtubeId: clip.video.youtubeId,
           title: clip.title || clip.video.title,
@@ -69,7 +73,7 @@ export async function GET(req: NextRequest) {
 
       // Add standalone videos
       for (const video of standaloneVideos) {
-        reels.push({
+        allReels.push({
           id: video.id,
           youtubeId: video.youtubeId,
           title: video.title,
@@ -83,7 +87,20 @@ export async function GET(req: NextRequest) {
         });
       }
 
-      return { reels: reels.slice(0, limit) };
+      // Apply cursor-based pagination: skip past the cursor item
+      let startIdx = 0;
+      if (cursor) {
+        const cursorIdx = allReels.findIndex((r) => r.id === cursor);
+        if (cursorIdx !== -1) {
+          startIdx = cursorIdx + 1;
+        }
+      }
+
+      const page = allReels.slice(startIdx, startIdx + limit);
+      const hasMore = startIdx + limit < allReels.length;
+      const nextCursor = page.length > 0 ? page[page.length - 1]!.id : undefined;
+
+      return { reels: page, hasMore, nextCursor };
     });
 
     return NextResponse.json(result);

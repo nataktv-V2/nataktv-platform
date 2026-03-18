@@ -67,7 +67,7 @@ export function ContinueWatching() {
           return (
             <Link
               key={entry.id}
-              href={`/video/${entry.video.id}`}
+              href={`/video/${entry.video.id}?t=${Math.floor(entry.progress)}`}
               className="group block flex-shrink-0 w-36 sm:w-44"
             >
               <div className="relative aspect-[9/16] rounded-xl overflow-hidden bg-[#121216]">

@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   webDir: "out",
   server: {
     // In production, load the live website instead of local files
-    url: "https://nataktv.com",
+    url: "https://app.nataktv.com",
     cleartext: false,
   },
   android: {

@@ -133,14 +133,14 @@ export default async function HomePage({
         </div>
       ) : (
         <>
+          {/* Continue Watching — client component, fetches per user */}
+          <ContinueWatching />
+
           {/* Trending */}
           <VideoRow title="🔥 Hot & Trending" videos={trending} />
 
           {/* Featured */}
           <VideoRow title="⭐ Featured Picks" videos={featured} />
-
-          {/* Continue Watching — client component, fetches per user */}
-          <ContinueWatching />
 
           {/* By Category — show as 3-col grid rows, sorted by video count */}
           {categories

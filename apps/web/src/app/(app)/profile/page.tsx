@@ -284,32 +284,97 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* Menu Items */}
-      <div className="space-y-1">
-        {[
-          { label: "My Favourites", href: "/favourites" },
-          { label: "Payment History", href: "/payments" },
-          { label: "Watch History", href: "/home" },
-          { label: "Help & Support", href: "mailto:officialnataktv@gmail.com" },
-          { label: "About Natak TV", href: "/" },
-        ].map((item) => (
-          <a
-            key={item.label}
-            href={item.href}
-            className="flex items-center justify-between py-3 px-1 border-b border-white/5 text-sm hover:text-[#f97316] transition-colors"
-          >
-            {item.label}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-zinc-500">
-              <path fillRule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
-            </svg>
-          </a>
-        ))}
+      {/* Account Section */}
+      <div className="mb-5">
+        <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider px-1 mb-2">Account</h3>
+        <div className="bg-[#121216] border border-white/10 rounded-xl overflow-hidden">
+          {[
+            { label: "Payment History", href: "/payments" },
+          ].map((item, i, arr) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`flex items-center justify-between py-3.5 px-4 text-sm hover:text-[#f97316] transition-colors ${i < arr.length - 1 ? "border-b border-white/5" : ""}`}
+            >
+              {item.label}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-zinc-500">
+                <path fillRule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+              </svg>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* History Section */}
+      <div className="mb-5">
+        <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider px-1 mb-2">History</h3>
+        <div className="bg-[#121216] border border-white/10 rounded-xl overflow-hidden">
+          {[
+            { label: "Watch History", href: "/watch-history" },
+          ].map((item, i, arr) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`flex items-center justify-between py-3.5 px-4 text-sm hover:text-[#f97316] transition-colors ${i < arr.length - 1 ? "border-b border-white/5" : ""}`}
+            >
+              {item.label}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-zinc-500">
+                <path fillRule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+              </svg>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Support Section */}
+      <div className="mb-5">
+        <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider px-1 mb-2">Support</h3>
+        <div className="bg-[#121216] border border-white/10 rounded-xl overflow-hidden">
+          {[
+            { label: "Help & Support", href: "/help" },
+            { label: "Delete Account", href: "/delete-account" },
+          ].map((item, i, arr) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`flex items-center justify-between py-3.5 px-4 text-sm hover:text-[#f97316] transition-colors ${i < arr.length - 1 ? "border-b border-white/5" : ""}`}
+            >
+              {item.label}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-zinc-500">
+                <path fillRule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+              </svg>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Legal Section */}
+      <div className="mb-5">
+        <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider px-1 mb-2">Legal</h3>
+        <div className="bg-[#121216] border border-white/10 rounded-xl overflow-hidden">
+          {[
+            { label: "Privacy Policy", href: "/privacy" },
+            { label: "Terms of Service", href: "/terms" },
+            { label: "Refund Policy", href: "/refund" },
+          ].map((item, i, arr) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`flex items-center justify-between py-3.5 px-4 text-sm hover:text-[#f97316] transition-colors ${i < arr.length - 1 ? "border-b border-white/5" : ""}`}
+            >
+              {item.label}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-zinc-500">
+                <path fillRule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+              </svg>
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Sign Out */}
       <button
         onClick={signOut}
-        className="w-full mt-8 py-3 text-red-400 text-sm font-medium hover:bg-red-500/10 rounded-lg transition-colors"
+        className="w-full mt-4 py-3 text-red-400 text-sm font-medium hover:bg-red-500/10 rounded-lg transition-colors"
       >
         Sign out
       </button>

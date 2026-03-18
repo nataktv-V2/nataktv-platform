@@ -9,13 +9,14 @@ type Props = {
   videoId: string;
   creditStart?: number | null;
   reelStart?: number;
+  startAt?: number;
   onEnded?: () => void;
 };
 
-export function GatedVideoPlayer({ youtubeId, title, videoId, creditStart, reelStart, onEnded }: Props) {
+export function GatedVideoPlayer({ youtubeId, title, videoId, creditStart, reelStart, startAt, onEnded }: Props) {
   return (
     <SubscriptionGate>
-      <VideoPlayer youtubeId={youtubeId} title={title} videoId={videoId} creditStart={creditStart} reelStart={reelStart} onEnded={onEnded} />
+      <VideoPlayer youtubeId={youtubeId} title={title} videoId={videoId} creditStart={creditStart} reelStart={reelStart} startAt={startAt} onEnded={onEnded} />
     </SubscriptionGate>
   );
 }
