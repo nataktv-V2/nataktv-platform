@@ -107,32 +107,32 @@ export default function LandingPage() {
         <div className="flex gap-4 animate-scroll-left">
           {[
             { title: "Shs! Kisiko Batana Mat!", img: "/posters/1.png" },
-            { title: "Gaon Ki Biwi", img: "/thumbnails/ads/gaon-ki-biwi.jpg" },
             { title: "New Dhulhan", img: "/posters/2.png" },
-            { title: "Hey Leela", img: "/thumbnails/ads/hey-leela.jpg" },
             { title: "Khulja Sim-Sim", img: "/posters/3.png" },
-            { title: "Love Shadi Dhokha", img: "/thumbnails/ads/love-shadi-dhokha.jpg" },
             { title: "Ghat Ghat Ka Paani", img: "/posters/4.png" },
-            { title: "Love Guru", img: "/thumbnails/ads/love-guru.jpg" },
             { title: "Pati Patni Aur Padosan", img: "/posters/5.png" },
-            { title: "Hurry Burry", img: "/thumbnails/ads/hurry-burry.jpg" },
-            { title: "Kalyanam To Kadhal", img: "/thumbnails/ads/kalyanam-to-kadhal.jpg" },
-            { title: "Ghat Ghat Ka Paani", img: "/thumbnails/ads/ghat-ghat-ka-paani.jpg" },
+            { title: "Dil Ki Baatein", img: "/posters/1.png" },
+            { title: "Mohabbat Ke Rang", img: "/posters/2.png" },
+            { title: "Anokha Rishta", img: "/posters/3.png" },
+            { title: "Pyaar Ka Safar", img: "/posters/4.png" },
+            { title: "Sapno Ki Duniya", img: "/posters/5.png" },
             // duplicated for seamless loop
             { title: "Shs! Kisiko Batana Mat!", img: "/posters/1.png" },
-            { title: "Gaon Ki Biwi", img: "/thumbnails/ads/gaon-ki-biwi.jpg" },
             { title: "New Dhulhan", img: "/posters/2.png" },
-            { title: "Hey Leela", img: "/thumbnails/ads/hey-leela.jpg" },
             { title: "Khulja Sim-Sim", img: "/posters/3.png" },
-            { title: "Love Shadi Dhokha", img: "/thumbnails/ads/love-shadi-dhokha.jpg" },
             { title: "Ghat Ghat Ka Paani", img: "/posters/4.png" },
-            { title: "Love Guru", img: "/thumbnails/ads/love-guru.jpg" },
+            { title: "Pati Patni Aur Padosan", img: "/posters/5.png" },
+            { title: "Dil Ki Baatein", img: "/posters/1.png" },
+            { title: "Mohabbat Ke Rang", img: "/posters/2.png" },
+            { title: "Anokha Rishta", img: "/posters/3.png" },
+            { title: "Pyaar Ka Safar", img: "/posters/4.png" },
+            { title: "Sapno Ki Duniya", img: "/posters/5.png" },
           ].map((item, i) => (
-            <div key={i} className="relative flex-shrink-0 w-52 sm:w-64 rounded-xl overflow-hidden border border-border-subtle" style={{ aspectRatio: "9/16" }}>
-              <Image src={item.img} alt={item.title} width={256} height={455} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+            <div key={i} className="relative flex-shrink-0 w-52 sm:w-64 rounded-xl overflow-hidden border border-white/5 shadow-xl shadow-black/40" style={{ aspectRatio: "2/3" }}>
+              <Image src={item.img} alt={item.title} width={256} height={384} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-3">
-                <span className="text-white text-sm font-bold drop-shadow-lg">{item.title}</span>
+                <span className="text-white text-sm font-extrabold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{item.title}</span>
               </div>
             </div>
           ))}
@@ -140,30 +140,32 @@ export default function LandingPage() {
         <div className="flex gap-4 mt-4 animate-scroll-right">
           {[
             { title: "Ghat Ghat Ka Paani", img: "/posters/4.png" },
-            { title: "Hurry Burry", img: "/thumbnails/ads/hurry-burry.jpg" },
             { title: "Pati Patni Aur Padosan", img: "/posters/5.png" },
-            { title: "Gaon Ki Biwi", img: "/thumbnails/ads/gaon-ki-biwi.jpg" },
             { title: "Shs! Kisiko Batana Mat!", img: "/posters/1.png" },
-            { title: "Kalyanam To Kadhal", img: "/thumbnails/ads/kalyanam-to-kadhal.jpg" },
             { title: "Khulja Sim-Sim", img: "/posters/3.png" },
-            { title: "Love Guru", img: "/thumbnails/ads/love-guru.jpg" },
+            { title: "Rangeen Zindagi", img: "/posters/2.png" },
+            { title: "Jhuki Nazar", img: "/posters/5.png" },
             { title: "New Dhulhan", img: "/posters/2.png" },
-            { title: "Hey Leela", img: "/thumbnails/ads/hey-leela.jpg" },
+            { title: "Dil Se Dil Tak", img: "/posters/1.png" },
+            { title: "Mera Humsafar", img: "/posters/3.png" },
+            { title: "Ishq Wala Pyaar", img: "/posters/4.png" },
             // duplicated for seamless loop
             { title: "Ghat Ghat Ka Paani", img: "/posters/4.png" },
-            { title: "Hurry Burry", img: "/thumbnails/ads/hurry-burry.jpg" },
             { title: "Pati Patni Aur Padosan", img: "/posters/5.png" },
-            { title: "Gaon Ki Biwi", img: "/thumbnails/ads/gaon-ki-biwi.jpg" },
             { title: "Shs! Kisiko Batana Mat!", img: "/posters/1.png" },
-            { title: "Kalyanam To Kadhal", img: "/thumbnails/ads/kalyanam-to-kadhal.jpg" },
             { title: "Khulja Sim-Sim", img: "/posters/3.png" },
-            { title: "Love Guru", img: "/thumbnails/ads/love-guru.jpg" },
+            { title: "Rangeen Zindagi", img: "/posters/2.png" },
+            { title: "Jhuki Nazar", img: "/posters/5.png" },
+            { title: "New Dhulhan", img: "/posters/2.png" },
+            { title: "Dil Se Dil Tak", img: "/posters/1.png" },
+            { title: "Mera Humsafar", img: "/posters/3.png" },
+            { title: "Ishq Wala Pyaar", img: "/posters/4.png" },
           ].map((item, i) => (
-            <div key={i} className="relative flex-shrink-0 w-52 sm:w-64 rounded-xl overflow-hidden border border-border-subtle" style={{ aspectRatio: "9/16" }}>
-              <Image src={item.img} alt={item.title} width={256} height={455} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+            <div key={i} className="relative flex-shrink-0 w-52 sm:w-64 rounded-xl overflow-hidden border border-white/5 shadow-xl shadow-black/40" style={{ aspectRatio: "2/3" }}>
+              <Image src={item.img} alt={item.title} width={256} height={384} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-3">
-                <span className="text-white text-sm font-bold drop-shadow-lg">{item.title}</span>
+                <span className="text-white text-sm font-extrabold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{item.title}</span>
               </div>
             </div>
           ))}
