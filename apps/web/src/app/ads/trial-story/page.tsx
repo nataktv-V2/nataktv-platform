@@ -15,8 +15,8 @@ export default function TrialStory() {
       {/* Full-bleed dramatic show image — top 60% */}
       <div className="absolute inset-0">
         <Image
-          src="/thumbnails/ads/ghat-ghat-ka-paani.jpg"
-          alt="Ghat Ghat Ka Paani"
+          src="/thumbnails/ads/hey-leela.jpg"
+          alt="Hey Leela"
           fill
           style={{ objectFit: "cover", objectPosition: "top center" }}
           unoptimized
@@ -84,32 +84,18 @@ export default function TrialStory() {
             </span>
           </div>
 
-          <h1
-            style={{
-              fontSize: 64,
-              color: "#f4f4f5",
-              fontFamily: "var(--font-poppins), Inter, sans-serif",
-              fontWeight: 800,
-              textAlign: "center",
-              textShadow: "0 2px 20px rgba(0,0,0,0.8)",
-              marginBottom: 12,
-            }}
-          >
-            2 din FREE trial
-          </h1>
-
           <p style={{ fontSize: 30, color: "rgba(255,255,255,0.55)", textAlign: "center" }}>
             100+ web series • Hindi, Tamil, Telugu
           </p>
         </div>
 
         {/* Show thumbnail strip — proof of content */}
-        <div className="flex gap-3 mb-10">
+        <div className="flex gap-4 mb-10">
           {["/thumbnails/ads/gaon-ki-biwi.jpg", "/thumbnails/ads/kalyanam-to-kadhal.jpg", "/thumbnails/ads/hey-leela.jpg", "/thumbnails/ads/love-guru.jpg"].map((img) => (
             <div
               key={img}
-              className="relative overflow-hidden rounded-xl"
-              style={{ width: 180, height: 100, border: "2px solid rgba(255,255,255,0.1)" }}
+              className="relative overflow-hidden rounded-2xl"
+              style={{ width: 220, height: 140, border: "2px solid rgba(255,255,255,0.15)" }}
             >
               <Image
                 src={img}
@@ -126,8 +112,8 @@ export default function TrialStory() {
         <button
           className="rounded-full font-bold"
           style={{
-            fontSize: 36,
-            padding: "24px 90px",
+            fontSize: 42,
+            padding: "28px 110px",
             background: "linear-gradient(135deg, #f97316, #ea580c)",
             boxShadow: "0 4px 30px rgba(249,115,22,0.5)",
             color: "#fff",
