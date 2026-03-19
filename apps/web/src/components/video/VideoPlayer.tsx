@@ -52,11 +52,13 @@ function formatTime(seconds: number) {
 export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart, startAt, onEnded }: VideoPlayerProps) {
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const endedFiredRef = useRef(false);
   const hasResumedRef = useRef(false);
@@ -237,6 +239,38 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart,
     setCurrentTime(relativeTime);
   };
 
+  const toggleFullscreen = useCallback(async () => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    try {
+      if (!document.fullscreenElement) {
+        await el.requestFullscreen();
+        // Try to lock to landscape on mobile
+        try {
+          await (screen.orientation as unknown as { lock: (o: string) => Promise<void> }).lock("landscape");
+        } catch {
+          // Orientation lock not supported on desktop
+        }
+      } else {
+        await document.exitFullscreen();
+        try {
+          (screen.orientation as unknown as { unlock: () => void }).unlock();
+        } catch {
+          // Ignore
+        }
+      }
+    } catch {
+      // Fullscreen not supported
+    }
+  }, []);
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handler = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", handler);
+    return () => document.removeEventListener("fullscreenchange", handler);
+  }, []);
+
   const handleContainerClick = () => {
     setShowControls(true);
     hideControlsAfterDelay();
@@ -246,7 +280,8 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart,
 
   return (
     <div
-      className="relative w-full aspect-video bg-black overflow-hidden [&>iframe]:!w-full [&>iframe]:!h-full [&>iframe]:absolute [&>iframe]:inset-0 [&>iframe]:pointer-events-none [&>iframe]:z-0"
+      ref={wrapperRef}
+      className={`relative w-full bg-black overflow-hidden [&>iframe]:!w-full [&>iframe]:!h-full [&>iframe]:absolute [&>iframe]:inset-0 [&>iframe]:pointer-events-none [&>iframe]:z-0 ${isFullscreen ? "h-screen" : "aspect-video"}`}
       onClick={handleContainerClick}
     >
       {/* YouTube iframe container — YT API replaces this div with an iframe */}
@@ -320,9 +355,27 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart,
               <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-accent rounded-full" />
             </div>
           </div>
-          <div className="flex justify-between text-white/60 text-xs">
+          <div className="flex justify-between items-center text-white/60 text-xs">
             <span>{formatTime(currentTime)}</span>
-            <span>{formatTime(duration)}</span>
+            <div className="flex items-center gap-3">
+              <span>{formatTime(duration)}</span>
+              {/* Fullscreen / Landscape toggle */}
+              <button
+                onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }}
+                className="text-white/80 hover:text-white p-1"
+                title={isFullscreen ? "Exit fullscreen" : "Watch in landscape"}
+              >
+                {isFullscreen ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                    <path fillRule="evenodd" d="M3.22 3.22a.75.75 0 0 1 1.06 0L8.25 7.19V4.5a.75.75 0 0 1 1.5 0v4.5a.75.75 0 0 1-.75.75H4.5a.75.75 0 0 1 0-1.5h2.69L3.22 4.28a.75.75 0 0 1 0-1.06Zm17.56 0a.75.75 0 0 1 0 1.06l-3.97 3.97h2.69a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75V4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0ZM3.75 15a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-2.69l-3.97 3.97a.75.75 0 0 1-1.06-1.06l3.97-3.97H4.5a.75.75 0 0 1-.75-.75Zm10.5 0a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-2.69l3.97 3.97a.75.75 0 1 1-1.06 1.06l-3.97-3.97v2.69a.75.75 0 0 1-1.5 0V15Z" clipRule="evenodd" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                    <path fillRule="evenodd" d="M15 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0V5.56l-3.97 3.97a.75.75 0 1 1-1.06-1.06l3.97-3.97h-2.69a.75.75 0 0 1-.75-.75Zm-12 0A.75.75 0 0 1 3.75 3h4.5a.75.75 0 0 1 0 1.5H5.56l3.97 3.97a.75.75 0 0 1-1.06 1.06L4.5 5.56v2.69a.75.75 0 0 1-1.5 0v-4.5Zm11.47 11.78a.75.75 0 1 1 1.06-1.06l3.97 3.97v-2.69a.75.75 0 0 1 1.5 0v4.5a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1 0-1.5h2.69l-3.97-3.97Zm-7.94 0a.75.75 0 0 1 0 1.06l-3.97 3.97h2.69a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
