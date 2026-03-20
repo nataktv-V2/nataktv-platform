@@ -9,15 +9,22 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "uid required" }, { status: 400 });
     }
 
+    // Admin emails get free access — no subscription needed
+    const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "").split(",").map((e) => e.trim().toLowerCase()).filter(Boolean);
+
     const user = await cached(`user:${uid}`, 300, () =>
       prisma.user.findUnique({
         where: { firebaseUid: uid },
-        select: { id: true },
+        select: { id: true, email: true },
       })
     );
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+      return NextResponse.json({ subscribed: true, status: "ADMIN" });
     }
 
     const subscription = await prisma.subscription.findFirst({

@@ -62,6 +62,8 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart,
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const endedFiredRef = useRef(false);
   const hasResumedRef = useRef(false);
+  const viewTrackedRef = useRef(false);
+  const watchSecondsRef = useRef(0);
 
   // Save current playback progress to the API
   const saveProgress = useCallback(() => {
@@ -193,6 +195,23 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart,
     const interval = setInterval(() => saveProgress(), 15000);
     return () => clearInterval(interval);
   }, [user?.uid, videoId, isPlaying, saveProgress]);
+
+  // Track view after 30s of actual watch time
+  useEffect(() => {
+    if (!videoId || !isPlaying || viewTrackedRef.current) return;
+    const interval = setInterval(() => {
+      watchSecondsRef.current += 1;
+      if (watchSecondsRef.current >= 30 && !viewTrackedRef.current) {
+        viewTrackedRef.current = true;
+        fetch("/api/videos/track-view", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ videoId, uid: user?.uid }),
+        }).catch(() => {});
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [videoId, isPlaying, user?.uid]);
 
   // Save progress on page unload / tab switch
   useEffect(() => {

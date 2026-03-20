@@ -47,13 +47,19 @@ export async function GET(req: NextRequest) {
         category: { name: string };
         thumbnailUrl: string;
         isClip: boolean;
+        isEpisode: boolean;
+        episodeNumber: number | null;
         videoId: string;
       };
 
       const allReels: ReelItem[] = [];
 
-      // Add clips
-      for (const clip of clips) {
+      // Add clips — episodes first, then regular clips
+      const episodeClips = clips.filter((c) => c.episodeNumber != null);
+      const regularClips = clips.filter((c) => c.episodeNumber == null);
+
+      // Interleave: episode clips get priority (appear earlier in feed)
+      for (const clip of episodeClips) {
         allReels.push({
           id: clip.id,
           youtubeId: clip.video.youtubeId,
@@ -64,6 +70,25 @@ export async function GET(req: NextRequest) {
           category: clip.video.category,
           thumbnailUrl: clip.video.generatedThumbnailUrl || clip.video.thumbnailUrl,
           isClip: true,
+          isEpisode: true,
+          episodeNumber: clip.episodeNumber,
+          videoId: clip.videoId,
+        });
+      }
+
+      for (const clip of regularClips) {
+        allReels.push({
+          id: clip.id,
+          youtubeId: clip.video.youtubeId,
+          title: clip.title || clip.video.title,
+          startTime: clip.startTime,
+          endTime: clip.endTime,
+          language: clip.video.language,
+          category: clip.video.category,
+          thumbnailUrl: clip.video.generatedThumbnailUrl || clip.video.thumbnailUrl,
+          isClip: true,
+          isEpisode: false,
+          episodeNumber: null,
           videoId: clip.videoId,
         });
       }
@@ -80,6 +105,8 @@ export async function GET(req: NextRequest) {
           category: video.category,
           thumbnailUrl: video.generatedThumbnailUrl || video.thumbnailUrl,
           isClip: false,
+          isEpisode: false,
+          episodeNumber: null,
           videoId: video.id,
         });
       }

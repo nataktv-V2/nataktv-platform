@@ -18,6 +18,7 @@ type Props = {
   videoId: string;
   creditStart?: number | null;
   reelStart?: number;
+  startAt?: number;
   nextVideo: NextVideoInfo | null;
 };
 
@@ -27,14 +28,17 @@ export function VideoPageClient({
   videoId,
   creditStart,
   reelStart,
+  startAt: startAtProp,
   nextVideo,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [countdown, setCountdown] = useState<number | null>(null);
 
-  // Resume from ?t=<seconds> query param (continue watching)
-  const startAt = searchParams.get("t") ? parseInt(searchParams.get("t")!, 10) : undefined;
+  // Resume from ?t=<seconds> or ?startAt=<seconds> query param, or prop
+  const startAt = startAtProp
+    ?? (searchParams.get("startAt") ? parseInt(searchParams.get("startAt")!, 10) : undefined)
+    ?? (searchParams.get("t") ? parseInt(searchParams.get("t")!, 10) : undefined);
 
   const handleEnded = () => {
     if (nextVideo) setCountdown(5);

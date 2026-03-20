@@ -60,12 +60,12 @@ export default function LandingPage() {
           >
             How it works
           </Link>
-          <Link
-            href="/home"
+          <a
+            href="https://app.nataktv.com/home"
             className="bg-accent hover:bg-accent-hover text-white px-5 py-2 rounded-full text-sm font-semibold transition-colors"
           >
             Subscribe
-          </Link>
+          </a>
         </div>
       </nav>
 
@@ -87,12 +87,12 @@ export default function LandingPage() {
           watch in HD — no ads, no hassle.
         </p>
         <div className="flex gap-4">
-          <Link
-            href="/home"
+          <a
+            href="https://app.nataktv.com/home"
             className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-full font-semibold transition-colors"
           >
             Start watching
-          </Link>
+          </a>
           <Link
             href="#features"
             className="border border-border-default text-text-primary px-8 py-3 rounded-full font-semibold hover:bg-bg-surface transition-colors"
@@ -233,12 +233,12 @@ export default function LandingPage() {
           Subscribe from ₹199/month. Sign up, pay with Razorpay, and get instant
           access.
         </p>
-        <Link
-          href="/home"
+        <a
+          href="https://app.nataktv.com/home"
           className="bg-accent hover:bg-accent-hover text-white px-10 py-4 rounded-full font-semibold text-lg transition-colors inline-block"
         >
           Get started
-        </Link>
+        </a>
       </section>
 
       {/* Footer */}

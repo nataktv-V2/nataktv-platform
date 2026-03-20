@@ -40,17 +40,25 @@ async function getHomeData(tag?: string) {
         }
       : {};
 
-    const [trending, featured, languages, categories, allFiltered] = await Promise.all([
+    const [trendingRaw, featured, mostWatched, languages, categories, allFiltered] = await Promise.all([
+      // Algorithmic trending: get top videos, will score by views * recency
       prisma.video.findMany({
-        where: { isTrending: true, ...tagFilter },
+        where: tagFilter,
         include: { language: true, category: true },
         orderBy: { views: "desc" },
-        take: 10,
+        take: 30,
       }),
       prisma.video.findMany({
         where: { isFeatured: true, ...tagFilter },
         include: { language: true, category: true },
         orderBy: { sortOrder: "asc" },
+        take: 10,
+      }),
+      // Most Watched — purely by total view count
+      prisma.video.findMany({
+        where: tagFilter,
+        include: { language: true, category: true },
+        orderBy: { views: "desc" },
         take: 10,
       }),
       prisma.language.findMany({
@@ -83,11 +91,23 @@ async function getHomeData(tag?: string) {
           })
         : Promise.resolve([]),
     ]);
-    return { trending, featured, languages, categories, allFiltered, error: false };
+    // Score trending by views * recency
+    const now = Date.now();
+    const trending = trendingRaw
+      .map((video) => {
+        const ageDays = (now - new Date(video.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+        const recency = ageDays < 3 ? 3 : ageDays < 7 ? 2 : ageDays < 30 ? 1.5 : 1;
+        return { ...video, _score: (video.views + 1) * recency };
+      })
+      .sort((a, b) => b._score - a._score)
+      .slice(0, 10);
+
+    return { trending, featured, mostWatched, languages, categories, allFiltered, error: false };
   } catch {
     return {
-      trending: [] as VideoWithRelations[],
+      trending: [] as (VideoWithRelations & { _score: number })[],
       featured: [] as VideoWithRelations[],
+      mostWatched: [] as VideoWithRelations[],
       languages: [] as LanguageWithVideos[],
       categories: [] as CategoryWithVideos[],
       allFiltered: [] as VideoWithRelations[],
@@ -102,7 +122,7 @@ export default async function HomePage({
   searchParams: Promise<{ tag?: string }>;
 }) {
   const { tag } = await searchParams;
-  const { trending, featured, languages, categories, allFiltered, error } = await getHomeData(tag);
+  const { trending, featured, mostWatched, languages, categories, allFiltered, error } = await getHomeData(tag);
 
   return (
     <div className="py-2">
@@ -141,6 +161,11 @@ export default async function HomePage({
 
           {/* Featured */}
           <VideoRow title="⭐ Featured Picks" videos={featured} />
+
+          {/* Most Watched */}
+          {mostWatched.length > 0 && (
+            <VideoRow title="👀 Most Watched" videos={mostWatched} />
+          )}
 
           {/* By Category — show as 3-col grid rows, sorted by video count */}
           {categories

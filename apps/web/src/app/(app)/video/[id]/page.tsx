@@ -5,9 +5,12 @@ import { VideoPageClient } from "@/components/video/VideoPageClient";
 import { ShareButton } from "@/components/video/ShareButton";
 import { FavouriteButton } from "@/components/video/FavouriteButton";
 import { VideoCard } from "@/components/video/VideoCard";
+import { EpisodeNav } from "@/components/video/EpisodeNav";
+import Link from "next/link";
 
 type Props = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ startAt?: string; ep?: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -30,15 +33,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function VideoPage({ params }: Props) {
+export default async function VideoPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { startAt, ep } = await searchParams;
 
   const video = await prisma.video.findUnique({
     where: { id },
-    include: { language: true, category: true },
+    include: {
+      language: true,
+      category: true,
+      clips: {
+        where: { episodeNumber: { not: null } },
+        orderBy: { episodeNumber: "asc" },
+      },
+    },
   });
 
   if (!video) notFound();
+
+  const episodes = video.clips;
+  const currentEpisode = ep ? parseInt(ep) : undefined;
+  const startAtTime = startAt ? parseInt(startAt) : undefined;
 
   // Get related videos (same category, exclude current)
   const related = await prisma.video.findMany({
@@ -56,6 +71,7 @@ export default async function VideoPage({ params }: Props) {
         videoId={video.id}
         creditStart={video.creditStart}
         reelStart={video.reelStart}
+        startAt={startAtTime}
         nextVideo={
           related[0]
             ? {
@@ -84,11 +100,35 @@ export default async function VideoPage({ params }: Props) {
           <span className="text-xs bg-bg-elevated text-text-muted px-2 py-0.5 rounded-full">
             {video.category.name}
           </span>
+          {episodes.length > 0 && (
+            <Link
+              href={`/video/${video.id}/episodes`}
+              className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full hover:bg-purple-500/30 transition-colors"
+            >
+              {episodes.length} Episodes
+            </Link>
+          )}
         </div>
         {video.description && (
           <p className="text-text-muted text-sm">{video.description}</p>
         )}
       </div>
+
+      {/* Episode Navigation */}
+      {episodes.length > 0 && (
+        <div className="px-4 pb-4">
+          <EpisodeNav
+            videoId={video.id}
+            episodes={episodes.map((ep) => ({
+              id: ep.id,
+              episodeNumber: ep.episodeNumber!,
+              startTime: ep.startTime,
+              endTime: ep.endTime,
+            }))}
+            currentEpisode={currentEpisode}
+          />
+        </div>
+      )}
 
       {/* Related Videos */}
       {related.length > 0 && (

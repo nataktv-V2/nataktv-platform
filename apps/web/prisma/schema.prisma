@@ -151,13 +151,14 @@ model WatchHistory {
 }
 
 model Clip {
-  id        String   @id @default(cuid())
-  videoId   String   @map("video_id")
-  title     String   @default("")
-  startTime Int      @map("start_time")
-  endTime   Int      @map("end_time")
-  sortOrder Int      @default(0) @map("sort_order")
-  createdAt DateTime @default(now()) @map("created_at")
+  id            String   @id @default(cuid())
+  videoId       String   @map("video_id")
+  title         String   @default("")
+  startTime     Int      @map("start_time")
+  endTime       Int      @map("end_time")
+  sortOrder     Int      @default(0) @map("sort_order")
+  episodeNumber Int?     @map("episode_number")
+  createdAt     DateTime @default(now()) @map("created_at")
 
   video Video @relation(fields: [videoId], references: [id])
 
