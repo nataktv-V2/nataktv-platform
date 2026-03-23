@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Refund & Cancellation Policy | Natak TV",
-  description: "Refund and cancellation policy for Natak TV subscriptions.",
+  title: "Refund Policy | Natak TV",
+  description: "Refund policy for Natak TV subscriptions.",
 };
 
 export default function RefundPolicyPage() {
@@ -28,83 +28,28 @@ export default function RefundPolicyPage() {
 
       {/* Content */}
       <main className="max-w-3xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Refund & Cancellation Policy</h1>
-        <p className="text-text-muted text-sm mb-8">Last updated: March 15, 2026</p>
+        <h1 className="text-3xl font-bold mb-2">Refund Policy</h1>
+        <p className="text-text-muted text-sm mb-8">Last updated: 12th February 2025</p>
 
         <div className="prose prose-invert prose-sm max-w-none space-y-6">
           <section>
+            <h2 className="text-xl font-semibold mb-3">Refund Policy for Natak TV</h2>
             <p className="text-zinc-300 leading-relaxed">
-              Natak TV believes in helping its customers as far as possible, and has therefore a liberal
+              NatakTV believes in helping its customers as far as possible, and has therefore a liberal
               cancellation policy. Under this policy:
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">1. Cancellation</h2>
-            <ul className="list-disc pl-6 text-zinc-300 space-y-1">
-              <li>Cancellations will be considered only if the request is made within 1 day of buying the subscription.</li>
-              <li>You can cancel your subscription at any time from your profile page.</li>
-              <li>Upon cancellation, your access continues until the end of the current billing period.</li>
-              <li>No partial refunds are provided for unused days within a billing period.</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold mb-3">2. Trial Period</h2>
             <p className="text-zinc-300 leading-relaxed">
-              Natak TV offers a 2-day trial for ₹2. During the trial period, you have full access to all
-              content. The trial payment of ₹2 is non-refundable.
+              Cancellations will be considered only if the request is made within 1 day of buying the subscription.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">3. Refund Processing</h2>
             <p className="text-zinc-300 leading-relaxed">
-              In case of any refunds approved by Natak TV, it will take 3–5 business days for the refund to
-              be credited to the end customer. Refunds will be credited to the original payment method via
-              Razorpay.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold mb-3">4. Non-Refundable Cases</h2>
-            <ul className="list-disc pl-6 text-zinc-300 space-y-1">
-              <li>Trial payment of ₹2</li>
-              <li>Partial month usage after cancellation</li>
-              <li>Dissatisfaction with content catalog</li>
-              <li>Inability to use the service due to your internet connection or device compatibility</li>
-              <li>Account suspension due to terms violation</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold mb-3">5. How to Request a Refund</h2>
-            <p className="text-zinc-300 leading-relaxed">
-              To request a refund, email us at{" "}
-              <a href="mailto:officialnataktv@gmail.com" className="text-accent hover:underline">
-                officialnataktv@gmail.com
-              </a>{" "}
-              with the following details:
-            </p>
-            <ul className="list-disc pl-6 text-zinc-300 space-y-1 mt-2">
-              <li>Your registered email address</li>
-              <li>Date of the transaction</li>
-              <li>Reason for the refund request</li>
-              <li>Any supporting screenshots or documentation</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold mb-3">6. Contact</h2>
-            <p className="text-zinc-300 leading-relaxed">
-              For refund or cancellation queries:{" "}
-              <a href="mailto:officialnataktv@gmail.com" className="text-accent hover:underline">
-                officialnataktv@gmail.com
-              </a>
-            </p>
-            <p className="text-zinc-300 leading-relaxed mt-2">
-              INDIDINO VENTURES PRIVATE LIMITED<br />
-              Bengaluru, Karnataka, India
+              In case of any Refunds approved by the NatakTV, it&apos;ll take 3-5 days for the refund to be
+              credited to the end customer.
             </p>
           </section>
         </div>

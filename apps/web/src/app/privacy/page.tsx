@@ -29,29 +29,28 @@ export default function PrivacyPolicyPage() {
       {/* Content */}
       <main className="max-w-3xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-2">Privacy Policy</h1>
-        <p className="text-text-muted text-sm mb-8">Last updated: March 15, 2026</p>
+        <p className="text-text-muted text-sm mb-8">Last updated: 7th February 2026</p>
 
         <div className="prose prose-invert prose-sm max-w-none space-y-6">
           <section>
             <p className="text-zinc-300 leading-relaxed">
-              Natak TV (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), operated by INDIDINO VENTURES
-              PRIVATE LIMITED, is committed to protecting your privacy. This Privacy Policy explains how we
-              collect, use, disclose, and safeguard your information when you use our website, mobile
-              application, and related services.
+              Natak TV (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy.
+              This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you
+              use our website, mobile application, and related services.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">1. Information We Collect</h2>
+            <h2 className="text-xl font-semibold mb-3">Information We Collect</h2>
             <ul className="list-disc pl-6 text-zinc-300 space-y-2">
               <li>
                 <strong>Account information:</strong> When you register, we collect your name, email address,
                 and any other details you provide.
               </li>
               <li>
-                <strong>Payment information:</strong> Subscription payments are processed by Razorpay. We do
-                not store full card numbers on our servers; we may retain billing-related information (e.g.,
-                transaction IDs, plan type) as needed for accounting and support.
+                <strong>Payment information:</strong> Subscription payments are processed by third-party payment
+                providers. We do not store full card numbers on our servers; we may retain billing-related
+                information (e.g., transaction IDs, plan type) as needed for accounting and support.
               </li>
               <li>
                 <strong>Usage data:</strong> We collect information about how you use the service, including
@@ -66,7 +65,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">2. How We Use Your Information</h2>
+            <h2 className="text-xl font-semibold mb-3">How We Use Your Information</h2>
             <p className="text-zinc-300 leading-relaxed mb-2">We use the information we collect to:</p>
             <ul className="list-disc pl-6 text-zinc-300 space-y-1">
               <li>Provide, maintain, and improve our services.</li>
@@ -79,7 +78,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">3. Sharing of Information</h2>
+            <h2 className="text-xl font-semibold mb-3">Sharing of Information</h2>
             <p className="text-zinc-300 leading-relaxed mb-2">
               We do not sell your personal information. We may share your information with:
             </p>
@@ -96,7 +95,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">4. Data Retention</h2>
+            <h2 className="text-xl font-semibold mb-3">Data Retention</h2>
             <p className="text-zinc-300 leading-relaxed">
               We retain your account and usage data for as long as your account is active and as needed to
               provide the service, resolve disputes, enforce agreements, and comply with legal obligations.
@@ -105,19 +104,16 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">5. Your Rights</h2>
+            <h2 className="text-xl font-semibold mb-3">Your Rights</h2>
             <p className="text-zinc-300 leading-relaxed">
               Depending on your location, you may have the right to access, correct, or delete your personal
               data, object to or restrict certain processing, and data portability. To exercise these rights
-              or ask questions, contact us at{" "}
-              <a href="mailto:officialnataktv@gmail.com" className="text-accent hover:underline">
-                officialnataktv@gmail.com
-              </a>.
+              or ask questions, contact us using the support details in the app or on our website.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">6. Children&apos;s Privacy</h2>
+            <h2 className="text-xl font-semibold mb-3">Children&apos;s Privacy</h2>
             <p className="text-zinc-300 leading-relaxed">
               We do not knowingly collect personal information from children under 13 (or the applicable age
               of digital consent) without verified parental consent. See our{" "}
@@ -127,7 +123,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">7. Security</h2>
+            <h2 className="text-xl font-semibold mb-3">Security</h2>
             <p className="text-zinc-300 leading-relaxed">
               We implement appropriate technical and organizational measures to protect your personal
               information against unauthorized access, alteration, disclosure, or destruction.
@@ -135,7 +131,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">8. Changes to This Policy</h2>
+            <h2 className="text-xl font-semibold mb-3">Changes to This Policy</h2>
             <p className="text-zinc-300 leading-relaxed">
               We may update this Privacy Policy from time to time. We will indicate the &quot;Last
               updated&quot; date and, where required, notify you of material changes. Continued use of the
@@ -144,16 +140,10 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">9. Contact</h2>
+            <h2 className="text-xl font-semibold mb-3">Contact</h2>
             <p className="text-zinc-300 leading-relaxed">
-              For privacy-related questions or requests, contact us at:{" "}
-              <a href="mailto:officialnataktv@gmail.com" className="text-accent hover:underline">
-                officialnataktv@gmail.com
-              </a>
-            </p>
-            <p className="text-zinc-300 leading-relaxed mt-2">
-              INDIDINO VENTURES PRIVATE LIMITED<br />
-              Bengaluru, Karnataka, India
+              For privacy-related questions or requests, please use the support contact details provided
+              in the app or on our website.
             </p>
           </section>
         </div>
