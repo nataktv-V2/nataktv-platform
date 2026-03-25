@@ -62,9 +62,21 @@ export function VideoWithEpisodes({
     if (seekFnRef.current) {
       seekFnRef.current(startTime);
     }
-    // Update URL without reload
     window.history.replaceState(null, "", `/video/${videoId}?startAt=${startTime}&ep=${episodeNumber}`);
   }, [videoId]);
+
+  // Auto-detect current episode based on playback time
+  const handleTimeUpdate = useCallback((absoluteSeconds: number) => {
+    if (episodes.length === 0) return;
+    for (let i = episodes.length - 1; i >= 0; i--) {
+      if (absoluteSeconds >= episodes[i].startTime) {
+        if (episodes[i].episodeNumber !== currentEpisode) {
+          setCurrentEpisode(episodes[i].episodeNumber);
+        }
+        return;
+      }
+    }
+  }, [episodes, currentEpisode]);
 
   return (
     <>
@@ -78,6 +90,7 @@ export function VideoWithEpisodes({
           startAt={startAt}
           onEnded={handleEnded}
           seekRef={seekFnRef}
+          onTimeUpdate={episodes.length > 0 ? handleTimeUpdate : undefined}
         />
 
         {/* Auto-play countdown overlay */}
@@ -118,7 +131,7 @@ export function VideoWithEpisodes({
         )}
       </div>
 
-      {/* Episode Navigation — inside same client component so seekRef works */}
+      {/* Episode Navigation */}
       {episodes.length > 0 && (
         <div className="px-4 pb-4">
           <EpisodeNav

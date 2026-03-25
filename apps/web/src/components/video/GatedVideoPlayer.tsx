@@ -12,12 +12,13 @@ type Props = {
   startAt?: number;
   onEnded?: () => void;
   seekRef?: React.MutableRefObject<((seconds: number) => void) | null>;
+  onTimeUpdate?: (absoluteSeconds: number) => void;
 };
 
-export function GatedVideoPlayer({ youtubeId, title, videoId, creditStart, reelStart, startAt, onEnded, seekRef }: Props) {
+export function GatedVideoPlayer({ youtubeId, title, videoId, creditStart, reelStart, startAt, onEnded, seekRef, onTimeUpdate }: Props) {
   return (
     <SubscriptionGate>
-      <VideoPlayer youtubeId={youtubeId} title={title} videoId={videoId} creditStart={creditStart} reelStart={reelStart} startAt={startAt} onEnded={onEnded} seekRef={seekRef} />
+      <VideoPlayer youtubeId={youtubeId} title={title} videoId={videoId} creditStart={creditStart} reelStart={reelStart} startAt={startAt} onEnded={onEnded} seekRef={seekRef} onTimeUpdate={onTimeUpdate} />
     </SubscriptionGate>
   );
 }

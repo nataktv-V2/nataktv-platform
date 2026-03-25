@@ -12,6 +12,7 @@ type VideoPlayerProps = {
   startAt?: number;
   onEnded?: () => void;
   seekRef?: React.MutableRefObject<((seconds: number) => void) | null>;
+  onTimeUpdate?: (absoluteSeconds: number) => void;
 };
 
 declare global {
@@ -50,7 +51,7 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart, startAt, onEnded, seekRef }: VideoPlayerProps) {
+export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart, startAt, onEnded, seekRef, onTimeUpdate }: VideoPlayerProps) {
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -194,6 +195,8 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart,
         const time = playerRef.current.getCurrentTime();
         // Show time relative to reelStart
         setCurrentTime(time - effectiveStart);
+        // Report absolute time to parent for episode tracking
+        onTimeUpdate?.(time);
         // Auto-pause at creditStart
         if (creditStart != null && creditStart > 0 && time >= creditStart) {
           playerRef.current.pauseVideo();
