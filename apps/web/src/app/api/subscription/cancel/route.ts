@@ -35,7 +35,17 @@ export async function POST(req: NextRequest) {
 
     // Cancel on Razorpay (at end of current billing cycle)
     if (subscription.razorpaySubscriptionId) {
-      await cancelSubscription(subscription.razorpaySubscriptionId, true);
+      try {
+        await cancelSubscription(subscription.razorpaySubscriptionId, true);
+      } catch (rzpError: unknown) {
+        // Razorpay rejects cancel if no billing cycle has started (e.g. during trial)
+        // In that case, we still cancel locally
+        const msg = rzpError instanceof Error ? rzpError.message : String(rzpError);
+        if (!msg.includes("no billing cycle")) {
+          throw rzpError; // Re-throw if it's a different error
+        }
+        console.log("Razorpay cancel skipped (no billing cycle yet), cancelling locally");
+      }
     }
 
     // Update local DB
