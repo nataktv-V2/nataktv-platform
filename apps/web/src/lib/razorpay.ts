@@ -57,6 +57,23 @@ export async function createSubscription(planId: string, customerEmail: string, 
   });
 }
 
+export async function createSubscriptionNoTrial(planId: string, customerEmail: string, customerName: string) {
+  // Direct ₹199/month — no trial, starts immediately
+  return razorpayFetch("/subscriptions", {
+    method: "POST",
+    body: JSON.stringify({
+      plan_id: planId,
+      total_count: 120,
+      quantity: 1,
+      customer_notify: 0,
+      notes: {
+        email: customerEmail,
+        name: customerName,
+      },
+    }),
+  });
+}
+
 export async function fetchSubscription(subscriptionId: string) {
   return razorpayFetch(`/subscriptions/${subscriptionId}`);
 }

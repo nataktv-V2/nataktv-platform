@@ -76,7 +76,7 @@ export function RazorpayCheckout({
         key: data.keyId,
         subscription_id: data.subscriptionId,
         name: "Natak TV",
-        description: "Monthly Subscription - ₹2 Trial",
+        description: data.hadTrialBefore ? "Monthly Subscription - ₹199/month" : "Monthly Subscription - ₹2 Trial",
         image: "/logo.png",
         prefill: {
           email: user.email || "",
