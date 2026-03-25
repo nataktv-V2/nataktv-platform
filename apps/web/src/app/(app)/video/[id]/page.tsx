@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { VideoPageClient } from "@/components/video/VideoPageClient";
+import { VideoWithEpisodes } from "@/components/video/VideoWithEpisodes";
 import { ShareButton } from "@/components/video/ShareButton";
 import { FavouriteButton } from "@/components/video/FavouriteButton";
 import { VideoCard } from "@/components/video/VideoCard";
-import { EpisodeNav } from "@/components/video/EpisodeNav";
 import Link from "next/link";
 
 type Props = {
@@ -64,8 +63,8 @@ export default async function VideoPage({ params, searchParams }: Props) {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Player */}
-      <VideoPageClient
+      {/* Player + Episode Nav */}
+      <VideoWithEpisodes
         youtubeId={video.youtubeId}
         title={video.title}
         videoId={video.id}
@@ -82,6 +81,13 @@ export default async function VideoPage({ params, searchParams }: Props) {
               }
             : null
         }
+        episodes={episodes.map((ep) => ({
+          id: ep.id,
+          episodeNumber: ep.episodeNumber!,
+          startTime: ep.startTime,
+          endTime: ep.endTime,
+        }))}
+        initialEpisode={currentEpisode}
       />
 
       {/* Video Info */}
@@ -113,22 +119,6 @@ export default async function VideoPage({ params, searchParams }: Props) {
           <p className="text-text-muted text-sm">{video.description}</p>
         )}
       </div>
-
-      {/* Episode Navigation */}
-      {episodes.length > 0 && (
-        <div className="px-4 pb-4">
-          <EpisodeNav
-            videoId={video.id}
-            episodes={episodes.map((ep) => ({
-              id: ep.id,
-              episodeNumber: ep.episodeNumber!,
-              startTime: ep.startTime,
-              endTime: ep.endTime,
-            }))}
-            currentEpisode={currentEpisode}
-          />
-        </div>
-      )}
 
       {/* Related Videos */}
       {related.length > 0 && (

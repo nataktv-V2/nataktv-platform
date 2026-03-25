@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { GatedVideoPlayer } from "./GatedVideoPlayer";
@@ -34,6 +34,7 @@ export function VideoPageClient({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [countdown, setCountdown] = useState<number | null>(null);
+  const seekFnRef = useRef<((seconds: number) => void) | null>(null);
 
   // Resume from ?t=<seconds> or ?startAt=<seconds> query param, or prop
   const startAt = startAtProp
@@ -43,6 +44,13 @@ export function VideoPageClient({
   const handleEnded = () => {
     if (nextVideo) setCountdown(5);
   };
+
+  // Exposed to EpisodeNav — seeks video to absolute time
+  const handleEpisodeSeek = useCallback((startTime: number) => {
+    if (seekFnRef.current) {
+      seekFnRef.current(startTime);
+    }
+  }, []);
 
   useEffect(() => {
     if (countdown === null) return;
@@ -64,6 +72,7 @@ export function VideoPageClient({
         reelStart={reelStart}
         startAt={startAt}
         onEnded={handleEnded}
+        seekRef={seekFnRef}
       />
 
       {/* Auto-play countdown overlay */}
@@ -107,3 +116,6 @@ export function VideoPageClient({
     </div>
   );
 }
+
+// Re-export the seek handler type for the server page to use
+export type EpisodeSeekHandler = (startTime: number) => void;

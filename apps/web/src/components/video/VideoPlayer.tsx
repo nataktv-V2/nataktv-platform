@@ -11,6 +11,7 @@ type VideoPlayerProps = {
   reelStart?: number;
   startAt?: number;
   onEnded?: () => void;
+  seekRef?: React.MutableRefObject<((seconds: number) => void) | null>;
 };
 
 declare global {
@@ -49,7 +50,7 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart, startAt, onEnded }: VideoPlayerProps) {
+export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart, startAt, onEnded, seekRef }: VideoPlayerProps) {
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -64,6 +65,23 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart,
   const hasResumedRef = useRef(false);
   const viewTrackedRef = useRef(false);
   const watchSecondsRef = useRef(0);
+
+  // Expose seekTo function to parent via ref
+  useEffect(() => {
+    if (seekRef) {
+      seekRef.current = (absoluteSeconds: number) => {
+        if (playerRef.current) {
+          playerRef.current.seekTo(absoluteSeconds, true);
+          playerRef.current.playVideo();
+          const effectiveStart = reelStart || 0;
+          setCurrentTime(absoluteSeconds - effectiveStart);
+        }
+      };
+    }
+    return () => {
+      if (seekRef) seekRef.current = null;
+    };
+  }, [seekRef, reelStart]);
 
   // Save current playback progress to the API
   const saveProgress = useCallback(() => {
