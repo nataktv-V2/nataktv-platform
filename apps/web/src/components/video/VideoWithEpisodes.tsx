@@ -69,14 +69,13 @@ export function VideoWithEpisodes({
   const handleTimeUpdate = useCallback((absoluteSeconds: number) => {
     if (episodes.length === 0) return;
     for (let i = episodes.length - 1; i >= 0; i--) {
-      if (absoluteSeconds >= episodes[i].startTime) {
-        if (episodes[i].episodeNumber !== currentEpisode) {
-          setCurrentEpisode(episodes[i].episodeNumber);
-        }
+      const ep = episodes[i];
+      if (ep && absoluteSeconds >= ep.startTime) {
+        setCurrentEpisode((prev) => prev === ep.episodeNumber ? prev : ep.episodeNumber);
         return;
       }
     }
-  }, [episodes, currentEpisode]);
+  }, [episodes]);
 
   return (
     <>
