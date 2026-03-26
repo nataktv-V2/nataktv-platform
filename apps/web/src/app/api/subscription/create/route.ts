@@ -31,10 +31,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Check if user already has an active subscription
-    if (user.subscriptions.length > 0) {
+    // Clean up stale PENDING subs older than 10 minutes (abandoned checkouts)
+    await prisma.subscription.deleteMany({
+      where: {
+        userId: user.id,
+        status: "PENDING",
+        createdAt: { lt: new Date(Date.now() - 10 * 60 * 1000) },
+      },
+    });
+
+    // Re-check after cleanup — only block on TRIAL or ACTIVE
+    const activeSub = await prisma.subscription.findFirst({
+      where: {
+        userId: user.id,
+        status: { in: ["TRIAL", "ACTIVE"] },
+      },
+    });
+
+    if (activeSub) {
       return NextResponse.json(
-        { error: "Already subscribed", subscription: user.subscriptions[0] },
+        { error: "Already subscribed", subscription: activeSub },
         { status: 409 }
       );
     }
@@ -47,9 +63,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if user has EVER had a subscription (any status) — no trial loop
+    // Check if user has EVER had a real subscription (not PENDING) — no trial loop
     const pastSubscription = await prisma.subscription.findFirst({
-      where: { userId: user.id },
+      where: { userId: user.id, status: { not: "PENDING" } },
     });
     const hadTrialBefore = !!pastSubscription;
 
