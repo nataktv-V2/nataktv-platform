@@ -10,6 +10,8 @@ import {
 import {
   onAuthStateChanged,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut as firebaseSignOut,
   type User as FirebaseUser,
 } from "firebase/auth";
@@ -83,12 +85,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, []);
 
+  // Handle redirect result on page load
+  useEffect(() => {
+    getRedirectResult(auth).catch(() => {});
+  }, []);
+
   const signInWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      // Use redirect on mobile (more reliable), popup on desktop
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        await signInWithRedirect(auth, googleProvider);
+      } else {
+        await signInWithPopup(auth, googleProvider);
+      }
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code;
-      // Silently ignore user-cancelled popups
       if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return;
       console.error("Google sign-in error:", err);
     }
