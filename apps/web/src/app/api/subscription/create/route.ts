@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       where: { firebaseUid: uid },
       include: {
         subscriptions: {
-          where: { status: { in: ["TRIAL", "ACTIVE"] } },
+          where: { status: { in: ["PENDING", "TRIAL", "ACTIVE"] } },
           orderBy: { createdAt: "desc" },
           take: 1,
         },
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
         userId: user.id,
         razorpaySubscriptionId: rzpSubscription.id,
         razorpayPlanId: planId,
-        status: hadTrialBefore ? "ACTIVE" : "TRIAL",
+        status: "PENDING",
         trialStart: hadTrialBefore ? null : new Date(),
         trialEnd: hadTrialBefore ? null : new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
         amountPaise: 19900,

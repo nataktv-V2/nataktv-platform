@@ -110,6 +110,7 @@ model Subscription {
 }
 
 enum SubscriptionStatus {
+  PENDING
   TRIAL
   ACTIVE
   PAST_DUE
