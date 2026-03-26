@@ -147,7 +147,7 @@ export default function SubscribePage() {
               animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
             }}
           >
-            {checkingTrial ? "Loading..." : showTrial ? "Start ₹2 Trial →" : "Subscribe — ₹199/month →"}
+            {checkingTrial ? "Loading..." : showTrial ? "Start ₹2 Trial →" : "Subscribe Now →"}
           </RazorpayCheckout>
         ) : (
           <button
