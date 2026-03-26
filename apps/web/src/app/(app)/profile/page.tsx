@@ -6,12 +6,23 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { RazorpayCheckout } from "@/components/subscription/RazorpayCheckout";
 
 export default function ProfilePage() {
   const { user, loading, signInWithGoogle, signOut } = useAuth();
   const { status, isSubscribed, loading: subLoading } = useSubscription();
   const [cancelling, setCancelling] = useState(false);
+  const [hadTrialBefore, setHadTrialBefore] = useState(false);
   const router = useRouter();
+
+  // Check if user already used trial
+  useEffect(() => {
+    if (!user?.uid) return;
+    fetch(`/api/subscription/check-trial?uid=${user.uid}`)
+      .then((r) => r.json())
+      .then((data) => setHadTrialBefore(data.hadTrial))
+      .catch(() => {});
+  }, [user?.uid]);
 
   // Redirect to /home after login
   useEffect(() => {
@@ -272,19 +283,36 @@ export default function ProfilePage() {
         ) : (
           <>
             <p className="text-zinc-400 text-sm mb-4">
-              Subscribe to unlock all content. Start with a ₹2 trial.
+              {hadTrialBefore
+                ? "Subscribe to continue watching all content."
+                : "Subscribe to unlock all content. Start with a ₹2 trial."}
             </p>
-            <Link
-              href="/subscribe"
-              className="block text-center text-white py-2.5 rounded-lg font-semibold text-sm"
-              style={{
-                background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
-                backgroundSize: "200% 100%",
-                animation: "shimmer 3s linear infinite",
-              }}
-            >
-              Subscribe Now ✨
-            </Link>
+            {hadTrialBefore ? (
+              <RazorpayCheckout
+                onSuccess={() => router.push("/home")}
+                onError={() => {}}
+                className="w-full text-center text-white py-2.5 rounded-lg font-semibold text-sm"
+                style={{
+                  background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer 3s linear infinite",
+                }}
+              >
+                Subscribe Now ✨
+              </RazorpayCheckout>
+            ) : (
+              <Link
+                href="/subscribe"
+                className="block text-center text-white py-2.5 rounded-lg font-semibold text-sm"
+                style={{
+                  background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer 3s linear infinite",
+                }}
+              >
+                Subscribe Now ✨
+              </Link>
+            )}
           </>
         )}
       </div>
