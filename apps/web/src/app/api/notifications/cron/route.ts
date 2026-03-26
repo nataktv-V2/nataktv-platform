@@ -34,13 +34,22 @@ export async function GET(req: NextRequest) {
     const body = template.body.replace("{video}", randomVideo.title);
     const url = `/video/${randomVideo.id}`;
 
-    // Get all users with FCM tokens
-    const users = await prisma.user.findMany({
-      where: { fcmToken: { not: null } },
-      select: { fcmToken: true },
-    });
-
-    const tokens = users.map((u) => u.fcmToken).filter((t): t is string => !!t);
+    // Get users with FCM tokens in batches of 1000
+    const tokens: string[] = [];
+    let skip = 0;
+    const BATCH_SIZE = 1000;
+    while (true) {
+      const batch = await prisma.user.findMany({
+        where: { fcmToken: { not: null } },
+        select: { fcmToken: true },
+        take: BATCH_SIZE,
+        skip,
+      });
+      if (batch.length === 0) break;
+      tokens.push(...batch.map((u) => u.fcmToken).filter((t): t is string => !!t));
+      if (batch.length < BATCH_SIZE) break;
+      skip += BATCH_SIZE;
+    }
 
     if (tokens.length === 0) {
       return NextResponse.json({ sent: 0, message: "No FCM tokens registered" });

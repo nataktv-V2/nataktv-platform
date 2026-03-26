@@ -1,29 +1,52 @@
 /**
- * Simple in-memory rate limiter using a sliding window.
- * Works without Redis — suitable for single-instance deployments.
+ * Redis-backed rate limiter using sliding window.
+ * Falls back to in-memory if Redis is unavailable.
  */
 
-type RateLimitEntry = { count: number; resetAt: number };
+import { getRedis } from "./redis";
 
-const store = new Map<string, RateLimitEntry>();
+const memoryStore = new Map<string, { count: number; resetAt: number }>();
 
-// Clean up expired entries every 60s
+// Clean up expired memory entries every 60s
 setInterval(() => {
   const now = Date.now();
-  for (const [key, entry] of store) {
-    if (entry.resetAt < now) store.delete(key);
+  for (const [key, entry] of memoryStore) {
+    if (entry.resetAt < now) memoryStore.delete(key);
   }
 }, 60_000);
 
+export async function rateLimitAsync(
+  key: string,
+  { limit, windowMs }: { limit: number; windowMs: number }
+): Promise<{ success: boolean; remaining: number }> {
+  const redis = getRedis();
+  if (redis) {
+    try {
+      const redisKey = `rl:${key}`;
+      const windowSec = Math.ceil(windowMs / 1000);
+      const count = await redis.incr(redisKey);
+      if (count === 1) await redis.expire(redisKey, windowSec);
+      if (count > limit) return { success: false, remaining: 0 };
+      return { success: true, remaining: limit - count };
+    } catch {
+      // Redis failed, fall through to memory
+    }
+  }
+  return rateLimit(key, { limit, windowMs });
+}
+
+/**
+ * Synchronous in-memory rate limiter (fallback).
+ */
 export function rateLimit(
   key: string,
   { limit, windowMs }: { limit: number; windowMs: number }
 ): { success: boolean; remaining: number } {
   const now = Date.now();
-  const entry = store.get(key);
+  const entry = memoryStore.get(key);
 
   if (!entry || entry.resetAt < now) {
-    store.set(key, { count: 1, resetAt: now + windowMs });
+    memoryStore.set(key, { count: 1, resetAt: now + windowMs });
     return { success: true, remaining: limit - 1 };
   }
 

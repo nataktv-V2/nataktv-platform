@@ -210,10 +210,10 @@ export function VideoPlayer({ youtubeId, title, videoId, creditStart, reelStart,
     return () => clearInterval(interval);
   }, [isPlaying, creditStart, reelStart]);
 
-  // Save watch history every 15s while playing
+  // Save watch history every 30s while playing
   useEffect(() => {
     if (!user?.uid || !videoId || !isPlaying) return;
-    const interval = setInterval(() => saveProgress(), 15000);
+    const interval = setInterval(() => saveProgress(), 30000);
     return () => clearInterval(interval);
   }, [user?.uid, videoId, isPlaying, saveProgress]);
 

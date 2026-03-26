@@ -41,10 +41,11 @@ export async function POST(req: NextRequest) {
           });
 
           if (paymentId) {
-            await prisma.payment.upsert({
-              where: { razorpayPaymentId: paymentId },
-              update: { status: "captured", amountPaise: amount || 19900 },
-              create: {
+            // Idempotency: skip if payment already recorded
+            const existing = await prisma.payment.findUnique({ where: { razorpayPaymentId: paymentId } });
+            if (!existing) {
+            await prisma.payment.create({
+              data: {
                 subscriptionId: (
                   await prisma.subscription.findUnique({
                     where: { razorpaySubscriptionId: rzpSubId },
@@ -57,6 +58,7 @@ export async function POST(req: NextRequest) {
                 paidAt: new Date(),
               },
             });
+            }
           }
         }
         break;

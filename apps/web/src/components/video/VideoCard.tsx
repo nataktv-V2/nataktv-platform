@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -21,7 +22,7 @@ function formatDuration(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function VideoCard({ id, title, thumbnailUrl, generatedThumbnailUrl, duration, language, fullWidth, createdAt }: VideoCardProps) {
+export const VideoCard = memo(function VideoCard({ id, title, thumbnailUrl, generatedThumbnailUrl, duration, language, fullWidth, createdAt }: VideoCardProps) {
   const isNew = createdAt ? (Date.now() - new Date(createdAt).getTime()) < 7 * 24 * 60 * 60 * 1000 : false;
 
   return (
@@ -64,4 +65,4 @@ export function VideoCard({ id, title, thumbnailUrl, generatedThumbnailUrl, dura
       </div>
     </Link>
   );
-}
+});

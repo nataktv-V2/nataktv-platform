@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
+import { cached } from "@/lib/redis";
 import { VideoRow } from "@/components/video/VideoRow";
 import { VideoCard } from "@/components/video/VideoCard";
 import { ContinueWatching } from "@/components/video/ContinueWatching";
@@ -27,6 +28,11 @@ type LanguageWithVideos = { id: string; name: string; videos: VideoWithRelations
 type CategoryWithVideos = { id: string; name: string; videos: VideoWithRelations[] };
 
 async function getHomeData(tag?: string) {
+  const cacheKey = `home:${tag || "all"}`;
+  return cached(cacheKey, 300, () => getHomeDataFresh(tag));
+}
+
+async function getHomeDataFresh(tag?: string) {
   try {
     // Build filter based on tag
     const tagFilter = tag

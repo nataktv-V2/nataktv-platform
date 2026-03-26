@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
           },
         },
         orderBy: { sortOrder: "asc" },
+        take: 200,
       });
 
       // Get videos that have no clips (standalone reels)
@@ -34,6 +35,7 @@ export async function GET(req: NextRequest) {
           : {},
         include: { language: true, category: true },
         orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+        take: 100,
       });
 
       // Unified feed items

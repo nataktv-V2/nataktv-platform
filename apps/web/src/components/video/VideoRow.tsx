@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { VideoCard } from "./VideoCard";
 
 type Video = {
@@ -16,7 +17,7 @@ type VideoRowProps = {
   videos: Video[];
 };
 
-export function VideoRow({ title, videos }: VideoRowProps) {
+export const VideoRow = memo(function VideoRow({ title, videos }: VideoRowProps) {
   if (videos.length === 0) return null;
 
   return (
@@ -39,4 +40,4 @@ export function VideoRow({ title, videos }: VideoRowProps) {
       </div>
     </section>
   );
-}
+});
