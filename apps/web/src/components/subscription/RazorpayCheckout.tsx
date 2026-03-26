@@ -81,6 +81,7 @@ export function RazorpayCheckout({
         prefill: {
           email: user.email || "",
           name: user.displayName || "",
+          method: "upi",
         },
         theme: {
           color: "#f97316",
