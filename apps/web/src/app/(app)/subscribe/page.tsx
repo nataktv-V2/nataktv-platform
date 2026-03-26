@@ -4,13 +4,28 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { RazorpayCheckout } from "@/components/subscription/RazorpayCheckout";
 import { useSubscription } from "@/components/subscription/SubscriptionGate";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function SubscribePage() {
   const { user, signInWithGoogle } = useAuth();
   const { isSubscribed, status, loading } = useSubscription();
   const router = useRouter();
   const [error, setError] = useState("");
+  const [hadTrialBefore, setHadTrialBefore] = useState(false);
+  const [checkingTrial, setCheckingTrial] = useState(true);
+
+  // Check if user already used trial
+  useEffect(() => {
+    if (!user?.uid) {
+      setCheckingTrial(false);
+      return;
+    }
+    fetch(`/api/subscription/check-trial?uid=${user.uid}`)
+      .then((r) => r.json())
+      .then((data) => setHadTrialBefore(data.hadTrial))
+      .catch(() => {})
+      .finally(() => setCheckingTrial(false));
+  }, [user?.uid]);
 
   // Already subscribed
   if (!loading && isSubscribed) {
@@ -42,12 +57,14 @@ export default function SubscribePage() {
     );
   }
 
+  const showTrial = !hadTrialBefore;
+
   return (
     <div className="max-w-md mx-auto px-4 py-6">
-      {/* Unlock Visual — Blurred+Locked → ₹2 Arrow → Clear+Unlocked */}
+      {/* Unlock Visual */}
       <div className="mb-6">
         <p className="text-center text-[#f97316] text-xs font-semibold tracking-widest uppercase mb-4">
-          Unlock everything
+          {showTrial ? "Unlock everything" : "Resume watching"}
         </p>
         <div className="flex items-center justify-center gap-2 sm:gap-4">
           {/* LEFT — Blurred + Locked thumbnail */}
@@ -59,9 +76,7 @@ export default function SubscribePage() {
               className="absolute inset-0 w-full h-full object-cover"
               style={{ filter: "blur(10px) saturate(0.7)", transform: "scale(1.15)" }}
             />
-            {/* Light overlay to soften */}
             <div className="absolute inset-0 bg-black/20 z-[1]" />
-            {/* Lock icon — animated wiggle */}
             <div className="absolute inset-0 flex items-center justify-center z-[2]">
               <div className="w-14 h-14 rounded-full bg-black/50 border border-white/20 flex items-center justify-center backdrop-blur-md" style={{ animation: "lock-wiggle 2s ease-in-out infinite" }}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7 text-white/80">
@@ -69,27 +84,26 @@ export default function SubscribePage() {
                 </svg>
               </div>
             </div>
-            {/* "Locked" label */}
             <div className="absolute bottom-0 left-0 right-0 py-2 text-center z-[3] bg-gradient-to-t from-black/80 to-transparent">
               <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider">Locked</span>
             </div>
           </div>
 
-          {/* CENTER — Arrow with ₹2 */}
+          {/* CENTER — Arrow with price */}
           <div className="flex flex-col items-center gap-1 flex-shrink-0 px-1">
-            {/* ₹2 badge — pulsing glow */}
             <div className="bg-[#f97316] text-white text-sm sm:text-base font-extrabold px-3 py-1.5 rounded-full whitespace-nowrap" style={{ animation: "pulse-glow 2s ease-in-out infinite" }}>
-              Just ₹2
+              {showTrial ? "Just ₹2" : "₹199/mo"}
             </div>
-            {/* Arrow — bouncing right */}
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-[#f97316]" style={{ animation: "arrow-bounce 1.2s ease-in-out infinite" }}>
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />
             </svg>
-            <span className="text-[10px] text-zinc-500 font-medium">2-day trial</span>
+            <span className="text-[10px] text-zinc-500 font-medium">
+              {showTrial ? "2-day trial" : "full access"}
+            </span>
           </div>
 
-          {/* RIGHT — Clear + Unlocked thumbnail — floating animation */}
+          {/* RIGHT — Clear + Unlocked thumbnail */}
           <div className="relative w-[140px] sm:w-[165px] flex-shrink-0 rounded-2xl overflow-hidden border-2 border-[#f97316]/40" style={{ aspectRatio: "2/3", animation: "float-up 3s ease-in-out infinite, pulse-glow 3s ease-in-out infinite" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -97,9 +111,7 @@ export default function SubscribePage() {
               alt="Unlocked content"
               className="absolute inset-0 w-full h-full object-cover"
             />
-            {/* Subtle gradient overlay at bottom */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-[1]" />
-            {/* Play icon */}
             <div className="absolute inset-0 flex items-center justify-center z-[2]">
               <div className="w-12 h-12 rounded-full bg-[#f97316]/90 flex items-center justify-center shadow-lg shadow-[#f97316]/30">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white ml-0.5">
@@ -107,16 +119,14 @@ export default function SubscribePage() {
                 </svg>
               </div>
             </div>
-            {/* "Unlocked" label */}
             <div className="absolute bottom-0 left-0 right-0 py-2 text-center z-[3] bg-gradient-to-t from-black/80 to-transparent">
               <span className="text-[10px] font-bold text-green-400 uppercase tracking-wider">Unlocked</span>
             </div>
           </div>
         </div>
 
-        {/* Subtext under visual */}
         <p className="text-center text-zinc-500 text-xs mt-3">
-          then ₹199/month · cancel anytime
+          {showTrial ? "then ₹199/month · cancel anytime" : "₹199/month · cancel anytime"}
         </p>
       </div>
 
@@ -137,7 +147,7 @@ export default function SubscribePage() {
               animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
             }}
           >
-            Start ₹2 Trial →
+            {checkingTrial ? "Loading..." : showTrial ? "Start ₹2 Trial →" : "Subscribe — ₹199/month →"}
           </RazorpayCheckout>
         ) : (
           <button
@@ -149,11 +159,10 @@ export default function SubscribePage() {
               animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
             }}
           >
-            Sign in & Start Trial →
+            Sign in to Subscribe →
           </button>
         )}
 
-        {/* Trust row under CTA */}
         <div className="flex justify-center gap-5 mt-3 text-zinc-500 text-[11px]">
           <div className="flex items-center gap-1">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-green-500">
@@ -200,8 +209,9 @@ export default function SubscribePage() {
 
       {/* Fine print */}
       <p className="text-zinc-600 text-[10px] text-center leading-relaxed">
-        ₹2 for 2-day trial, then ₹199/month. Auto-renews via Razorpay.
-        Cancel anytime from your profile. No refund for partial months.
+        {showTrial
+          ? "₹2 for 2-day trial, then ₹199/month. Auto-renews via Razorpay. Cancel anytime from your profile. No refund for partial months."
+          : "₹199/month. Auto-renews via Razorpay. Cancel anytime from your profile. No refund for partial months."}
       </p>
     </div>
   );
