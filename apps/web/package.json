@@ -16,6 +16,7 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@capacitor/app": "^6.0.3",
     "@prisma/client": "^6.6.0",
     "firebase": "^11.6.0",
     "firebase-admin": "^13.0.0",
