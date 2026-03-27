@@ -92,12 +92,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-      // Use redirect on mobile (more reliable), popup on desktop
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      if (isMobile) {
-        await signInWithRedirect(auth, googleProvider);
-      } else {
+      const isCapacitor = typeof window !== "undefined" && !!(window as unknown as { Capacitor?: unknown }).Capacitor;
+      if (isCapacitor) {
+        // Inside Capacitor WebView: always use popup (redirect opens external Chrome)
         await signInWithPopup(auth, googleProvider);
+      } else {
+        // Regular browser: redirect on mobile, popup on desktop
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          await signInWithRedirect(auth, googleProvider);
+        } else {
+          await signInWithPopup(auth, googleProvider);
+        }
       }
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code;

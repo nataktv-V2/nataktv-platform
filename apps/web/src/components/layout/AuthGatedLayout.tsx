@@ -34,7 +34,12 @@ export function AuthGatedLayout({
   const isLoginScreen = pathname === "/profile" && !user && !loading;
 
   if (isLoginScreen) {
-    return <main className="min-h-screen">{children}</main>;
+    return (
+      <>
+        <main className="min-h-screen pb-20">{children}</main>
+        {bottomNav}
+      </>
+    );
   }
 
   return (

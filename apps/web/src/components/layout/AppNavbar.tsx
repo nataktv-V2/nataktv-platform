@@ -8,7 +8,7 @@ export function AppNavbar() {
   const isSearchPage = pathname === "/search";
 
   return (
-    <header className="bg-bg-primary/90 backdrop-blur-md border-b border-border-subtle">
+    <header className="bg-bg-primary/90 backdrop-blur-md border-b border-border-subtle safe-area-top">
       <div className="flex items-center justify-between px-4 h-14 max-w-5xl mx-auto">
         <Link href="/home" className="flex items-center gap-1.5">
           <span className="text-lg font-bold">
