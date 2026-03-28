@@ -10,9 +10,10 @@ import {
 import {
   onAuthStateChanged,
   signInWithPopup,
-  signInWithRedirect,
+  signInWithCredential,
   getRedirectResult,
   signOut as firebaseSignOut,
+  GoogleAuthProvider,
   type User as FirebaseUser,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
@@ -85,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, []);
 
-  // Handle redirect result on page load
+  // Handle redirect result on page load (for any legacy redirect flows)
   useEffect(() => {
     getRedirectResult(auth).catch(() => {});
   }, []);
@@ -94,16 +95,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const isCapacitor = typeof window !== "undefined" && !!(window as unknown as { Capacitor?: unknown }).Capacitor;
       if (isCapacitor) {
-        // Inside Capacitor WebView: always use popup (redirect opens external Chrome)
-        await signInWithPopup(auth, googleProvider);
-      } else {
-        // Regular browser: redirect on mobile, popup on desktop
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        if (isMobile) {
-          await signInWithRedirect(auth, googleProvider);
-        } else {
+        // Inside Capacitor WebView: use native Google Sign-In (no Chrome opening)
+        try {
+          const { GoogleAuth } = await import("@codetrix-studio/capacitor-google-auth");
+          const result = await GoogleAuth.signIn();
+          // Use the idToken from native sign-in to authenticate with Firebase
+          const credential = GoogleAuthProvider.credential(result.authentication.idToken);
+          await signInWithCredential(auth, credential);
+        } catch (nativeErr: unknown) {
+          const msg = (nativeErr as { message?: string })?.message || "";
+          // If user cancelled native sign-in, silently ignore
+          if (msg.includes("cancel") || msg.includes("12501")) return;
+          console.error("Native Google sign-in error:", nativeErr);
+          // Fallback to popup if native fails
           await signInWithPopup(auth, googleProvider);
         }
+      } else {
+        // Regular browser: always use popup (redirect has issues with auth state loss on mobile)
+        await signInWithPopup(auth, googleProvider);
       }
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code;

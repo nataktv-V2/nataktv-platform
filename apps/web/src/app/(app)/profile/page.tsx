@@ -78,7 +78,7 @@ export default function ProfilePage() {
     };
 
     return (
-      <div className="flex flex-col h-[100dvh] overflow-hidden fixed inset-0 bg-[#0a0a0c] z-[100]">
+      <div className="flex flex-col min-h-[calc(100dvh-5rem)] overflow-hidden bg-[#0a0a0c]">
         {/* Logo + Tagline */}
         <div className="pt-14 pb-3 text-center z-10">
           <div className="flex items-center justify-center gap-1.5 mb-1.5">
