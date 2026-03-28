@@ -10,6 +10,7 @@ import {
 import {
   onAuthStateChanged,
   signInWithPopup,
+  signInWithRedirect,
   signInWithCredential,
   getRedirectResult,
   signOut as firebaseSignOut,
@@ -86,9 +87,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, []);
 
-  // Handle redirect result on page load (for any legacy redirect flows)
+  // Handle redirect result on page load (fires after signInWithRedirect returns)
   useEffect(() => {
-    getRedirectResult(auth).catch(() => {});
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          // Redirect login succeeded — onAuthStateChanged will handle the rest
+          console.log("Redirect login success:", result.user.email);
+        }
+      })
+      .catch((err) => {
+        console.error("getRedirectResult error:", err);
+      });
   }, []);
 
   const signInWithGoogle = async () => {
@@ -117,8 +127,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await signInWithPopup(auth, googleProvider);
         }
       } else {
-        // Regular browser: always use popup (redirect has issues with auth state loss on mobile)
-        await signInWithPopup(auth, googleProvider);
+        // Regular browser: try popup first, fall back to redirect if blocked
+        try {
+          await signInWithPopup(auth, googleProvider);
+        } catch (popupErr: unknown) {
+          const popupCode = (popupErr as { code?: string })?.code;
+          if (popupCode === "auth/popup-closed-by-user" || popupCode === "auth/cancelled-popup-request") return;
+          if (popupCode === "auth/popup-blocked") {
+            // Popup was blocked by browser — fall back to redirect
+            await signInWithRedirect(auth, googleProvider);
+            return;
+          }
+          throw popupErr;
+        }
       }
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code;
