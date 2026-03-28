@@ -97,11 +97,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (isCapacitor) {
         // Inside Capacitor WebView: use native Google Sign-In (no Chrome opening)
         try {
-          const { GoogleAuth } = await import("@codetrix-studio/capacitor-google-auth");
-          const result = await GoogleAuth.signIn();
-          // Use the idToken from native sign-in to authenticate with Firebase
-          const credential = GoogleAuthProvider.credential(result.authentication.idToken);
-          await signInWithCredential(auth, credential);
+          // Access GoogleAuth plugin via Capacitor's plugin bridge (avoids build-time import)
+          const cap = (window as unknown as { Capacitor?: { Plugins?: { GoogleAuth?: { signIn: () => Promise<{ authentication: { idToken: string } }> } } } }).Capacitor;
+          const googleAuth = cap?.Plugins?.GoogleAuth;
+          if (googleAuth) {
+            const result = await googleAuth.signIn();
+            const credential = GoogleAuthProvider.credential(result.authentication.idToken);
+            await signInWithCredential(auth, credential);
+          } else {
+            // GoogleAuth plugin not available, fallback to popup
+            await signInWithPopup(auth, googleProvider);
+          }
         } catch (nativeErr: unknown) {
           const msg = (nativeErr as { message?: string })?.message || "";
           // If user cancelled native sign-in, silently ignore
