@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "342635565192",
+    "project_id": "natak-tv-71b7a",
+    "storage_bucket": "natak-tv-71b7a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:342635565192:android:fbe90f9adf87ac152b0f3d",
+        "android_client_info": {
+          "package_name": "com.nataktv.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "342635565192-gqfsqdv5e6f99rqnpc5d1jgc6ldq1dt9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nataktv.app",
+            "certificate_hash": "95ea05c031a24f84de44e90798f93740cea30d51"
+          }
+        },
+        {
+          "client_id": "342635565192-umh0dt3sts5tj4grlbdau8plmf7boe71.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nataktv.app",
+            "certificate_hash": "097a327f73c187efbca60c337ec49d9bca1c6599"
+          }
+        },
+        {
+          "client_id": "342635565192-46l6ple0vs3p6mc6l5e0kkf4jvj4v53f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVHG2_97m-nMBdpivdUcav6GN-gpNWP3o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "342635565192-46l6ple0vs3p6mc6l5e0kkf4jvj4v53f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

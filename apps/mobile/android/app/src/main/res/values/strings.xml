@@ -4,4 +4,5 @@
     <string name="title_activity_main">Natak TV</string>
     <string name="package_name">com.nataktv.app</string>
     <string name="custom_url_scheme">com.nataktv.app</string>
+    <string name="server_client_id">342635565192-46l6ple0vs3p6mc6l5e0kkf4jvj4v53f.apps.googleusercontent.com</string>
 </resources>

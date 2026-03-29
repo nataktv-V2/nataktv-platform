@@ -98,10 +98,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (isCapacitor) {
         // Inside Capacitor WebView: use native Google Sign-In (no Chrome opening)
         try {
-          const cap = (window as unknown as { Capacitor?: { Plugins?: { GoogleAuth?: { signIn: () => Promise<{ authentication: { idToken: string } }> } } } }).Capacitor;
-          const googleAuth = cap?.Plugins?.GoogleAuth;
-          if (googleAuth) {
-            const result = await googleAuth.signIn();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const Capacitor = (window as any).Capacitor;
+          if (Capacitor?.Plugins?.GoogleAuth) {
+            const GoogleAuth = Capacitor.Plugins.GoogleAuth;
+            // Must initialize before signIn — creates the GoogleSignInClient on native side
+            await GoogleAuth.initialize({
+              clientId: "342635565192-46l6ple0vs3p6mc6l5e0kkf4jvj4v53f.apps.googleusercontent.com",
+              scopes: "profile email",
+              grantOfflineAccess: true,
+            });
+            const result = await GoogleAuth.signIn();
             const credential = GoogleAuthProvider.credential(result.authentication.idToken);
             await signInWithCredential(auth, credential);
           } else {
@@ -111,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const msg = (nativeErr as { message?: string })?.message || "";
           if (msg.includes("cancel") || msg.includes("12501")) return;
           console.error("Native Google sign-in error:", nativeErr);
+          // Fallback to popup if native fails
           await signInWithPopup(auth, googleProvider);
         }
       } else {
