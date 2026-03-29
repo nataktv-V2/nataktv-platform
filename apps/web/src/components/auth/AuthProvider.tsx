@@ -105,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // Must initialize before signIn — creates the GoogleSignInClient on native side
             await GoogleAuth.initialize({
               clientId: "342635565192-46l6ple0vs3p6mc6l5e0kkf4jvj4v53f.apps.googleusercontent.com",
-              scopes: "profile email",
+              scopes: "profile,email",
               grantOfflineAccess: true,
             });
             const result = await GoogleAuth.signIn();
