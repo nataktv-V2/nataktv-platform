@@ -6,11 +6,12 @@ importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
 firebase.initializeApp({
-  apiKey: "AIzaSy_YOUR_KEY",
+  apiKey: "AIzaSyDJyq9e-5bogw8ABnrvO597fng3IxF-qJQ",
   authDomain: "natak-tv-71b7a.firebaseapp.com",
   projectId: "natak-tv-71b7a",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  storageBucket: "natak-tv-71b7a.firebasestorage.app",
+  messagingSenderId: "342635565192",
+  appId: "1:342635565192:web:9cd8940d9985e8052b0f3d",
 });
 
 const messaging = firebase.messaging();
