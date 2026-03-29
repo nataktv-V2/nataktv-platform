@@ -109,17 +109,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               grantOfflineAccess: true,
             });
             const result = await GoogleAuth.signIn();
-            const credential = GoogleAuthProvider.credential(result.authentication.idToken);
-            await signInWithCredential(auth, credential);
+            console.log("Native signIn result:", JSON.stringify(result));
+            const idToken = result?.authentication?.idToken;
+            if (idToken) {
+              const credential = GoogleAuthProvider.credential(idToken);
+              await signInWithCredential(auth, credential);
+              console.log("signInWithCredential SUCCESS");
+            } else {
+              console.error("No idToken from native signIn:", JSON.stringify(result));
+              // Show error to user instead of opening Chrome
+              alert("Login failed: no token received. Please try again.");
+            }
           } else {
+            // No GoogleAuth plugin — not in Capacitor or plugin missing
             await signInWithPopup(auth, googleProvider);
           }
         } catch (nativeErr: unknown) {
-          const msg = (nativeErr as { message?: string })?.message || "";
+          const msg = String((nativeErr as { message?: string })?.message || nativeErr);
+          console.error("Native Google sign-in error:", msg);
           if (msg.includes("cancel") || msg.includes("12501")) return;
-          console.error("Native Google sign-in error:", nativeErr);
-          // Fallback to popup if native fails
-          await signInWithPopup(auth, googleProvider);
+          // Do NOT fall back to popup in Capacitor — it opens Chrome
+          alert("Login error: " + msg.substring(0, 100));
         }
       } else {
         // Regular browser: try popup first, fall back to redirect if blocked
