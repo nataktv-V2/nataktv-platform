@@ -21,16 +21,17 @@ export function isCapacitorApp(): boolean {
 
 let rcInitialized = false;
 
-async function getRC() {
-  const { Purchases } = await import("@revenuecat/purchases-capacitor");
-  return Purchases;
+function getRC() {
+  // Access via Capacitor bridge — no npm import needed in web app
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (window as CapacitorWindow).Capacitor?.Plugins?.Purchases;
 }
 
 export async function initRevenueCat(userId?: string) {
   if (!isCapacitorApp() || rcInitialized) return;
 
   try {
-    const Purchases = await getRC();
+    const Purchases = getRC();
     await Purchases.configure({
       apiKey: "test_IEClPGMteffJiuurQBBVQPQHIzg",
       appUserID: userId || undefined,
@@ -46,7 +47,7 @@ export async function loginRevenueCat(userId: string) {
   if (!isCapacitorApp()) return;
 
   try {
-    const Purchases = await getRC();
+    const Purchases = getRC();
     await Purchases.logIn({ appUserID: userId });
     console.log("[RevenueCat] Logged in:", userId);
   } catch (err) {
@@ -58,7 +59,7 @@ export async function logoutRevenueCat() {
   if (!isCapacitorApp()) return;
 
   try {
-    const Purchases = await getRC();
+    const Purchases = getRC();
     await Purchases.logOut();
     console.log("[RevenueCat] Logged out");
   } catch (err) {
@@ -81,7 +82,7 @@ export async function getTrialInfo(): Promise<TrialInfo> {
   if (!isCapacitorApp()) return { eligible: false };
 
   try {
-    const Purchases = await getRC();
+    const Purchases = getRC();
     const offerings = await Purchases.getOfferings();
     const monthly =
       offerings?.current?.monthly ||
@@ -118,7 +119,7 @@ export async function purchaseMonthly(): Promise<{ success: boolean; error?: str
   if (!isCapacitorApp()) return { success: false, error: "Not in Capacitor" };
 
   try {
-    const Purchases = await getRC();
+    const Purchases = getRC();
     const offerings = await Purchases.getOfferings();
 
     const monthly =
@@ -155,7 +156,7 @@ export async function checkEntitlement(): Promise<boolean> {
   if (!isCapacitorApp()) return false;
 
   try {
-    const Purchases = await getRC();
+    const Purchases = getRC();
     const info = await Purchases.getCustomerInfo();
     const isActive = !!info?.customerInfo?.entitlements?.active?.["Natak TV Pro"];
     console.log("[RevenueCat] Entitlement active:", isActive);
@@ -170,7 +171,7 @@ export async function restorePurchases(): Promise<boolean> {
   if (!isCapacitorApp()) return false;
 
   try {
-    const Purchases = await getRC();
+    const Purchases = getRC();
     const info = await Purchases.restorePurchases();
     return !!info?.customerInfo?.entitlements?.active?.["Natak TV Pro"];
   } catch (err) {

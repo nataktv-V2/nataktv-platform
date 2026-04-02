@@ -1,24 +1,33 @@
 /**
  * Push notification registration for Capacitor Android app.
- * Requests permission, gets FCM token, and registers it with our server.
+ * Uses window.Capacitor.Plugins directly — no npm import needed.
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type CapacitorWindow = Window & { Capacitor?: any };
+type AnyWindow = Window & { Capacitor?: any };
 
 function isCapacitor(): boolean {
   return (
     typeof window !== "undefined" &&
-    !!(window as CapacitorWindow).Capacitor?.isNativePlatform?.()
+    !!(window as AnyWindow).Capacitor?.isNativePlatform?.()
   );
+}
+
+function getPushPlugin() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (window as AnyWindow).Capacitor?.Plugins?.PushNotifications;
 }
 
 export async function registerPushNotifications(uid: string) {
   if (!isCapacitor()) return;
 
-  try {
-    const { PushNotifications } = await import("@capacitor/push-notifications");
+  const PushNotifications = getPushPlugin();
+  if (!PushNotifications) {
+    console.log("[Push] PushNotifications plugin not available");
+    return;
+  }
 
+  try {
     // Request permission
     const permResult = await PushNotifications.requestPermissions();
     if (permResult.receive !== "granted") {
@@ -30,9 +39,8 @@ export async function registerPushNotifications(uid: string) {
     await PushNotifications.register();
 
     // Listen for token
-    PushNotifications.addListener("registration", async (token) => {
+    PushNotifications.addListener("registration", async (token: { value: string }) => {
       console.log("[Push] FCM token:", token.value);
-      // Send token to our server
       try {
         await fetch("/api/notifications/register", {
           method: "POST",
@@ -46,19 +54,19 @@ export async function registerPushNotifications(uid: string) {
     });
 
     // Listen for registration errors
-    PushNotifications.addListener("registrationError", (error) => {
+    PushNotifications.addListener("registrationError", (error: unknown) => {
       console.error("[Push] Registration error:", error);
     });
 
     // Listen for incoming notifications (foreground)
-    PushNotifications.addListener("pushNotificationReceived", (notification) => {
+    PushNotifications.addListener("pushNotificationReceived", (notification: unknown) => {
       console.log("[Push] Received in foreground:", notification);
-      // Could show an in-app toast/banner here
     });
 
-    // Listen for notification taps (user clicked notification)
-    PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
-      const url = action.notification?.data?.url;
+    // Listen for notification taps
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    PushNotifications.addListener("pushNotificationActionPerformed", (action: any) => {
+      const url = action?.notification?.data?.url;
       if (url && typeof window !== "undefined") {
         window.location.href = url;
       }
