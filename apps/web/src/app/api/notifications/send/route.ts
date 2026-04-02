@@ -127,16 +127,21 @@ export async function POST(req: NextRequest) {
  */
 async function getAccessToken(): Promise<string | null> {
   try {
-    let serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+    let serviceAccountKey: string | undefined;
 
-    // Fallback: read from file if env var is not set
-    if (!serviceAccountKey) {
-      try {
-        const fs = await import("fs");
-        const path = await import("path");
-        const filePath = path.join(process.cwd(), "firebase-sa.json");
+    // Try reading from file first (most reliable)
+    try {
+      const fs = await import("fs");
+      const path = await import("path");
+      const filePath = path.join(process.cwd(), "firebase-sa.json");
+      if (fs.existsSync(filePath)) {
         serviceAccountKey = fs.readFileSync(filePath, "utf-8");
-      } catch { /* file not found */ }
+      }
+    } catch { /* file not found */ }
+
+    // Fallback to env var
+    if (!serviceAccountKey) {
+      serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
     }
 
     if (!serviceAccountKey) return null;
