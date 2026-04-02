@@ -156,7 +156,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Bottom Section — Google Button RIGHT after animation, then benefits, then legal */}
-        <div className="px-6 pb-8 pt-4 text-center z-10 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/95 to-transparent">
+        <div className="px-6 pb-24 pt-4 text-center z-10 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/95 to-transparent">
           {/* Google Sign-In Button — prominent, right after posters */}
           <button
             onClick={handleLogin}

@@ -153,6 +153,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    // Also sign out of native Google Auth so account picker shows next login
+    try {
+      const isCapacitor = typeof window !== "undefined" && !!(window as unknown as { Capacitor?: unknown }).Capacitor;
+      if (isCapacitor) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const GoogleAuth = (window as any).Capacitor?.Plugins?.GoogleAuth;
+        if (GoogleAuth) await GoogleAuth.signOut();
+      }
+    } catch (_) { /* ignore */ }
     await firebaseSignOut(auth);
   };
 
