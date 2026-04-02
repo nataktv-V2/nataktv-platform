@@ -3,6 +3,7 @@
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { isCapacitorApp, checkEntitlement } from "@/lib/revenuecat";
 
 type SubscriptionGateProps = {
   children: React.ReactNode;
@@ -28,16 +29,33 @@ export function useSubscription() {
       return;
     }
 
-    fetch(`/api/subscription/status?uid=${user.uid}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setStatus(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setStatus(null);
-        setLoading(false);
+    // In Capacitor, also check RevenueCat entitlement
+    if (isCapacitorApp()) {
+      checkEntitlement().then((active) => {
+        if (active) {
+          setStatus({ subscribed: true, status: "ACTIVE" });
+          setLoading(false);
+          return;
+        }
+        // Fall through to server check
+        fetchServerStatus();
       });
+    } else {
+      fetchServerStatus();
+    }
+
+    function fetchServerStatus() {
+      fetch(`/api/subscription/status?uid=${user.uid}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setStatus(data);
+          setLoading(false);
+        })
+        .catch(() => {
+          setStatus(null);
+          setLoading(false);
+        });
+    }
   }, [user?.uid]);
 
   return { status, loading, isSubscribed: status?.subscribed === true };

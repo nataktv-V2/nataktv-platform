@@ -5,6 +5,7 @@ import { RazorpayCheckout } from "@/components/subscription/RazorpayCheckout";
 import { useSubscription } from "@/components/subscription/SubscriptionGate";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { isCapacitorApp, purchaseMonthly, getTrialInfo, type TrialInfo } from "@/lib/revenuecat";
 
 export default function SubscribePage() {
   const { user, signInWithGoogle } = useAuth();
@@ -13,18 +14,33 @@ export default function SubscribePage() {
   const [error, setError] = useState("");
   const [hadTrialBefore, setHadTrialBefore] = useState(false);
   const [checkingTrial, setCheckingTrial] = useState(true);
+  const [rcTrialInfo, setRcTrialInfo] = useState<TrialInfo | null>(null);
+  const [purchasing, setPurchasing] = useState(false);
 
-  // Check if user already used trial
+  // Check trial eligibility
   useEffect(() => {
     if (!user?.uid) {
       setCheckingTrial(false);
       return;
     }
-    fetch(`/api/subscription/check-trial?uid=${user.uid}`)
-      .then((r) => r.json())
-      .then((data) => setHadTrialBefore(data.hadTrial))
-      .catch(() => {})
-      .finally(() => setCheckingTrial(false));
+
+    if (isCapacitorApp()) {
+      // RevenueCat handles trial eligibility via Google Play
+      getTrialInfo()
+        .then((info) => {
+          setRcTrialInfo(info);
+          setHadTrialBefore(!info.eligible);
+        })
+        .catch(() => {})
+        .finally(() => setCheckingTrial(false));
+    } else {
+      // Browser: check via server API (Razorpay flow)
+      fetch(`/api/subscription/check-trial?uid=${user.uid}`)
+        .then((r) => r.json())
+        .then((data) => setHadTrialBefore(data.hadTrial))
+        .catch(() => {})
+        .finally(() => setCheckingTrial(false));
+    }
   }, [user?.uid]);
 
   // Already subscribed
@@ -137,18 +153,51 @@ export default function SubscribePage() {
         )}
 
         {user ? (
-          <RazorpayCheckout
-            onSuccess={() => router.push("/home")}
-            onError={(err) => setError(err)}
-            className="w-full text-white py-4 rounded-2xl font-bold text-lg transition-colors"
-            style={{
-              background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
-              backgroundSize: "200% 100%",
-              animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
-            }}
-          >
-            {checkingTrial ? "Loading..." : showTrial ? "Start ₹2 Trial →" : "Subscribe Now →"}
-          </RazorpayCheckout>
+          isCapacitorApp() ? (
+            <button
+              disabled={purchasing}
+              onClick={async () => {
+                setError("");
+                setPurchasing(true);
+                const result = await purchaseMonthly();
+                setPurchasing(false);
+                if (result.success) {
+                  router.push("/home");
+                } else if (result.error && result.error !== "cancelled") {
+                  setError(result.error);
+                }
+              }}
+              className="w-full text-white py-4 rounded-2xl font-bold text-lg transition-colors"
+              style={{
+                background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
+                backgroundSize: "200% 100%",
+                animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
+              }}
+            >
+              {purchasing ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Processing...
+                </span>
+              ) : checkingTrial ? "Loading..." : rcTrialInfo?.eligible
+                ? `Start ₹${rcTrialInfo.introPrice || "2"} Trial →`
+                : "Subscribe Now — ₹199/mo →"
+              }
+            </button>
+          ) : (
+            <RazorpayCheckout
+              onSuccess={() => router.push("/home")}
+              onError={(err) => setError(err)}
+              className="w-full text-white py-4 rounded-2xl font-bold text-lg transition-colors"
+              style={{
+                background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
+                backgroundSize: "200% 100%",
+                animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
+              }}
+            >
+              {checkingTrial ? "Loading..." : showTrial ? "Start ₹2 Trial →" : "Subscribe Now →"}
+            </RazorpayCheckout>
+          )
         ) : (
           <button
             onClick={() => signInWithGoogle()}
@@ -174,7 +223,7 @@ export default function SubscribePage() {
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-green-500">
               <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
             </svg>
-            Razorpay
+            {isCapacitorApp() ? "Google Play" : "Razorpay"}
           </div>
           <div className="flex items-center gap-1">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-green-500">
@@ -209,9 +258,13 @@ export default function SubscribePage() {
 
       {/* Fine print */}
       <p className="text-zinc-600 text-[10px] text-center leading-relaxed">
-        {showTrial
-          ? "₹2 for 2-day trial, then ₹199/month. Auto-renews via Razorpay. Cancel anytime from your profile. No refund for partial months."
-          : "₹199/month. Auto-renews via Razorpay. Cancel anytime from your profile. No refund for partial months."}
+        {isCapacitorApp()
+          ? rcTrialInfo?.eligible
+            ? `₹${rcTrialInfo.introPrice || "2"} for ${rcTrialInfo.introDays || 2}-day trial, then ₹199/month. Auto-renews via Google Play. Cancel anytime from Google Play subscriptions.`
+            : "₹199/month. Auto-renews via Google Play. Cancel anytime from Google Play subscriptions."
+          : showTrial
+            ? "₹2 for 2-day trial, then ₹199/month. Auto-renews via Razorpay. Cancel anytime from your profile. No refund for partial months."
+            : "₹199/month. Auto-renews via Razorpay. Cancel anytime from your profile. No refund for partial months."}
       </p>
     </div>
   );

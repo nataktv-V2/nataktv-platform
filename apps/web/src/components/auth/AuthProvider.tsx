@@ -18,6 +18,7 @@ import {
   type User as FirebaseUser,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
+import { initRevenueCat, loginRevenueCat, logoutRevenueCat, isCapacitorApp } from "@/lib/revenuecat";
 
 type AuthUser = {
   uid: string;
@@ -79,8 +80,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch {
           // Sync failed — user can still use the app, sync retries on next load
         }
+        // Init RevenueCat for in-app billing (Capacitor only)
+        if (isCapacitorApp()) {
+          initRevenueCat(firebaseUser.uid).then(() => loginRevenueCat(firebaseUser.uid));
+        }
       } else {
         setUser(null);
+        if (isCapacitorApp()) logoutRevenueCat();
       }
       setLoading(false);
     });
