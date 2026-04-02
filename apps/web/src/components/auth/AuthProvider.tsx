@@ -19,6 +19,7 @@ import {
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { initRevenueCat, loginRevenueCat, logoutRevenueCat, isCapacitorApp } from "@/lib/revenuecat";
+import { registerPushNotifications } from "@/lib/push-notifications";
 
 type AuthUser = {
   uid: string;
@@ -80,9 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch {
           // Sync failed — user can still use the app, sync retries on next load
         }
-        // Init RevenueCat for in-app billing (Capacitor only)
+        // Init Capacitor-only features
         if (isCapacitorApp()) {
           initRevenueCat(firebaseUser.uid).then(() => loginRevenueCat(firebaseUser.uid));
+          registerPushNotifications(firebaseUser.uid);
         }
       } else {
         setUser(null);
