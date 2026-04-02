@@ -29,6 +29,8 @@ export function useSubscription() {
       return;
     }
 
+    const uid = user.uid;
+
     // In Capacitor, also check RevenueCat entitlement
     if (isCapacitorApp()) {
       checkEntitlement().then((active) => {
@@ -37,7 +39,6 @@ export function useSubscription() {
           setLoading(false);
           return;
         }
-        // Fall through to server check
         fetchServerStatus();
       });
     } else {
@@ -45,7 +46,7 @@ export function useSubscription() {
     }
 
     function fetchServerStatus() {
-      fetch(`/api/subscription/status?uid=${user.uid}`)
+      fetch(`/api/subscription/status?uid=${uid}`)
         .then((res) => res.json())
         .then((data) => {
           setStatus(data);
