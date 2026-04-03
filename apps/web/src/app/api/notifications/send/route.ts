@@ -1,10 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-// Use eval("require") to prevent Next.js bundler from stripping Node.js builtins
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, no-eval
-const nodeFs: any = eval('require')("fs");
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, no-eval
-const nodePath: any = eval('require')("path");
+// Inline the service account JSON at build time if env var exists,
+// otherwise we'll read from file at runtime using a dynamic workaround
+let _cachedServiceAccountKey: string | null = null;
+
+function getServiceAccountKey(): string | null {
+  if (_cachedServiceAccountKey) return _cachedServiceAccountKey;
+
+  // Try env var first
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+    _cachedServiceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+    return _cachedServiceAccountKey;
+  }
+
+  // Try reading file at runtime — use Function constructor to avoid bundler
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
+    const dynamicRequire = new Function("mod", "return require(mod)");
+    const fs = dynamicRequire("fs");
+    const path = dynamicRequire("path");
+    const possiblePaths = [
+      path.join(process.cwd(), "firebase-sa.json"),
+      path.join(process.cwd(), "apps", "web", "firebase-sa.json"),
+      "/opt/nataktv/apps/web/firebase-sa.json",
+    ];
+    for (const filePath of possiblePaths) {
+      if (fs.existsSync(filePath)) {
+        _cachedServiceAccountKey = fs.readFileSync(filePath, "utf-8");
+        return _cachedServiceAccountKey;
+      }
+    }
+  } catch (err) {
+    console.error("[FCM] Failed to read firebase-sa.json:", err);
+  }
+
+  return null;
+}
 
 /**
  * POST /api/notifications/send
@@ -132,28 +163,7 @@ export async function POST(req: NextRequest) {
  */
 async function getAccessToken(): Promise<string | null> {
   try {
-    let serviceAccountKey: string | undefined;
-
-    // Try reading firebase-sa.json from multiple possible paths
-    const possiblePaths = [
-      nodePath.join(process.cwd(), "firebase-sa.json"),
-      nodePath.join(process.cwd(), "apps", "web", "firebase-sa.json"),
-      "/opt/nataktv/apps/web/firebase-sa.json",
-    ];
-    for (const filePath of possiblePaths) {
-      try {
-        if (nodeFs.existsSync(filePath)) {
-          serviceAccountKey = nodeFs.readFileSync(filePath, "utf-8");
-          break;
-        }
-      } catch { /* try next path */ }
-    }
-
-    // Fallback to env var
-    if (!serviceAccountKey) {
-      serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-    }
-
+    const serviceAccountKey = getServiceAccountKey();
     if (!serviceAccountKey) return null;
 
     const sa = JSON.parse(serviceAccountKey);
