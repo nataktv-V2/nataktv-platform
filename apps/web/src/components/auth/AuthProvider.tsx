@@ -161,23 +161,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    // Also sign out of native Google Auth so account picker shows next login
-    try {
-      const isCapacitor = typeof window !== "undefined" && !!(window as unknown as { Capacitor?: unknown }).Capacitor;
-      if (isCapacitor) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const GoogleAuth = (window as any).Capacitor?.Plugins?.GoogleAuth;
-        if (GoogleAuth) {
-          // Race with timeout — don't let native signOut hang or crash the app
-          await Promise.race([
-            GoogleAuth.signOut().catch((err: unknown) => console.error("[Auth] GoogleAuth.signOut error:", err)),
-            new Promise((resolve) => setTimeout(resolve, 2000)),
-          ]);
-        }
-      }
-    } catch (err) {
-      console.error("[Auth] signOut native error:", err);
-    }
+    // Only Firebase signOut — native GoogleAuth.signOut() crashes the Capacitor WebView.
+    // Account picker will still show on next login because GoogleAuth.initialize()
+    // is called fresh before each signIn attempt.
     await firebaseSignOut(auth);
   };
 
