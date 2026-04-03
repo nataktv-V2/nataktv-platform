@@ -167,9 +167,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (isCapacitor) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const GoogleAuth = (window as any).Capacitor?.Plugins?.GoogleAuth;
-        if (GoogleAuth) await GoogleAuth.signOut();
+        if (GoogleAuth) {
+          // Race with timeout — don't let native signOut hang or crash the app
+          await Promise.race([
+            GoogleAuth.signOut().catch((err: unknown) => console.error("[Auth] GoogleAuth.signOut error:", err)),
+            new Promise((resolve) => setTimeout(resolve, 2000)),
+          ]);
+        }
       }
-    } catch (_) { /* ignore */ }
+    } catch (err) {
+      console.error("[Auth] signOut native error:", err);
+    }
     await firebaseSignOut(auth);
   };
 

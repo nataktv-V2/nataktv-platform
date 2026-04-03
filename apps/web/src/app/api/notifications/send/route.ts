@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { readFileSync, existsSync } from "fs";
+import { join } from "path";
 
 /**
  * POST /api/notifications/send
@@ -129,15 +131,20 @@ async function getAccessToken(): Promise<string | null> {
   try {
     let serviceAccountKey: string | undefined;
 
-    // Try reading from file first (most reliable)
-    try {
-      const fs = await import("fs");
-      const path = await import("path");
-      const filePath = path.join(process.cwd(), "firebase-sa.json");
-      if (fs.existsSync(filePath)) {
-        serviceAccountKey = fs.readFileSync(filePath, "utf-8");
-      }
-    } catch { /* file not found */ }
+    // Try reading firebase-sa.json from multiple possible paths
+    const possiblePaths = [
+      join(process.cwd(), "firebase-sa.json"),
+      join(process.cwd(), "apps", "web", "firebase-sa.json"),
+      "/opt/nataktv/apps/web/firebase-sa.json",
+    ];
+    for (const filePath of possiblePaths) {
+      try {
+        if (existsSync(filePath)) {
+          serviceAccountKey = readFileSync(filePath, "utf-8");
+          break;
+        }
+      } catch { /* try next path */ }
+    }
 
     // Fallback to env var
     if (!serviceAccountKey) {
