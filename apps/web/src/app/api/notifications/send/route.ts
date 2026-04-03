@@ -189,6 +189,9 @@ async function getAccessToken(): Promise<string | null> {
     });
 
     const tokenData = await tokenRes.json();
+    if (!tokenData.access_token) {
+      _lastAccessTokenError = `Token exchange failed: ${JSON.stringify(tokenData)}`;
+    }
     return tokenData.access_token || null;
   } catch (err) {
     console.error("Failed to get FCM access token:", err instanceof Error ? `${err.message}\n${err.stack}` : err);
