@@ -152,10 +152,15 @@ async function getAccessToken(): Promise<string | null> {
 
     const sa = JSON.parse(serviceAccountKey);
 
-    // Build JWT
-    const header = btoa(JSON.stringify({ alg: "RS256", typ: "JWT" }));
+    // Build JWT using Buffer (Node.js) instead of btoa (browser)
+    const toBase64Url = (data: string | Buffer) => {
+      const b = typeof data === "string" ? Buffer.from(data) : data;
+      return b.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    };
+
+    const header = toBase64Url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
     const now = Math.floor(Date.now() / 1000);
-    const claimSet = btoa(
+    const claimSet = toBase64Url(
       JSON.stringify({
         iss: sa.client_email,
         scope: "https://www.googleapis.com/auth/firebase.messaging",
@@ -168,18 +173,26 @@ async function getAccessToken(): Promise<string | null> {
     const signInput = `${header}.${claimSet}`;
 
     // Import the private key and sign
-    const key = await importPrivateKey(sa.private_key);
+    const pemContents = sa.private_key
+      .replace(/-----BEGIN PRIVATE KEY-----/, "")
+      .replace(/-----END PRIVATE KEY-----/, "")
+      .replace(/\n/g, "");
+    const binaryDer = Buffer.from(pemContents, "base64");
+    const key = await crypto.subtle.importKey(
+      "pkcs8",
+      binaryDer,
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      false,
+      ["sign"]
+    );
     const signature = await crypto.subtle.sign(
       "RSASSA-PKCS1-v1_5",
       key,
       new TextEncoder().encode(signInput)
     );
-    const sig = btoa(String.fromCharCode(...new Uint8Array(signature)))
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/, "");
+    const sig = toBase64Url(Buffer.from(signature));
 
-    const jwt = `${header.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")}.${claimSet.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")}.${sig}`;
+    const jwt = `${header}.${claimSet}.${sig}`;
 
     // Exchange JWT for access token
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
@@ -202,17 +215,3 @@ async function getAccessToken(): Promise<string | null> {
   return null;
 }
 
-async function importPrivateKey(pem: string): Promise<CryptoKey> {
-  const pemContents = pem
-    .replace(/-----BEGIN PRIVATE KEY-----/, "")
-    .replace(/-----END PRIVATE KEY-----/, "")
-    .replace(/\n/g, "");
-  const binaryDer = Uint8Array.from(atob(pemContents), (c) => c.charCodeAt(0));
-  return crypto.subtle.importKey(
-    "pkcs8",
-    binaryDer,
-    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-}
