@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-// fs/path must be required at runtime to avoid Next.js tree-shaking
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const nodeFs = require("fs") as typeof import("fs");
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const nodePath = require("path") as typeof import("path");
+// Use eval("require") to prevent Next.js bundler from stripping Node.js builtins
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, no-eval
+const nodeFs: any = eval('require')("fs");
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, no-eval
+const nodePath: any = eval('require')("path");
 
 /**
  * POST /api/notifications/send
