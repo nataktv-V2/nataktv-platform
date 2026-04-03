@@ -1,37 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-// Inline the service account JSON at build time if env var exists,
-// otherwise we'll read from file at runtime using a dynamic workaround
-let _cachedServiceAccountKey: string | null = null;
-
 function getServiceAccountKey(): string | null {
-  if (_cachedServiceAccountKey) return _cachedServiceAccountKey;
-
-  // Try env var first
-  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-    _cachedServiceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-    return _cachedServiceAccountKey;
+  // Option 1: base64-encoded env var (avoids JSON quoting issues in .env)
+  const b64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_B64;
+  if (b64) {
+    try {
+      return Buffer.from(b64, "base64").toString("utf-8");
+    } catch { /* invalid base64 */ }
   }
 
-  // Try reading file at runtime — use Function constructor to avoid bundler
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
-    const dynamicRequire = new Function("mod", "return require(mod)");
-    const fs = dynamicRequire("fs");
-    const path = dynamicRequire("path");
-    const possiblePaths = [
-      path.join(process.cwd(), "firebase-sa.json"),
-      path.join(process.cwd(), "apps", "web", "firebase-sa.json"),
-      "/opt/nataktv/apps/web/firebase-sa.json",
-    ];
-    for (const filePath of possiblePaths) {
-      if (fs.existsSync(filePath)) {
-        _cachedServiceAccountKey = fs.readFileSync(filePath, "utf-8");
-        return _cachedServiceAccountKey;
-      }
-    }
-  } catch (err) {
-    console.error("[FCM] Failed to read firebase-sa.json:", err);
+  // Option 2: plain JSON env var
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+    return process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
   }
 
   return null;
