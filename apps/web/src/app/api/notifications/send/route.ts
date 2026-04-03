@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     if (!accessToken || !projectId) {
       return NextResponse.json(
-        { error: "Firebase not configured for sending. Set FIREBASE_SERVICE_ACCOUNT_KEY." },
+        { error: "Firebase not configured for sending. Set FIREBASE_SERVICE_ACCOUNT_KEY.", debug: { hasAccessToken: !!accessToken, hasProjectId: !!projectId, projectId: projectId || null, cwd: process.cwd() } },
         { status: 500 }
       );
     }
