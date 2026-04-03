@@ -1,6 +1,7 @@
 /**
  * Push notification registration for Capacitor Android app.
- * Uses window.Capacitor.Plugins directly — no npm import needed.
+ * Registers FCM token on app launch (even before login).
+ * When user logs in, updates the token with their uid.
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,12 +15,19 @@ function isCapacitor(): boolean {
 }
 
 function getPushPlugin() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (window as AnyWindow).Capacitor?.Plugins?.PushNotifications;
 }
 
-export async function registerPushNotifications(uid: string) {
-  if (!isCapacitor()) return;
+let _registeredToken: string | null = null;
+let _initialized = false;
+
+/**
+ * Call on app load — registers FCM token even without a user.
+ * Anonymous tokens allow sending notifications to non-logged-in users.
+ */
+export async function initPushNotifications() {
+  if (!isCapacitor() || _initialized) return;
+  _initialized = true;
 
   const PushNotifications = getPushPlugin();
   if (!PushNotifications) {
@@ -28,42 +36,38 @@ export async function registerPushNotifications(uid: string) {
   }
 
   try {
-    // Request permission
     const permResult = await PushNotifications.requestPermissions();
     if (permResult.receive !== "granted") {
       console.log("[Push] Permission denied");
       return;
     }
 
-    // Register with FCM
     await PushNotifications.register();
 
-    // Listen for token
     PushNotifications.addListener("registration", async (token: { value: string }) => {
       console.log("[Push] FCM token:", token.value);
+      _registeredToken = token.value;
+      // Register anonymous token (no uid yet)
       try {
         await fetch("/api/notifications/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: token.value, uid }),
+          body: JSON.stringify({ token: token.value }),
         });
-        console.log("[Push] Token registered with server");
+        console.log("[Push] Anonymous token registered");
       } catch (err) {
         console.error("[Push] Failed to register token:", err);
       }
     });
 
-    // Listen for registration errors
     PushNotifications.addListener("registrationError", (error: unknown) => {
       console.error("[Push] Registration error:", error);
     });
 
-    // Listen for incoming notifications (foreground)
     PushNotifications.addListener("pushNotificationReceived", (notification: unknown) => {
       console.log("[Push] Received in foreground:", notification);
     });
 
-    // Listen for notification taps
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     PushNotifications.addListener("pushNotificationActionPerformed", (action: any) => {
       const url = action?.notification?.data?.url;
@@ -73,5 +77,23 @@ export async function registerPushNotifications(uid: string) {
     });
   } catch (err) {
     console.error("[Push] Setup error:", err);
+  }
+}
+
+/**
+ * Call when user logs in — associates the FCM token with their uid.
+ */
+export async function linkPushTokenToUser(uid: string) {
+  if (!_registeredToken) return;
+
+  try {
+    await fetch("/api/notifications/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: _registeredToken, uid }),
+    });
+    console.log("[Push] Token linked to user:", uid);
+  } catch (err) {
+    console.error("[Push] Failed to link token:", err);
   }
 }

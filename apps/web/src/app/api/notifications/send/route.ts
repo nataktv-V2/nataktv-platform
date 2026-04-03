@@ -52,9 +52,24 @@ export async function POST(req: NextRequest) {
       select: { fcmToken: true },
     });
 
-    const tokens = users
+    const userTokens = users
       .map((u) => u.fcmToken)
       .filter((t): t is string => !!t);
+
+    // Also get tokens from push_tokens table (includes anonymous users)
+    let allTokens: string[] = [...userTokens];
+    if (target === "all") {
+      try {
+        const pushTokenRows = await prisma.$queryRawUnsafe<{ token: string }[]>(
+          `SELECT token FROM push_tokens WHERE token IS NOT NULL`
+        );
+        const pushTokens = pushTokenRows.map((r) => r.token);
+        // Merge and deduplicate
+        allTokens = [...new Set([...userTokens, ...pushTokens])];
+      } catch { /* push_tokens table may not exist yet */ }
+    }
+
+    const tokens = allTokens;
 
     if (tokens.length === 0) {
       return NextResponse.json({ sent: 0, message: "No users with FCM tokens found" });

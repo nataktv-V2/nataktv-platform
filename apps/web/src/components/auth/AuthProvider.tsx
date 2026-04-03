@@ -19,7 +19,7 @@ import {
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { initRevenueCat, loginRevenueCat, logoutRevenueCat, isCapacitorApp } from "@/lib/revenuecat";
-import { registerPushNotifications } from "@/lib/push-notifications";
+import { initPushNotifications, linkPushTokenToUser } from "@/lib/push-notifications";
 
 type AuthUser = {
   uid: string;
@@ -67,6 +67,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Register push notifications on app load (even before login)
+  useEffect(() => {
+    if (isCapacitorApp()) {
+      initPushNotifications();
+    }
+  }, []);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
@@ -84,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Init Capacitor-only features
         if (isCapacitorApp()) {
           initRevenueCat(firebaseUser.uid).then(() => loginRevenueCat(firebaseUser.uid));
-          registerPushNotifications(firebaseUser.uid);
+          linkPushTokenToUser(firebaseUser.uid);
         }
       } else {
         setUser(null);
