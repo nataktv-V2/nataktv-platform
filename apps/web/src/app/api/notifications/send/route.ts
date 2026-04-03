@@ -63,8 +63,10 @@ export async function POST(req: NextRequest) {
     const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 
     if (!accessToken || !projectId) {
+      const b64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_B64;
+      const plain = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
       return NextResponse.json(
-        { error: "Firebase not configured for sending. Set FIREBASE_SERVICE_ACCOUNT_KEY.", debug: { hasAccessToken: !!accessToken, hasProjectId: !!projectId, projectId: projectId || null, cwd: process.cwd() } },
+        { error: "Firebase not configured for sending. Set FIREBASE_SERVICE_ACCOUNT_KEY.", debug: { hasAccessToken: !!accessToken, hasProjectId: !!projectId, hasB64: !!b64, b64Len: b64?.length || 0, hasPlain: !!plain, cwd: process.cwd() } },
         { status: 500 }
       );
     }
