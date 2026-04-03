@@ -4,9 +4,9 @@
  * Browser users continue using Razorpay.
  *
  * Trial flow:
- * - New user: ₹2 for 2 days (intro offer) → auto-renews ₹199/month
+ * - New user: 1 week free trial → auto-renews ₹199/month
  * - Returning/cancelled user: ₹199/month (no trial)
- * Google Play handles intro offer eligibility automatically.
+ * Google Play handles trial eligibility automatically.
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,7 +33,7 @@ export async function initRevenueCat(userId?: string) {
   try {
     const Purchases = getRC();
     await Purchases.configure({
-      apiKey: "test_IEClPGMteffJiuurQBBVQPQHIzg",
+      apiKey: "goog_fKAiDErpdjMrzaZpxvRPucXqBfX",
       appUserID: userId || undefined,
     });
     rcInitialized = true;
@@ -69,8 +69,8 @@ export async function logoutRevenueCat() {
 
 export type TrialInfo = {
   eligible: boolean;
-  introPrice?: string; // e.g. "₹2"
-  introDays?: number;  // e.g. 2
+  introPrice?: string; // e.g. "Free" or "₹2"
+  introDays?: number;  // e.g. 7 (1 week)
   monthlyPrice?: string; // e.g. "₹199"
 };
 
@@ -94,11 +94,11 @@ export async function getTrialInfo(): Promise<TrialInfo> {
     const introOffer = product?.introductoryPrice;
     const monthlyPrice = product?.priceString || "₹199";
 
-    if (introOffer && introOffer.price > 0) {
+    if (introOffer && introOffer.price >= 0) {
       return {
         eligible: true,
-        introPrice: introOffer.priceString || "₹2",
-        introDays: introOffer.periodNumberOfUnits || 2,
+        introPrice: introOffer.price === 0 ? "Free" : (introOffer.priceString || "Free"),
+        introDays: introOffer.periodNumberOfUnits || 7,
         monthlyPrice,
       };
     }
@@ -131,7 +131,7 @@ export async function purchaseMonthly(): Promise<{ success: boolean; error?: str
     }
 
     // Google Play handles trial eligibility automatically —
-    // if the user is eligible for the intro offer, they see ₹2 for 2 days
+    // if the user is eligible for the free trial, they get 1 week free
     // if not (already used trial / cancelled), they see ₹199/month
     const result = await Purchases.purchasePackage({ aPackage: monthly });
     console.log("[RevenueCat] Purchase result:", JSON.stringify(result));
