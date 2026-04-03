@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+let _lastAccessTokenError: string | null = null;
+
 function getServiceAccountKey(): string | null {
   // Option 1: base64-encoded env var (avoids JSON quoting issues in .env)
   const b64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_B64;
@@ -66,7 +68,7 @@ export async function POST(req: NextRequest) {
       const b64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_B64;
       const plain = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
       return NextResponse.json(
-        { error: "Firebase not configured for sending. Set FIREBASE_SERVICE_ACCOUNT_KEY.", debug: { hasAccessToken: !!accessToken, hasProjectId: !!projectId, hasB64: !!b64, b64Len: b64?.length || 0, hasPlain: !!plain, cwd: process.cwd() } },
+        { error: "Firebase not configured for sending. Set FIREBASE_SERVICE_ACCOUNT_KEY.", debug: { hasAccessToken: !!accessToken, hasProjectId: !!projectId, hasB64: !!b64, b64Len: b64?.length || 0, hasPlain: !!plain, cwd: process.cwd(), tokenError: _lastAccessTokenError } },
         { status: 500 }
       );
     }
@@ -189,7 +191,9 @@ async function getAccessToken(): Promise<string | null> {
     const tokenData = await tokenRes.json();
     return tokenData.access_token || null;
   } catch (err) {
-    console.error("Failed to get FCM access token:", err instanceof Error ? err.message : err);
+    console.error("Failed to get FCM access token:", err instanceof Error ? `${err.message}\n${err.stack}` : err);
+    // Store the error so we can return it in the debug response
+    _lastAccessTokenError = err instanceof Error ? err.message : String(err);
     return null;
   }
   return null;
