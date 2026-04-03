@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { readFileSync, existsSync } from "fs";
-import { join } from "path";
+// fs/path must be required at runtime to avoid Next.js tree-shaking
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const nodeFs = require("fs") as typeof import("fs");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const nodePath = require("path") as typeof import("path");
 
 /**
  * POST /api/notifications/send
@@ -133,14 +136,14 @@ async function getAccessToken(): Promise<string | null> {
 
     // Try reading firebase-sa.json from multiple possible paths
     const possiblePaths = [
-      join(process.cwd(), "firebase-sa.json"),
-      join(process.cwd(), "apps", "web", "firebase-sa.json"),
+      nodePath.join(process.cwd(), "firebase-sa.json"),
+      nodePath.join(process.cwd(), "apps", "web", "firebase-sa.json"),
       "/opt/nataktv/apps/web/firebase-sa.json",
     ];
     for (const filePath of possiblePaths) {
       try {
-        if (existsSync(filePath)) {
-          serviceAccountKey = readFileSync(filePath, "utf-8");
+        if (nodeFs.existsSync(filePath)) {
+          serviceAccountKey = nodeFs.readFileSync(filePath, "utf-8");
           break;
         }
       } catch { /* try next path */ }
@@ -194,9 +197,10 @@ async function getAccessToken(): Promise<string | null> {
     const tokenData = await tokenRes.json();
     return tokenData.access_token || null;
   } catch (err) {
-    console.error("Failed to get FCM access token:", err);
+    console.error("Failed to get FCM access token:", err instanceof Error ? err.message : err);
     return null;
   }
+  return null;
 }
 
 async function importPrivateKey(pem: string): Promise<CryptoKey> {
