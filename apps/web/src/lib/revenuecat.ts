@@ -4,7 +4,7 @@
  * Browser users continue using Razorpay.
  *
  * Trial flow:
- * - New user: 1 week free trial → auto-renews ₹199/month
+ * - New user: ₹2 for 1 week trial → auto-renews ₹199/month
  * - Returning/cancelled user: ₹199/month (no trial)
  * Google Play handles trial eligibility automatically.
  */
@@ -97,7 +97,7 @@ export async function getTrialInfo(): Promise<TrialInfo> {
     if (introOffer && introOffer.price >= 0) {
       return {
         eligible: true,
-        introPrice: introOffer.price === 0 ? "Free" : (introOffer.priceString || "Free"),
+        introPrice: introOffer.price === 0 ? "Free" : (introOffer.priceString || "₹2"),
         introDays: introOffer.periodNumberOfUnits || 7,
         monthlyPrice,
       };
@@ -112,8 +112,8 @@ export async function getTrialInfo(): Promise<TrialInfo> {
 
 /**
  * Purchase the monthly subscription.
- * Google Play will automatically apply the intro offer (₹2 trial) if eligible.
- * If not eligible (cancelled before), it charges ₹199 directly.
+ * Google Play will automatically apply the ₹2/1-week intro offer if eligible.
+ * If not eligible (cancelled before), it charges ₹199/month directly.
  */
 export async function purchaseMonthly(): Promise<{ success: boolean; error?: string }> {
   if (!isCapacitorApp()) return { success: false, error: "Not in Capacitor" };
