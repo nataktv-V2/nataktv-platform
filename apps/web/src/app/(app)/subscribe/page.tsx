@@ -108,7 +108,7 @@ export default function SubscribePage() {
           {/* CENTER — Arrow with price */}
           <div className="flex flex-col items-center gap-1 flex-shrink-0 px-1">
             <div className="bg-[#f97316] text-white text-sm sm:text-base font-extrabold px-3 py-1.5 rounded-full whitespace-nowrap" style={{ animation: "pulse-glow 2s ease-in-out infinite" }}>
-              {showTrial ? "Just ₹2" : "₹199/mo"}
+              {showTrial ? "FREE" : "₹199/mo"}
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-[#f97316]" style={{ animation: "arrow-bounce 1.2s ease-in-out infinite" }}>
               <path d="M5 12h14" />
@@ -142,7 +142,7 @@ export default function SubscribePage() {
         </div>
 
         <p className="text-center text-zinc-500 text-xs mt-3">
-          {showTrial ? "₹2 for 1 week · then ₹199/month" : "₹199/month · cancel anytime"}
+          {showTrial ? "free for 1 week · then ₹199/month" : "₹199/month · cancel anytime"}
         </p>
       </div>
 
@@ -180,7 +180,7 @@ export default function SubscribePage() {
                   Processing...
                 </span>
               ) : checkingTrial ? "Loading..." : rcTrialInfo?.eligible
-                ? "Start ₹2 Trial →"
+                ? "Start Free Trial →"
                 : "Subscribe Now — ₹199/mo →"
               }
             </button>
@@ -195,7 +195,7 @@ export default function SubscribePage() {
                 animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
               }}
             >
-              {checkingTrial ? "Loading..." : showTrial ? "Start ₹2 Trial →" : "Subscribe Now →"}
+              {checkingTrial ? "Loading..." : showTrial ? "Start Free Trial →" : "Subscribe Now →"}
             </RazorpayCheckout>
           )
         ) : (
@@ -260,10 +260,10 @@ export default function SubscribePage() {
       <p className="text-zinc-600 text-[10px] text-center leading-relaxed">
         {isCapacitorApp()
           ? rcTrialInfo?.eligible
-            ? "₹2 for 1 week, then ₹199/month. Auto-renews via Google Play. Cancel anytime from Google Play subscriptions."
+            ? "1-week free trial, then ₹199/month. Auto-renews via Google Play. Cancel anytime from Google Play subscriptions."
             : "₹199/month. Auto-renews via Google Play. Cancel anytime from Google Play subscriptions."
           : showTrial
-            ? "₹2 for 1 week, then ₹199/month. Auto-renews via Razorpay. Cancel anytime from your profile. No refund for partial months."
+            ? "1-week free trial, then ₹199/month. Auto-renews via Razorpay. Cancel anytime from your profile. No refund for partial months."
             : "₹199/month. Auto-renews via Razorpay. Cancel anytime from your profile. No refund for partial months."}
       </p>
     </div>
