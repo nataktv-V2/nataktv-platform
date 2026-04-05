@@ -11,7 +11,6 @@ import {
   onAuthStateChanged,
   signInWithPopup,
   signInWithRedirect,
-  signInWithCredential,
   getRedirectResult,
   signOut as firebaseSignOut,
   GoogleAuthProvider,
@@ -111,40 +110,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const isCapacitor = typeof window !== "undefined" && !!(window as unknown as { Capacitor?: unknown }).Capacitor;
       if (isCapacitor) {
-        // Inside Capacitor WebView: use native Google Sign-In (no Chrome opening)
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const Capacitor = (window as any).Capacitor;
-          if (Capacitor?.Plugins?.GoogleAuth) {
-            const GoogleAuth = Capacitor.Plugins.GoogleAuth;
-            // Must initialize before signIn — creates the GoogleSignInClient on native side
-            await GoogleAuth.initialize({
-              clientId: "342635565192-46l6ple0vs3p6mc6l5e0kkf4jvj4v53f.apps.googleusercontent.com",
-              scopes: "profile,email",
-              grantOfflineAccess: true,
-            });
-            const result = await GoogleAuth.signIn();
-            console.log("Native signIn result:", JSON.stringify(result));
-            const idToken = result?.authentication?.idToken;
-            if (idToken) {
-              const credential = GoogleAuthProvider.credential(idToken);
-              await signInWithCredential(auth, credential);
-              console.log("signInWithCredential SUCCESS");
-            } else {
-              console.error("No idToken from native signIn:", JSON.stringify(result));
-              alert("Login failed: no token received. Please try again.");
-            }
-          } else {
-            // No GoogleAuth plugin — not in Capacitor or plugin missing
-            await signInWithPopup(auth, googleProvider);
-          }
-        } catch (nativeErr: unknown) {
-          const msg = String((nativeErr as { message?: string })?.message || nativeErr);
-          console.error("Native Google sign-in error:", msg);
-          if (msg.includes("cancel") || msg.includes("12501")) return;
-          // Do NOT fall back to popup in Capacitor — it opens Chrome
-          alert("Login error: " + msg.substring(0, 100));
-        }
+        // Capacitor WebView: use Firebase web redirect flow
+        // Native GoogleAuth.signIn() fails because Play signing key's OAuth client
+        // is in a different GCP project than the web client (Google-managed conflict).
+        // signInWithRedirect works purely via web — no native OAuth client needed.
+        console.log("Capacitor detected — using signInWithRedirect");
+        await signInWithRedirect(auth, googleProvider);
       } else {
         // Regular browser: try popup first, fall back to redirect if blocked
         try {
