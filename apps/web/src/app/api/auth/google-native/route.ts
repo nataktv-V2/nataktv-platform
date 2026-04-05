@@ -24,26 +24,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Use google ID as the Firebase UID prefix to keep it deterministic
-    const uid = `google_${googleId}`;
-
-    // Create or update the user in Firebase Auth
+    // Try to find existing user by email first (they may have signed in via web before)
+    // If not found, create with google_ prefix UID
+    let uid: string;
     try {
-      await adminAuth.getUser(uid);
-      // User exists, update their info
+      const existingUser = await adminAuth.getUserByEmail(email);
+      uid = existingUser.uid;
+      // Update their info
       await adminAuth.updateUser(uid, {
-        email,
         displayName: displayName || undefined,
         photoURL: photoUrl || undefined,
       });
     } catch {
-      // User doesn't exist, create them
-      await adminAuth.createUser({
-        uid,
-        email,
-        displayName: displayName || undefined,
-        photoURL: photoUrl || undefined,
-      });
+      // No existing user with this email — create new one
+      uid = `google_${googleId}`;
+      try {
+        await adminAuth.getUser(uid);
+        await adminAuth.updateUser(uid, {
+          email,
+          displayName: displayName || undefined,
+          photoURL: photoUrl || undefined,
+        });
+      } catch {
+        await adminAuth.createUser({
+          uid,
+          email,
+          displayName: displayName || undefined,
+          photoURL: photoUrl || undefined,
+        });
+      }
     }
 
     // Create a custom token for this user
