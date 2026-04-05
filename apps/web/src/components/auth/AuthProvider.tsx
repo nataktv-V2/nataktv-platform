@@ -11,13 +11,14 @@ import {
   onAuthStateChanged,
   signInWithPopup,
   signInWithRedirect,
-  signInWithCredential,
+  signInWithCustomToken,
   getRedirectResult,
   signOut as firebaseSignOut,
-  GoogleAuthProvider,
   type User as FirebaseUser,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const window: any;
 import { initRevenueCat, loginRevenueCat, logoutRevenueCat, isCapacitorApp } from "@/lib/revenuecat";
 import { initPushNotifications, linkPushTokenToUser } from "@/lib/push-notifications";
 
@@ -109,39 +110,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-      const isCapacitor = typeof window !== "undefined" && !!(window as unknown as { Capacitor?: unknown }).Capacitor;
+      const isCapacitor = typeof window !== "undefined" && !!window?.Capacitor;
       if (isCapacitor) {
-        // Native Google Sign-In via Capacitor plugin
-        // DO NOT pass clientId/serverClientId — Play signing key's OAuth client
-        // is in a Google-managed GCP project, causing "must be in same project" error.
-        // Without serverClientId, we get an accessToken (not idToken) and use that.
+        // Native Google Sign-In via Capacitor plugin + custom token
+        // Play signing key's OAuth client is in Google's internal GCP project,
+        // so we can't use idToken/accessToken (same-project error).
+        // Instead: native picker → get user info → backend creates custom token.
         try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const Capacitor = (window as any).Capacitor;
+          const Capacitor = window.Capacitor;
           if (Capacitor?.Plugins?.GoogleAuth) {
             const GoogleAuth = Capacitor.Plugins.GoogleAuth;
             await GoogleAuth.initialize({
               scopes: "profile,email",
-              grantOfflineAccess: true,
+              grantOfflineAccess: false,
             });
             const result = await GoogleAuth.signIn();
             console.log("Native signIn result:", JSON.stringify(result));
-            const idToken = result?.authentication?.idToken;
-            const accessToken = result?.authentication?.accessToken;
-            if (idToken) {
-              // If idToken available, use it (best case)
-              const credential = GoogleAuthProvider.credential(idToken);
-              await signInWithCredential(auth, credential);
-              console.log("signInWithCredential SUCCESS (idToken)");
-            } else if (accessToken) {
-              // No idToken (no serverClientId) — use accessToken
-              const credential = GoogleAuthProvider.credential(null, accessToken);
-              await signInWithCredential(auth, credential);
-              console.log("signInWithCredential SUCCESS (accessToken)");
-            } else {
-              console.error("No token from native signIn:", JSON.stringify(result));
-              alert("Login failed: no token received. Please try again.");
+
+            // Extract user info from native sign-in (always available)
+            const googleId = result?.id;
+            const email = result?.email;
+            const displayName = result?.displayName || result?.name;
+            const photoUrl = result?.imageUrl || result?.photoUrl;
+
+            if (!googleId || !email) {
+              console.error("No user info from native signIn:", JSON.stringify(result));
+              alert("Login failed. Please try again.");
+              return;
             }
+
+            // Get custom token from our backend
+            const res = await fetch("/api/auth/google-native", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ googleId, email, displayName, photoUrl }),
+            });
+
+            if (!res.ok) {
+              const errData = await res.json().catch(() => ({}));
+              throw new Error(errData.error || "Backend auth failed");
+            }
+
+            const { token } = await res.json();
+            await signInWithCustomToken(auth, token);
+            console.log("signInWithCustomToken SUCCESS");
           } else {
             await signInWithPopup(auth, googleProvider);
           }
