@@ -11,6 +11,7 @@ import {
   onAuthStateChanged,
   signInWithPopup,
   signInWithRedirect,
+  signInWithCredential,
   getRedirectResult,
   signOut as firebaseSignOut,
   GoogleAuthProvider,
@@ -110,12 +111,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const isCapacitor = typeof window !== "undefined" && !!(window as unknown as { Capacitor?: unknown }).Capacitor;
       if (isCapacitor) {
-        // Capacitor WebView: use Firebase web redirect flow
-        // Native GoogleAuth.signIn() fails because Play signing key's OAuth client
-        // is in a different GCP project than the web client (Google-managed conflict).
-        // signInWithRedirect works purely via web — no native OAuth client needed.
-        console.log("Capacitor detected — using signInWithRedirect");
-        await signInWithRedirect(auth, googleProvider);
+        // Native Google Sign-In via Capacitor plugin
+        // DO NOT pass clientId/serverClientId — Play signing key's OAuth client
+        // is in a Google-managed GCP project, causing "must be in same project" error.
+        // Without serverClientId, we get an accessToken (not idToken) and use that.
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const Capacitor = (window as any).Capacitor;
+          if (Capacitor?.Plugins?.GoogleAuth) {
+            const GoogleAuth = Capacitor.Plugins.GoogleAuth;
+            await GoogleAuth.initialize({
+              scopes: "profile email",
+              grantOfflineAccess: true,
+            });
+            const result = await GoogleAuth.signIn();
+            console.log("Native signIn result:", JSON.stringify(result));
+            const idToken = result?.authentication?.idToken;
+            const accessToken = result?.authentication?.accessToken;
+            if (idToken) {
+              // If idToken available, use it (best case)
+              const credential = GoogleAuthProvider.credential(idToken);
+              await signInWithCredential(auth, credential);
+              console.log("signInWithCredential SUCCESS (idToken)");
+            } else if (accessToken) {
+              // No idToken (no serverClientId) — use accessToken
+              const credential = GoogleAuthProvider.credential(null, accessToken);
+              await signInWithCredential(auth, credential);
+              console.log("signInWithCredential SUCCESS (accessToken)");
+            } else {
+              console.error("No token from native signIn:", JSON.stringify(result));
+              alert("Login failed: no token received. Please try again.");
+            }
+          } else {
+            await signInWithPopup(auth, googleProvider);
+          }
+        } catch (nativeErr: unknown) {
+          const msg = String((nativeErr as { message?: string })?.message || nativeErr);
+          console.error("Native Google sign-in error:", msg);
+          if (msg.includes("cancel") || msg.includes("12501")) return;
+          alert("Login error: " + msg.substring(0, 100));
+        }
       } else {
         // Regular browser: try popup first, fall back to redirect if blocked
         try {
