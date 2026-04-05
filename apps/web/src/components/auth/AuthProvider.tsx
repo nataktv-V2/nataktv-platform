@@ -121,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (Capacitor?.Plugins?.GoogleAuth) {
             const GoogleAuth = Capacitor.Plugins.GoogleAuth;
             await GoogleAuth.initialize({
-              scopes: "profile email",
+              scopes: "profile,email",
               grantOfflineAccess: true,
             });
             const result = await GoogleAuth.signIn();
