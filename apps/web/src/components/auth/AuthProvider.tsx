@@ -117,24 +117,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const Capacitor = (window as any).Capacitor;
           if (Capacitor?.Plugins?.GoogleAuth) {
             const GoogleAuth = Capacitor.Plugins.GoogleAuth;
-            // Must initialize before signIn — creates the GoogleSignInClient on native side
+            // Initialize without clientId/serverClientId to avoid same-project check
+            // (Play signing key's OAuth client is in a Google-managed project)
             await GoogleAuth.initialize({
-              clientId: "342635565192-46l6ple0vs3p6mc6l5e0kkf4jvj4v53f.apps.googleusercontent.com",
               scopes: "profile,email",
-              grantOfflineAccess: true,
             });
             // Sign out first to force account picker (otherwise auto-picks last account)
             try { await GoogleAuth.signOut(); } catch { /* ignore — may not be signed in */ }
             const result = await GoogleAuth.signIn();
             console.log("Native signIn result:", JSON.stringify(result));
             const idToken = result?.authentication?.idToken;
+            const accessToken = result?.authentication?.accessToken;
             if (idToken) {
               const credential = GoogleAuthProvider.credential(idToken);
               await signInWithCredential(auth, credential);
-              console.log("signInWithCredential SUCCESS");
+              console.log("signInWithCredential SUCCESS via idToken");
+            } else if (accessToken) {
+              const credential = GoogleAuthProvider.credential(null, accessToken);
+              await signInWithCredential(auth, credential);
+              console.log("signInWithCredential SUCCESS via accessToken");
             } else {
-              console.error("No idToken from native signIn:", JSON.stringify(result));
-              // Show error to user instead of opening Chrome
+              console.error("No token from native signIn:", JSON.stringify(result));
               alert("Login failed: no token received. Please try again.");
             }
           } else {
