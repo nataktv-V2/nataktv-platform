@@ -4,7 +4,15 @@ import { getAuth } from "firebase-admin/auth";
 let app: App;
 
 if (getApps().length === 0) {
-  const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  // Support both plain JSON and base64-encoded service account key
+  const serviceAccountRaw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  const serviceAccountB64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_B64;
+  const serviceAccount = serviceAccountRaw
+    ? serviceAccountRaw
+    : serviceAccountB64
+      ? Buffer.from(serviceAccountB64, "base64").toString("utf-8")
+      : null;
+
   if (serviceAccount) {
     app = initializeApp({
       credential: cert(JSON.parse(serviceAccount)),
