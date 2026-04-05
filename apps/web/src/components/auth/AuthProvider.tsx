@@ -124,6 +124,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               scopes: "profile,email",
               grantOfflineAccess: false,
             });
+            // Sign out first to force account picker on every login
+            try { await GoogleAuth.signOut(); } catch { /* ignore */ }
             const result = await GoogleAuth.signIn();
             console.log("Native signIn result:", JSON.stringify(result));
 
