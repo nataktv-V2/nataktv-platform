@@ -185,10 +185,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    // Only Firebase signOut — native GoogleAuth.signOut() crashes the Capacitor WebView.
-    // Account picker will still show on next login because GoogleAuth.initialize()
-    // is called fresh before each signIn attempt.
     await firebaseSignOut(auth);
+    // Also sign out from native Google plugin so account picker shows next time
+    try {
+      const isCapacitor = typeof window !== "undefined" && !!window?.Capacitor;
+      if (isCapacitor && window.Capacitor?.Plugins?.GoogleAuth) {
+        await window.Capacitor.Plugins.GoogleAuth.signOut();
+      }
+    } catch {
+      // Ignore — native signOut can sometimes fail, but Firebase signOut already worked
+    }
   };
 
   return (
