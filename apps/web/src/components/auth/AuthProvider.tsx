@@ -185,6 +185,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    // Clear native Google cached account so picker shows on next login
+    try {
+      const isCapacitor = typeof window !== "undefined" && !!window?.Capacitor;
+      if (isCapacitor && window.Capacitor?.Plugins?.GoogleAuth) {
+        const GoogleAuth = window.Capacitor.Plugins.GoogleAuth;
+        // Must initialize before signOut — otherwise plugin crashes
+        await GoogleAuth.initialize({
+          scopes: "profile,email",
+          grantOfflineAccess: false,
+        });
+        await GoogleAuth.signOut();
+      }
+    } catch {
+      // Ignore native signOut errors — Firebase signOut still works
+    }
     await firebaseSignOut(auth);
   };
 
