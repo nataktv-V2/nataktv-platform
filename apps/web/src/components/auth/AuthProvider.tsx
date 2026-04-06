@@ -124,8 +124,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               scopes: "profile,email",
               grantOfflineAccess: false,
             });
-            // Sign out first to force account picker on every login
-            try { await GoogleAuth.signOut(); } catch { /* ignore */ }
             const result = await GoogleAuth.signIn();
             console.log("Native signIn result:", JSON.stringify(result));
 
@@ -188,15 +186,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await firebaseSignOut(auth);
-    // Also sign out from native Google plugin so account picker shows next time
-    try {
-      const isCapacitor = typeof window !== "undefined" && !!window?.Capacitor;
-      if (isCapacitor && window.Capacitor?.Plugins?.GoogleAuth) {
-        await window.Capacitor.Plugins.GoogleAuth.signOut();
-      }
-    } catch {
-      // Ignore — native signOut can sometimes fail, but Firebase signOut already worked
-    }
   };
 
   return (
