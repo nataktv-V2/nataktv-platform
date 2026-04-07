@@ -13,10 +13,13 @@
 type CapacitorWindow = Window & { Capacitor?: any };
 
 export function isCapacitorApp(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    !!(window as CapacitorWindow).Capacitor?.isNativePlatform?.()
-  );
+  if (typeof window === "undefined") return false;
+  const cap = (window as CapacitorWindow).Capacitor;
+  if (!cap) return false;
+  // Try isNativePlatform() first, fall back to checking isPluginAvailable or platform
+  if (typeof cap.isNativePlatform === "function") return cap.isNativePlatform();
+  // Fallback: if Capacitor object exists with native platform info
+  return cap.getPlatform?.() === "android" || cap.getPlatform?.() === "ios" || !!cap.Plugins;
 }
 
 let rcInitialized = false;

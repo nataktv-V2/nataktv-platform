@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { RazorpayCheckout } from "@/components/subscription/RazorpayCheckout";
+import { isCapacitorApp, purchaseMonthly } from "@/lib/revenuecat";
 
 export default function ProfilePage() {
   const { user, loading, signInWithGoogle, signOut } = useAuth();
@@ -287,7 +288,26 @@ export default function ProfilePage() {
                 ? "Subscribe to continue watching all content."
                 : "Subscribe to unlock all content. Start with a ₹2 trial."}
             </p>
-            {hadTrialBefore ? (
+            {isCapacitorApp() ? (
+              <button
+                onClick={async () => {
+                  const result = await purchaseMonthly();
+                  if (result.success) {
+                    router.push("/home");
+                  } else if (result.error && result.error !== "cancelled") {
+                    alert(result.error);
+                  }
+                }}
+                className="w-full text-center text-white py-2.5 rounded-lg font-semibold text-sm"
+                style={{
+                  background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer 3s linear infinite",
+                }}
+              >
+                Subscribe Now
+              </button>
+            ) : hadTrialBefore ? (
               <RazorpayCheckout
                 onSuccess={() => router.push("/home")}
                 onError={() => {}}
@@ -298,7 +318,7 @@ export default function ProfilePage() {
                   animation: "shimmer 3s linear infinite",
                 }}
               >
-                Subscribe Now ✨
+                Subscribe Now
               </RazorpayCheckout>
             ) : (
               <Link
@@ -310,7 +330,7 @@ export default function ProfilePage() {
                   animation: "shimmer 3s linear infinite",
                 }}
               >
-                Subscribe Now ✨
+                Subscribe Now
               </Link>
             )}
           </>
