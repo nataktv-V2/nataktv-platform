@@ -26,9 +26,11 @@ const config: CapacitorConfig = {
     },
     GoogleAuth: {
       scopes: ["profile", "email"],
-      clientId: "342635565192-46l6ple0vs3p6mc6l5e0kkf4jvj4v53f.apps.googleusercontent.com",
-      androidClientId: "342635565192-46l6ple0vs3p6mc6l5e0kkf4jvj4v53f.apps.googleusercontent.com",
-      forceCodeForRefreshToken: true,
+      // No clientId/serverClientId — our custom token flow only needs
+      // basic profile info (name, email, id), not an ID token.
+      // Setting these causes "must be in same project" error with Play signing.
+      grantOfflineAccess: false,
+      forceCodeForRefreshToken: false,
     },
   },
 };
