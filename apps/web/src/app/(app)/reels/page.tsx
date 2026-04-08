@@ -349,9 +349,7 @@ export default function ReelsPage() {
             <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clipRule="evenodd" />
           </svg>
         </div>
-        <h2 className="text-xl font-bold mb-2">Subscribe to watch Reels</h2>
-        <p className="text-white text-lg font-bold mb-0.5">Free for 4 days</p>
-        <p className="text-text-muted text-xs mb-6">then ₹199/month · cancel anytime</p>
+        <h2 className="text-2xl font-bold mb-6">FREE FOR 4 DAYS</h2>
         <Link
           href="/subscribe"
           className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-xl font-semibold transition-colors"

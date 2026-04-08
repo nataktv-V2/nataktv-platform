@@ -107,14 +107,8 @@ export function SubscriptionGate({ children, fallback }: SubscriptionGateProps) 
         <div className="blur-sm pointer-events-none">{children}</div>
         <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl">
           <div className="text-center p-6 max-w-xs">
-            <p className="text-white font-semibold mb-1">
-              Subscribe to watch
-            </p>
-            <p className="text-white text-lg font-bold mb-0.5">
-              Free for 4 days
-            </p>
-            <p className="text-zinc-500 text-xs mb-4">
-              then ₹199/month · cancel anytime
+            <p className="text-white text-xl font-bold mb-4">
+              FREE FOR 4 DAYS
             </p>
             <Link
               href="/subscribe"
