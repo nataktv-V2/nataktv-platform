@@ -110,14 +110,17 @@ export function SubscriptionGate({ children, fallback }: SubscriptionGateProps) 
             <p className="text-white font-semibold mb-1">
               Subscribe to watch
             </p>
-            <p className="text-zinc-400 text-sm mb-4">
-              Start with a ₹2 trial for 2 days
+            <p className="text-white text-lg font-bold mb-0.5">
+              Free for 4 days
+            </p>
+            <p className="text-zinc-500 text-xs mb-4">
+              then ₹199/month · cancel anytime
             </p>
             <Link
               href="/subscribe"
               className="inline-block bg-[#f97316] hover:bg-[#ea580c] text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors"
             >
-              Subscribe Now — ₹199/mo
+              Start Free Trial
             </Link>
           </div>
         </div>

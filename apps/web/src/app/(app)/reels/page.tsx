@@ -350,12 +350,13 @@ export default function ReelsPage() {
           </svg>
         </div>
         <h2 className="text-xl font-bold mb-2">Subscribe to watch Reels</h2>
-        <p className="text-text-muted mb-6">Start with a ₹2 trial for 2 days</p>
+        <p className="text-white text-lg font-bold mb-0.5">Free for 4 days</p>
+        <p className="text-text-muted text-xs mb-6">then ₹199/month · cancel anytime</p>
         <Link
           href="/subscribe"
           className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-xl font-semibold transition-colors"
         >
-          Subscribe Now — ₹199/mo
+          Start Free Trial
         </Link>
       </div>
     );
