@@ -4,7 +4,7 @@
  * Browser users continue using Razorpay.
  *
  * Trial flow:
- * - New user: 1 week free trial → auto-renews ₹199/month
+ * - New user: 4 day free trial → auto-renews ₹199/month
  * - Returning/cancelled user: ₹199/month (no trial)
  * Google Play handles trial eligibility automatically.
  */
@@ -101,7 +101,7 @@ export async function getTrialInfo(): Promise<TrialInfo> {
       return {
         eligible: true,
         introPrice: introOffer.price === 0 ? "Free" : (introOffer.priceString || "₹2"),
-        introDays: introOffer.periodNumberOfUnits || 7,
+        introDays: introOffer.periodNumberOfUnits || 4,
         monthlyPrice,
       };
     }

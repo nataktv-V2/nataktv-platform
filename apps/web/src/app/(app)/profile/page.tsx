@@ -283,11 +283,16 @@ export default function ProfilePage() {
           </>
         ) : (
           <>
-            <p className="text-zinc-400 text-sm mb-4">
-              {hadTrialBefore
-                ? "Subscribe to continue watching all content."
-                : "Subscribe to unlock all content. Start with a ₹2 trial."}
-            </p>
+            {hadTrialBefore ? (
+              <p className="text-zinc-400 text-sm mb-4">
+                Subscribe to continue watching all content.
+              </p>
+            ) : (
+              <div className="mb-4 text-center">
+                <p className="text-white text-lg font-bold">Free for 4 days</p>
+                <p className="text-zinc-500 text-xs mt-0.5">then ₹199/month · cancel anytime</p>
+              </div>
+            )}
             {isCapacitorApp() ? (
               <button
                 onClick={async () => {
@@ -305,7 +310,7 @@ export default function ProfilePage() {
                   animation: "shimmer 3s linear infinite",
                 }}
               >
-                Subscribe Now
+                {hadTrialBefore ? "Subscribe Now — ₹199/mo" : "Start Free Trial"}
               </button>
             ) : hadTrialBefore ? (
               <RazorpayCheckout
