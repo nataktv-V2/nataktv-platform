@@ -107,9 +107,10 @@ export function SubscriptionGate({ children, fallback }: SubscriptionGateProps) 
         <div className="blur-sm pointer-events-none">{children}</div>
         <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl">
           <div className="text-center p-6 max-w-xs">
-            <p className="text-white text-xl font-bold mb-4">
+            <p className="text-white text-xl font-bold mb-1">
               FREE FOR 4 DAYS
             </p>
+            <p className="text-zinc-500 text-xs mb-4">then ₹199/month</p>
             <Link
               href="/subscribe"
               className="inline-block bg-[#f97316] hover:bg-[#ea580c] text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors"
