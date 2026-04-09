@@ -9,7 +9,11 @@
   },
   "dependencies": {
     "@capacitor/android": "^6.2.1",
-    "@capacitor/core": "^6.2.1"
+    "@capacitor/app": "^6.0.3",
+    "@capacitor/core": "^6.2.1",
+    "@capacitor/push-notifications": "6.0.5",
+    "@codetrix-studio/capacitor-google-auth": "3.4.0-rc.4",
+    "@revenuecat/purchases-capacitor": "7.5.7"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.2.1"
