@@ -8,6 +8,8 @@ const config: CapacitorConfig = {
     // In production, load the live website instead of local files
     url: "https://app.nataktv.com",
     cleartext: false,
+    // Allow WebView to navigate to beatai payment proxy without opening Chrome
+    allowNavigation: ["beatai.indidino.com"],
   },
   android: {
     backgroundColor: "#0a0a0c",
