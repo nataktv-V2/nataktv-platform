@@ -3,14 +3,10 @@
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useCallback, useState } from "react";
 
-declare global {
-  interface Window {
-    Razorpay: new (options: Record<string, unknown>) => {
-      open: () => void;
-      on: (event: string, handler: () => void) => void;
-    };
-  }
-}
+// Payment is routed through beatai.indidino.com/nataktv since nataktv.com
+// doesn't have Razorpay payment permission yet.
+const BEATAI_PAYMENT_URL = "https://beatai.indidino.com/nataktv";
+const PAYMENT_CALLBACK_URL = `${typeof window !== "undefined" ? window.location.origin : ""}/payment-done`;
 
 type RazorpayCheckoutProps = {
   onSuccess?: () => void;
@@ -20,22 +16,7 @@ type RazorpayCheckoutProps = {
   style?: React.CSSProperties;
 };
 
-function loadRazorpayScript(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (window.Razorpay) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-}
-
 export function RazorpayCheckout({
-  onSuccess,
   onError,
   children,
   className,
@@ -49,15 +30,7 @@ export function RazorpayCheckout({
     setLoading(true);
 
     try {
-      // Load Razorpay script
-      const loaded = await loadRazorpayScript();
-      if (!loaded) {
-        onError?.("Failed to load payment gateway");
-        setLoading(false);
-        return;
-      }
-
-      // Create subscription on server
+      // Create subscription on our server (uses beatai Razorpay keys)
       const res = await fetch("/api/subscription/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -71,52 +44,36 @@ export function RazorpayCheckout({
         return;
       }
 
-      // Open Razorpay checkout
-      const options = {
+      // Build Razorpay options to pass to beatai payment page
+      const paymentData = {
         key: data.keyId,
         subscription_id: data.subscriptionId,
         name: "Natak TV",
-        description: data.hadTrialBefore ? "Monthly Subscription - ₹199/month" : "Monthly Subscription - ₹2 Trial",
-        image: "/logo.png",
+        description: data.hadTrialBefore
+          ? "Monthly Subscription - ₹199/month"
+          : "Monthly Subscription - Free Trial",
+        image: "https://app.nataktv.com/logo.png",
         prefill: {
           email: user.email || "",
           name: user.displayName || "",
           method: "upi",
         },
-        theme: {
-          color: "#f97316",
-        },
-        handler: async (response: {
-          razorpay_payment_id: string;
-          razorpay_subscription_id: string;
-          razorpay_signature: string;
-        }) => {
-          // Verify payment on server
-          const verifyRes = await fetch("/api/subscription/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(response),
-          });
-
-          if (verifyRes.ok) {
-            onSuccess?.();
-          } else {
-            onError?.("Payment verification failed");
-          }
-          setLoading(false);
-        },
-        modal: {
-          ondismiss: () => setLoading(false),
-        },
+        theme: { color: "#f97316" },
+        notes: { _source: "nataktv" },
       };
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
+      // Redirect to beatai payment proxy page
+      const url =
+        BEATAI_PAYMENT_URL +
+        "?data=" + encodeURIComponent(JSON.stringify(paymentData)) +
+        "&callback=" + encodeURIComponent(PAYMENT_CALLBACK_URL);
+
+      window.location.href = url;
     } catch {
       onError?.("Something went wrong");
       setLoading(false);
     }
-  }, [user, onSuccess, onError]);
+  }, [user, onError]);
 
   return (
     <button

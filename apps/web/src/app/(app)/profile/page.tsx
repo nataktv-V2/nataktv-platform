@@ -6,8 +6,11 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { RazorpayCheckout } from "@/components/subscription/RazorpayCheckout";
-import { isCapacitorApp, purchaseMonthly } from "@/lib/revenuecat";
+import { RazorpayCheckout } from "@/components/subscription/RazorpayCheckout"; // Only used for test accounts
+import { purchaseMonthly } from "@/lib/revenuecat";
+
+// Razorpay test accounts — these emails get Razorpay instead of Google Play Billing
+const RAZORPAY_TEST_EMAILS = ["sandeep@indidino.com"];
 
 export default function ProfilePage() {
   const { user, loading, signInWithGoogle, signOut } = useAuth();
@@ -293,7 +296,20 @@ export default function ProfilePage() {
                 <p className="text-zinc-500 text-xs mt-0.5">then ₹199/month · cancel anytime</p>
               </div>
             )}
-            {isCapacitorApp() ? (
+            {user.email && RAZORPAY_TEST_EMAILS.includes(user.email) ? (
+              <RazorpayCheckout
+                onSuccess={() => router.push("/home")}
+                onError={() => {}}
+                className="w-full text-center text-white py-2.5 rounded-lg font-semibold text-sm"
+                style={{
+                  background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer 3s linear infinite",
+                }}
+              >
+                {hadTrialBefore ? "Subscribe Now — ₹199/mo" : "Start Free Trial"}
+              </RazorpayCheckout>
+            ) : (
               <button
                 onClick={async () => {
                   const result = await purchaseMonthly();
@@ -312,31 +328,6 @@ export default function ProfilePage() {
               >
                 {hadTrialBefore ? "Subscribe Now — ₹199/mo" : "Start Free Trial"}
               </button>
-            ) : hadTrialBefore ? (
-              <RazorpayCheckout
-                onSuccess={() => router.push("/home")}
-                onError={() => {}}
-                className="w-full text-center text-white py-2.5 rounded-lg font-semibold text-sm"
-                style={{
-                  background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
-                  backgroundSize: "200% 100%",
-                  animation: "shimmer 3s linear infinite",
-                }}
-              >
-                Subscribe Now
-              </RazorpayCheckout>
-            ) : (
-              <Link
-                href="/subscribe"
-                className="block text-center text-white py-2.5 rounded-lg font-semibold text-sm"
-                style={{
-                  background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
-                  backgroundSize: "200% 100%",
-                  animation: "shimmer 3s linear infinite",
-                }}
-              >
-                Subscribe Now
-              </Link>
             )}
           </>
         )}
