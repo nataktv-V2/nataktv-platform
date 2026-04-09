@@ -1,12 +1,12 @@
 "use client";
 
 import { useAuth } from "@/components/auth/AuthProvider";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { isCapacitorApp } from "@/lib/revenuecat";
 
 // Payment is routed through beatai.indidino.com/nataktv since nataktv.com
 // doesn't have Razorpay payment permission yet.
-// In Capacitor WebView, we load Razorpay SDK inline to avoid opening Chrome.
+// In Capacitor, we show an iframe overlay so the user stays inside the app.
 const BEATAI_PAYMENT_URL = "https://beatai.indidino.com/nataktv";
 const PAYMENT_CALLBACK_URL = `${typeof window !== "undefined" ? window.location.origin : ""}/payment-done`;
 
@@ -40,22 +40,6 @@ type RazorpayCheckoutProps = {
   style?: React.CSSProperties;
 };
 
-/** Load Razorpay checkout.js script once */
-function loadRazorpayScript(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((window as any).Razorpay) {
-      resolve();
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load Razorpay SDK"));
-    document.head.appendChild(script);
-  });
-}
-
 export function RazorpayCheckout({
   onSuccess,
   onError,
@@ -65,6 +49,39 @@ export function RazorpayCheckout({
 }: RazorpayCheckoutProps) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [showIframe, setShowIframe] = useState(false);
+  const [iframeSrc, setIframeSrc] = useState("");
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  // Listen for postMessage from payment-done page inside the iframe
+  useEffect(() => {
+    if (!showIframe) return;
+
+    const handleMessage = (event: MessageEvent) => {
+      if (!event.data || typeof event.data !== "object") return;
+
+      if (event.data.type === "razorpay-success") {
+        setShowIframe(false);
+        setIframeSrc("");
+        setLoading(false);
+        onSuccess?.();
+      } else if (event.data.type === "razorpay-error") {
+        setShowIframe(false);
+        setIframeSrc("");
+        setLoading(false);
+        onError?.(event.data.error || "Payment failed");
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [showIframe, onSuccess, onError]);
+
+  const handleClose = useCallback(() => {
+    setShowIframe(false);
+    setIframeSrc("");
+    setLoading(false);
+  }, []);
 
   const handleClick = useCallback(async () => {
     if (!user) return;
@@ -104,61 +121,21 @@ export function RazorpayCheckout({
         config: UPI_CONFIG,
       };
 
-      // --- CAPACITOR: Open Razorpay modal inline (no Chrome redirect) ---
-      if (isCapacitorApp()) {
-        await loadRazorpayScript();
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const Razorpay = (window as any).Razorpay;
-        const rzp = new Razorpay({
-          ...paymentData,
-          handler: async (response: {
-            razorpay_payment_id: string;
-            razorpay_subscription_id: string;
-            razorpay_signature: string;
-          }) => {
-            // Verify payment on our server
-            try {
-              const verifyRes = await fetch("/api/subscription/verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_subscription_id: response.razorpay_subscription_id,
-                  razorpay_signature: response.razorpay_signature,
-                }),
-              });
-              if (verifyRes.ok) {
-                onSuccess?.();
-              } else {
-                onError?.("Payment verification failed. Contact support if amount was deducted.");
-              }
-            } catch {
-              onError?.("Network error during verification.");
-            }
-          },
-          modal: {
-            ondismiss: () => {
-              setLoading(false);
-            },
-            confirm_close: true,
-          },
-        });
-        rzp.on("payment.failed", (resp: { error?: { description?: string } }) => {
-          onError?.(resp?.error?.description || "Payment failed");
-          setLoading(false);
-        });
-        rzp.open();
-        return;
-      }
-
-      // --- WEB: Redirect to beatai proxy (existing flow) ---
-      const url =
+      // Build the beatai URL
+      const beataiUrl =
         BEATAI_PAYMENT_URL +
         "?data=" + encodeURIComponent(JSON.stringify(paymentData)) +
         "&callback=" + encodeURIComponent(PAYMENT_CALLBACK_URL);
 
-      window.location.href = url;
+      // --- CAPACITOR: Show iframe overlay (stays inside the app) ---
+      if (isCapacitorApp()) {
+        setIframeSrc(beataiUrl);
+        setShowIframe(true);
+        return;
+      }
+
+      // --- WEB: Redirect to beatai proxy ---
+      window.location.href = beataiUrl;
     } catch {
       onError?.("Something went wrong");
       setLoading(false);
@@ -166,20 +143,93 @@ export function RazorpayCheckout({
   }, [user, onSuccess, onError]);
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={loading || !user}
-      className={className}
-      style={style}
-    >
-      {loading ? (
-        <span className="flex items-center justify-center gap-2">
-          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          Processing...
-        </span>
-      ) : (
-        children
+    <>
+      <button
+        onClick={handleClick}
+        disabled={loading || !user}
+        className={className}
+        style={style}
+      >
+        {loading ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            Processing...
+          </span>
+        ) : (
+          children
+        )}
+      </button>
+
+      {/* Full-screen iframe overlay for Capacitor in-app payment */}
+      {showIframe && (
+        <div
+          ref={overlayRef}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 99999,
+            backgroundColor: "#000",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {/* Top bar with back button */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "12px 16px",
+              backgroundColor: "#0a0a0c",
+              borderBottom: "1px solid rgba(255,255,255,0.1)",
+              flexShrink: 0,
+            }}
+          >
+            <button
+              onClick={handleClose}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                color: "#fff",
+                background: "none",
+                border: "none",
+                fontSize: "15px",
+                fontWeight: 600,
+                cursor: "pointer",
+                padding: "4px 0",
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5" />
+                <path d="m12 19-7-7 7-7" />
+              </svg>
+              Back
+            </button>
+            <span
+              style={{
+                marginLeft: "auto",
+                color: "#71717a",
+                fontSize: "12px",
+              }}
+            >
+              Secure Payment
+            </span>
+          </div>
+
+          {/* Iframe loading the beatai payment page */}
+          <iframe
+            src={iframeSrc}
+            style={{
+              flex: 1,
+              width: "100%",
+              border: "none",
+              backgroundColor: "#fff",
+            }}
+            allow="payment"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"
+          />
+        </div>
       )}
-    </button>
+    </>
   );
 }

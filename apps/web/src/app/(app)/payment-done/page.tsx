@@ -20,6 +20,8 @@ function PaymentVerifier() {
       return;
     }
 
+    const isInIframe = window.parent !== window;
+
     fetch("/api/subscription/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -32,15 +34,28 @@ function PaymentVerifier() {
       .then((res) => {
         if (res.ok) {
           setStatus("success");
-          setTimeout(() => router.push("/home"), 2000);
+          // If inside iframe (Capacitor), notify parent to close overlay
+          if (isInIframe) {
+            window.parent.postMessage({ type: "razorpay-success" }, "*");
+          } else {
+            setTimeout(() => router.push("/home"), 2000);
+          }
         } else {
           setStatus("error");
-          setErrorMsg("Payment verification failed. Contact support if amount was deducted.");
+          const errMsg = "Payment verification failed. Contact support if amount was deducted.";
+          setErrorMsg(errMsg);
+          if (isInIframe) {
+            window.parent.postMessage({ type: "razorpay-error", error: errMsg }, "*");
+          }
         }
       })
       .catch(() => {
         setStatus("error");
-        setErrorMsg("Network error. Please check your connection.");
+        const errMsg = "Network error. Please check your connection.";
+        setErrorMsg(errMsg);
+        if (isInIframe) {
+          window.parent.postMessage({ type: "razorpay-error", error: errMsg }, "*");
+        }
       });
   }, [searchParams, router]);
 
