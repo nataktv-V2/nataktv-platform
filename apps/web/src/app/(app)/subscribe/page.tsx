@@ -5,7 +5,7 @@ import { RazorpayCheckout } from "@/components/subscription/RazorpayCheckout"; /
 import { useSubscription } from "@/components/subscription/SubscriptionGate";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { purchaseMonthly, getTrialInfo, type TrialInfo } from "@/lib/revenuecat";
+import { purchaseMonthly, getTrialInfo, restorePurchases, isCapacitorApp, type TrialInfo } from "@/lib/revenuecat";
 
 // Razorpay test accounts — these emails get Razorpay instead of Google Play Billing
 const RAZORPAY_TEST_EMAILS = ["sandeep@indidino.com"];
@@ -20,6 +20,7 @@ export default function SubscribePage() {
   const [rcTrialInfo, setRcTrialInfo] = useState<TrialInfo | null>(null);
   const useRazorpay = user?.email && RAZORPAY_TEST_EMAILS.includes(user.email);
   const [purchasing, setPurchasing] = useState(false);
+  const [restoring, setRestoring] = useState(false);
 
   // Check trial eligibility
   useEffect(() => {
@@ -204,6 +205,26 @@ export default function SubscribePage() {
             }}
           >
             Sign in to Subscribe →
+          </button>
+        )}
+
+        {isCapacitorApp() && !useRazorpay && (
+          <button
+            disabled={restoring}
+            onClick={async () => {
+              setRestoring(true);
+              setError("");
+              const restored = await restorePurchases();
+              setRestoring(false);
+              if (restored) {
+                router.push("/home");
+              } else {
+                setError("No previous purchase found to restore.");
+              }
+            }}
+            className="w-full text-center text-zinc-400 text-xs py-2 underline"
+          >
+            {restoring ? "Restoring..." : "Already purchased? Restore"}
           </button>
         )}
 

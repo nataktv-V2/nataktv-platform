@@ -123,6 +123,28 @@ export async function purchaseMonthly(): Promise<{ success: boolean; error?: str
 
   try {
     const Purchases = getRC();
+
+    // First, try to restore any pending/unacknowledged purchases
+    // This fixes "Developer hasn't acknowledged your purchase" errors
+    try {
+      const restored = await Purchases.restorePurchases();
+      const restoredEnt = restored?.customerInfo?.entitlements?.active?.["Natak TV Pro"];
+      if (restoredEnt) {
+        console.log("[RevenueCat] Restored existing purchase — user is already subscribed");
+        syncGooglePlayToServer(
+          restored?.customerInfo?.originalAppUserId || "",
+          {
+            active: true,
+            expirationDate: restoredEnt.expirationDate || undefined,
+            productId: restoredEnt.productIdentifier || "nataktv_monthly",
+          }
+        );
+        return { success: true };
+      }
+    } catch (restoreErr) {
+      console.log("[RevenueCat] Restore attempt before purchase:", restoreErr);
+    }
+
     const offerings = await Purchases.getOfferings();
 
     const monthly =
@@ -133,15 +155,11 @@ export async function purchaseMonthly(): Promise<{ success: boolean; error?: str
       return { success: false, error: "No subscription package found" };
     }
 
-    // Google Play handles trial eligibility automatically —
-    // if the user is eligible for the free trial, they get 1 week free
-    // if not (already used trial / cancelled), they see ₹199/month
     const result = await Purchases.purchasePackage({ aPackage: monthly });
     console.log("[RevenueCat] Purchase result:", JSON.stringify(result));
 
     const entitlement = result?.customerInfo?.entitlements?.active?.["Natak TV Pro"];
     if (entitlement) {
-      // Sync to server DB so our backend knows about this Google Play purchase
       syncGooglePlayToServer(
         result?.customerInfo?.originalAppUserId || "",
         {
