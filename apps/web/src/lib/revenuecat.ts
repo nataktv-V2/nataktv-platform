@@ -188,12 +188,26 @@ export async function getEntitlementInfo(): Promise<EntitlementInfo> {
 
   try {
     const Purchases = getRC();
+
+    // Invalidate cache to get fresh data from RevenueCat servers
+    if (typeof Purchases.invalidateCustomerInfoCache === "function") {
+      await Purchases.invalidateCustomerInfoCache();
+    }
+
     const info = await Purchases.getCustomerInfo();
     const ent = info?.customerInfo?.entitlements?.active?.["Natak TV Pro"];
+
+    console.log("[RevenueCat] Full entitlement:", JSON.stringify(ent));
+
     if (ent) {
+      // Detect cancellation: check willRenew, unsubscribeDetectedAt, or billingIssueDetectedAt
+      const isCancelled = ent.willRenew === false
+        || ent.willRenew === "false"
+        || !!ent.unsubscribeDetectedAt;
+
       return {
         active: true,
-        willRenew: ent.willRenew !== false, // false = cancelled but still in paid period
+        willRenew: !isCancelled,
         expirationDate: ent.expirationDate || undefined,
         productId: ent.productIdentifier || "nataktv_monthly",
       };
