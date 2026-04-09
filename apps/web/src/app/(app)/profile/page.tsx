@@ -7,14 +7,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { RazorpayCheckout } from "@/components/subscription/RazorpayCheckout";
-import { isCapacitorApp } from "@/lib/revenuecat";
+import { isCapacitorApp, purchaseMonthly } from "@/lib/revenuecat";
+
+const RAZORPAY_TEST_EMAILS = ["sandeep@indidino.com"];
 
 export default function ProfilePage() {
   const { user, loading, signInWithGoogle, signOut } = useAuth();
   const { status, isSubscribed, loading: subLoading } = useSubscription();
   const [cancelling, setCancelling] = useState(false);
   const [hadTrialBefore, setHadTrialBefore] = useState(false);
+  const [purchasing, setPurchasing] = useState(false);
   const router = useRouter();
+  const isTestEmail = RAZORPAY_TEST_EMAILS.includes(user?.email || "");
+  const isCapacitor = isCapacitorApp();
 
   // Check if user already used trial
   useEffect(() => {
@@ -326,18 +331,52 @@ export default function ProfilePage() {
                 <p className="text-zinc-500 text-xs mt-0.5">then ₹199/month · cancel anytime</p>
               </div>
             )}
-            <RazorpayCheckout
-              onSuccess={() => router.push("/home")}
-              onError={() => {}}
-              className="w-full text-center text-white py-2.5 rounded-lg font-semibold text-sm"
-              style={{
-                background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
-                backgroundSize: "200% 100%",
-                animation: "shimmer 3s linear infinite",
-              }}
-            >
-              {hadTrialBefore ? "Subscribe Now — ₹199/mo" : "Start Free Trial"}
-            </RazorpayCheckout>
+            {isTestEmail ? (
+              <RazorpayCheckout
+                onSuccess={() => router.push("/home")}
+                onError={() => {}}
+                className="w-full text-center text-white py-2.5 rounded-lg font-semibold text-sm"
+                style={{
+                  background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer 3s linear infinite",
+                }}
+              >
+                {hadTrialBefore ? "Subscribe Now — ₹199/mo" : "Start Free Trial"}
+              </RazorpayCheckout>
+            ) : isCapacitor ? (
+              <button
+                disabled={purchasing}
+                onClick={async () => {
+                  setPurchasing(true);
+                  const result = await purchaseMonthly();
+                  if (result.success) {
+                    router.push("/home");
+                  }
+                  setPurchasing(false);
+                }}
+                className="w-full text-center text-white py-2.5 rounded-lg font-semibold text-sm"
+                style={{
+                  background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer 3s linear infinite",
+                }}
+              >
+                {purchasing ? "Processing..." : hadTrialBefore ? "Subscribe Now — ₹199/mo" : "Start Free Trial"}
+              </button>
+            ) : (
+              <button
+                onClick={() => router.push("/subscribe")}
+                className="w-full text-center text-white py-2.5 rounded-lg font-semibold text-sm"
+                style={{
+                  background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer 3s linear infinite",
+                }}
+              >
+                {hadTrialBefore ? "Subscribe Now — ₹199/mo" : "Start Free Trial"}
+              </button>
+            )}
           </>
         )}
       </div>
