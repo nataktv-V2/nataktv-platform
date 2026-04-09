@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { RazorpayCheckout } from "@/components/subscription/RazorpayCheckout"; // Only used for test accounts
-import { purchaseMonthly } from "@/lib/revenuecat";
+import { purchaseMonthly, isCapacitorApp } from "@/lib/revenuecat";
 
 // Razorpay test accounts — these emails get Razorpay instead of Google Play Billing
 const RAZORPAY_TEST_EMAILS = ["sandeep@indidino.com"];
@@ -203,6 +203,13 @@ export default function ProfilePage() {
   }
 
   const handleCancel = async () => {
+    // Google Play subscriptions must be cancelled through Play Store
+    if (isCapacitorApp()) {
+      if (!confirm("You'll be redirected to Google Play to manage your subscription.")) return;
+      window.open("https://play.google.com/store/account/subscriptions", "_blank");
+      return;
+    }
+
     if (!confirm("Are you sure you want to cancel your subscription? You can still watch until the end of your current billing period.")) return;
     setCancelling(true);
     try {
@@ -281,7 +288,7 @@ export default function ProfilePage() {
               disabled={cancelling}
               className="w-full text-center border border-red-500/30 text-red-400 hover:bg-red-500/10 py-2.5 rounded-lg text-sm font-medium transition-colors"
             >
-              {cancelling ? "Cancelling..." : "Cancel Subscription"}
+              {cancelling ? "Cancelling..." : isCapacitorApp() ? "Manage Subscription" : "Cancel Subscription"}
             </button>
           </>
         ) : (
