@@ -282,23 +282,49 @@ export default function ProfilePage() {
 
         {isSubscribed ? (
           <>
-            {status?.status === "TRIAL" && status.trialEnd && (
-              <p className="text-zinc-400 text-sm mb-2">
-                Trial ends: {new Date(status.trialEnd).toLocaleDateString()}
-              </p>
+            {status?.status === "CANCELLED" && status.currentPeriodEnd ? (
+              <>
+                <p className="text-zinc-400 text-sm mb-2">
+                  Cancelled — active until {new Date(status.currentPeriodEnd).toLocaleDateString()}
+                </p>
+                {isCapacitorApp() ? (
+                  <button
+                    onClick={() => window.open("https://play.google.com/store/account/subscriptions", "_blank")}
+                    className="w-full text-center bg-[#f97316] hover:bg-[#ea580c] text-white py-2.5 rounded-lg text-sm font-semibold transition-colors"
+                  >
+                    Resubscribe in Google Play
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleCancel}
+                    disabled={cancelling}
+                    className="w-full text-center border border-zinc-600 text-zinc-400 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Manage Subscription
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                {status?.status === "TRIAL" && status.trialEnd && (
+                  <p className="text-zinc-400 text-sm mb-2">
+                    Trial ends: {new Date(status.trialEnd).toLocaleDateString()}
+                  </p>
+                )}
+                {status?.currentPeriodEnd && (
+                  <p className="text-zinc-400 text-sm mb-4">
+                    Next billing: {new Date(status.currentPeriodEnd).toLocaleDateString()}
+                  </p>
+                )}
+                <button
+                  onClick={handleCancel}
+                  disabled={cancelling}
+                  className="w-full text-center border border-red-500/30 text-red-400 hover:bg-red-500/10 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                >
+                  {cancelling ? "Cancelling..." : isCapacitorApp() ? "Manage Subscription" : "Cancel Subscription"}
+                </button>
+              </>
             )}
-            {status?.currentPeriodEnd && (
-              <p className="text-zinc-400 text-sm mb-4">
-                Next billing: {new Date(status.currentPeriodEnd).toLocaleDateString()}
-              </p>
-            )}
-            <button
-              onClick={handleCancel}
-              disabled={cancelling}
-              className="w-full text-center border border-red-500/30 text-red-400 hover:bg-red-500/10 py-2.5 rounded-lg text-sm font-medium transition-colors"
-            >
-              {cancelling ? "Cancelling..." : isCapacitorApp() ? "Manage Subscription" : "Cancel Subscription"}
-            </button>
           </>
         ) : (
           <>

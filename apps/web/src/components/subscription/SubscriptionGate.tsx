@@ -38,7 +38,12 @@ export function useSubscription() {
         syncGooglePlayToServer(uid, ent);
 
         if (ent.active) {
-          setStatus({ subscribed: true, status: "ACTIVE" });
+          if (ent.willRenew) {
+            setStatus({ subscribed: true, status: "ACTIVE", currentPeriodEnd: ent.expirationDate });
+          } else {
+            // Cancelled but still in paid period — show as cancelled with expiry
+            setStatus({ subscribed: true, status: "CANCELLED", currentPeriodEnd: ent.expirationDate });
+          }
           setLoading(false);
           return;
         }

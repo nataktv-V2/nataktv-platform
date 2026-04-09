@@ -123,28 +123,6 @@ export async function purchaseMonthly(): Promise<{ success: boolean; error?: str
 
   try {
     const Purchases = getRC();
-
-    // First, try to restore any pending/unacknowledged purchases
-    // This fixes "Developer hasn't acknowledged your purchase" errors
-    try {
-      const restored = await Purchases.restorePurchases();
-      const restoredEnt = restored?.customerInfo?.entitlements?.active?.["Natak TV Pro"];
-      if (restoredEnt) {
-        console.log("[RevenueCat] Restored existing purchase — user is already subscribed");
-        syncGooglePlayToServer(
-          restored?.customerInfo?.originalAppUserId || "",
-          {
-            active: true,
-            expirationDate: restoredEnt.expirationDate || undefined,
-            productId: restoredEnt.productIdentifier || "nataktv_monthly",
-          }
-        );
-        return { success: true };
-      }
-    } catch (restoreErr) {
-      console.log("[RevenueCat] Restore attempt before purchase:", restoreErr);
-    }
-
     const offerings = await Purchases.getOfferings();
 
     const monthly =
@@ -184,6 +162,7 @@ export async function purchaseMonthly(): Promise<{ success: boolean; error?: str
 
 export type EntitlementInfo = {
   active: boolean;
+  willRenew: boolean;
   expirationDate?: string;
   productId?: string;
 };
@@ -204,7 +183,7 @@ export async function checkEntitlement(): Promise<boolean> {
 }
 
 export async function getEntitlementInfo(): Promise<EntitlementInfo> {
-  if (!isCapacitorApp()) return { active: false };
+  if (!isCapacitorApp()) return { active: false, willRenew: false };
 
   try {
     const Purchases = getRC();
@@ -213,14 +192,15 @@ export async function getEntitlementInfo(): Promise<EntitlementInfo> {
     if (ent) {
       return {
         active: true,
+        willRenew: ent.willRenew !== false, // false = cancelled but still in paid period
         expirationDate: ent.expirationDate || undefined,
         productId: ent.productIdentifier || "nataktv_monthly",
       };
     }
-    return { active: false };
+    return { active: false, willRenew: false };
   } catch (err) {
     console.error("[RevenueCat] Entitlement info error:", err);
-    return { active: false };
+    return { active: false, willRenew: false };
   }
 }
 
