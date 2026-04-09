@@ -3,7 +3,7 @@
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { isCapacitorApp, checkEntitlement } from "@/lib/revenuecat";
+import { isCapacitorApp, getEntitlementInfo, syncGooglePlayToServer } from "@/lib/revenuecat";
 
 type SubscriptionGateProps = {
   children: React.ReactNode;
@@ -31,14 +31,18 @@ export function useSubscription() {
 
     const uid = user.uid;
 
-    // In Capacitor, also check RevenueCat entitlement
+    // In Capacitor, check RevenueCat entitlement and sync to server
     if (isCapacitorApp()) {
-      checkEntitlement().then((active) => {
-        if (active) {
+      getEntitlementInfo().then((ent) => {
+        // Sync Google Play state to our DB (fire-and-forget)
+        syncGooglePlayToServer(uid, ent);
+
+        if (ent.active) {
           setStatus({ subscribed: true, status: "ACTIVE" });
           setLoading(false);
           return;
         }
+        // RevenueCat says not active — trust it over stale server data
         fetchServerStatus();
       });
     } else {

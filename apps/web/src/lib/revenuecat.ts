@@ -141,6 +141,15 @@ export async function purchaseMonthly(): Promise<{ success: boolean; error?: str
 
     const entitlement = result?.customerInfo?.entitlements?.active?.["Natak TV Pro"];
     if (entitlement) {
+      // Sync to server DB so our backend knows about this Google Play purchase
+      syncGooglePlayToServer(
+        result?.customerInfo?.originalAppUserId || "",
+        {
+          active: true,
+          expirationDate: entitlement.expirationDate || undefined,
+          productId: entitlement.productIdentifier || "nataktv_monthly",
+        }
+      );
       return { success: true };
     }
 
@@ -155,6 +164,12 @@ export async function purchaseMonthly(): Promise<{ success: boolean; error?: str
   }
 }
 
+export type EntitlementInfo = {
+  active: boolean;
+  expirationDate?: string;
+  productId?: string;
+};
+
 export async function checkEntitlement(): Promise<boolean> {
   if (!isCapacitorApp()) return false;
 
@@ -168,6 +183,44 @@ export async function checkEntitlement(): Promise<boolean> {
     console.error("[RevenueCat] Check entitlement error:", err);
     return false;
   }
+}
+
+export async function getEntitlementInfo(): Promise<EntitlementInfo> {
+  if (!isCapacitorApp()) return { active: false };
+
+  try {
+    const Purchases = getRC();
+    const info = await Purchases.getCustomerInfo();
+    const ent = info?.customerInfo?.entitlements?.active?.["Natak TV Pro"];
+    if (ent) {
+      return {
+        active: true,
+        expirationDate: ent.expirationDate || undefined,
+        productId: ent.productIdentifier || "nataktv_monthly",
+      };
+    }
+    return { active: false };
+  } catch (err) {
+    console.error("[RevenueCat] Entitlement info error:", err);
+    return { active: false };
+  }
+}
+
+/**
+ * Sync Google Play subscription state to our server DB.
+ * Fire-and-forget — doesn't block the UI.
+ */
+export function syncGooglePlayToServer(uid: string, entitlement: EntitlementInfo) {
+  fetch("/api/subscription/google-play-sync", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      uid,
+      active: entitlement.active,
+      productId: entitlement.productId,
+      expirationDate: entitlement.expirationDate,
+    }),
+  }).catch((err) => console.error("[RevenueCat] Sync error:", err));
 }
 
 export async function restorePurchases(): Promise<boolean> {

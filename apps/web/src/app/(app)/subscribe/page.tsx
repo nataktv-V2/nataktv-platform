@@ -67,7 +67,8 @@ export default function SubscribePage() {
     );
   }
 
-  const showTrial = !hadTrialBefore;
+  // Show trial UI only if BOTH server says no prior trial AND RevenueCat says eligible
+  const showTrial = !hadTrialBefore && (rcTrialInfo?.eligible !== false);
 
   return (
     <div className="max-w-md mx-auto px-4 py-6">

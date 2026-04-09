@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { RazorpayCheckout } from "@/components/subscription/RazorpayCheckout"; // Only used for test accounts
-import { purchaseMonthly, isCapacitorApp } from "@/lib/revenuecat";
+import { purchaseMonthly, isCapacitorApp, getTrialInfo } from "@/lib/revenuecat";
 
 // Razorpay test accounts — these emails get Razorpay instead of Google Play Billing
 const RAZORPAY_TEST_EMAILS = ["sandeep@indidino.com"];
@@ -19,13 +19,22 @@ export default function ProfilePage() {
   const [hadTrialBefore, setHadTrialBefore] = useState(false);
   const router = useRouter();
 
-  // Check if user already used trial
+  // Check if user already used trial (server DB + RevenueCat)
   useEffect(() => {
     if (!user?.uid) return;
+
+    // Server check
     fetch(`/api/subscription/check-trial?uid=${user.uid}`)
       .then((r) => r.json())
-      .then((data) => setHadTrialBefore(data.hadTrial))
+      .then((data) => { if (data.hadTrial) setHadTrialBefore(true); })
       .catch(() => {});
+
+    // RevenueCat check (Capacitor only) — if not eligible, they used trial
+    if (isCapacitorApp()) {
+      getTrialInfo().then((info) => {
+        if (!info.eligible) setHadTrialBefore(true);
+      });
+    }
   }, [user?.uid]);
 
   // Redirect to /home after login
