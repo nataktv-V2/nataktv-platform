@@ -60,6 +60,27 @@ export function RazorpayCheckout({
         },
         theme: { color: "#f97316" },
         notes: { _source: "nataktv" },
+        // Auto-detect UPI apps (PhonePe, GPay, Paytm etc.) for one-tap payment
+        config: {
+          display: {
+            blocks: {
+              recommended: {
+                name: "Pay using UPI App",
+                instruments: [
+                  {
+                    method: "upi",
+                    flows: ["intent"],
+                    apps: ["phonepe", "google_pay", "paytm", "bhim", "cred"],
+                  },
+                ],
+              },
+            },
+            sequence: ["block.recommended"],
+            preferences: {
+              show_default_blocks: true, // keep other methods (card, netbanking) below
+            },
+          },
+        },
       };
 
       // Redirect to beatai payment proxy page
