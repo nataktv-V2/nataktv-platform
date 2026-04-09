@@ -142,6 +142,7 @@ export async function purchaseMonthly(): Promise<{ success: boolean; error?: str
         result?.customerInfo?.originalAppUserId || "",
         {
           active: true,
+          willRenew: true,
           expirationDate: entitlement.expirationDate || undefined,
           productId: entitlement.productIdentifier || "nataktv_monthly",
         }
