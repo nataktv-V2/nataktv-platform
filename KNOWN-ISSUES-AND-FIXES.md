@@ -10,16 +10,24 @@
 
 **Why debug APK works but Play Store doesn't**: Debug APK uses local debug key (SHA-1: `95ea05...`) which has an OAuth client in OUR Firebase project → same project → works. Play Store uses Google's key → different project → fails.
 
-**Fix**: 
+**Fix (plugin patch approach)**: 
 - `capacitor.config.ts` — GoogleAuth plugin must NOT have `clientId`, `androidClientId`, or `serverClientId`
-- `android/app/src/main/res/values/strings.xml` — `server_client_id` must be EMPTY: `<string name="server_client_id"></string>`
+- `android/app/src/main/res/values/strings.xml` — `server_client_id` = `"SKIP"` (NOT empty — empty crashes the plugin)
+- Patched `GoogleAuth.java` via `pnpm patch` — skips `requestIdToken()` when clientId is "SKIP", empty, "Your Web Client Key", or doesn't contain `.apps.googleusercontent.com`
+- Patch file: `patches/@codetrix-studio__capacitor-google-auth@3.4.0-rc.4.patch`
 - Our custom token flow only needs basic profile info (name, email, Google ID) — no ID token needed
+
+**IMPORTANT — what does NOT work**:
+- Empty `server_client_id` (`""`) → crashes with "Given String is empty or null"
+- Removing `server_client_id` entirely → plugin default "Your Web Client Key" takes over → invalid audience
+- Any real web client ID → "must be in same project" error on Play Store
 
 **Files to check before every release**:
 ```
-apps/mobile/capacitor.config.ts → GoogleAuth section
-apps/mobile/android/app/src/main/res/values/strings.xml → server_client_id
+apps/mobile/capacitor.config.ts → GoogleAuth section (no clientId)
+apps/mobile/android/app/src/main/res/values/strings.xml → server_client_id = "SKIP"
 apps/mobile/android/app/src/main/assets/capacitor.config.json → after cap sync
+patches/@codetrix-studio__capacitor-google-auth@3.4.0-rc.4.patch → must exist
 ```
 
 **Verification command after build**:
@@ -28,6 +36,10 @@ apps/mobile/android/app/src/main/assets/capacitor.config.json → after cap sync
 cd apps/mobile/android
 unzip -p app/build/outputs/bundle/release/app-release.aab "base/assets/capacitor.config.json" | grep -A10 "GoogleAuth"
 # Should NOT contain clientId or androidClientId
+
+# Check server_client_id = SKIP in merged resources
+grep "server_client_id" app/build/intermediates/incremental/release/mergeReleaseResources/merged.dir/values/values.xml
+# Should show: SKIP
 ```
 
 ---
@@ -123,7 +135,8 @@ adb install app-debug.apk
 
 ### Pre-build checks:
 - [ ] `capacitor.config.ts` → GoogleAuth has NO `clientId`, `androidClientId`, or `serverClientId`
-- [ ] `strings.xml` → `server_client_id` is EMPTY
+- [ ] `strings.xml` → `server_client_id` = "SKIP" (NOT empty, NOT removed)
+- [ ] `patches/@codetrix-studio__capacitor-google-auth@3.4.0-rc.4.patch` exists
 - [ ] `build.gradle` → `versionCode` incremented (must be higher than previous upload)
 - [ ] `build.gradle` → `versionName` updated
 
@@ -163,4 +176,4 @@ ssh root@64.227.168.208 "cd /opt/nataktv && git pull && pnpm build && pm2 restar
 
 ---
 
-*Last updated: 2026-04-08*
+*Last updated: 2026-04-09*

@@ -4,7 +4,7 @@
     <string name="title_activity_main">Natak TV</string>
     <string name="package_name">com.nataktv.app</string>
     <string name="custom_url_scheme">com.nataktv.app</string>
-    <string name="server_client_id"></string>
+    <string name="server_client_id" translatable="false">SKIP</string>
     <string name="facebook_app_id">1674220434019581</string>
     <string name="facebook_client_token">5904eae8f6c8d3d2df52c1d913c043d8</string>
 </resources>

@@ -1,0 +1,50 @@
+diff --git a/android/src/main/java/com/codetrixstudio/capacitor/GoogleAuth/GoogleAuth.java b/android/src/main/java/com/codetrixstudio/capacitor/GoogleAuth/GoogleAuth.java
+index 147fac87c55e9b1d664259ffefa1286f0f8d7d13..0460279d3920dd150086118b6695ef978815c198 100644
+--- a/android/src/main/java/com/codetrixstudio/capacitor/GoogleAuth/GoogleAuth.java
++++ b/android/src/main/java/com/codetrixstudio/capacitor/GoogleAuth/GoogleAuth.java
+@@ -55,11 +55,20 @@ public class GoogleAuth extends Plugin {
+ 
+   public void loadSignInClient (String clientId, boolean forceCodeForRefreshToken, String[] scopeArray) {
+     GoogleSignInOptions.Builder googleSignInBuilder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+-      .requestIdToken(clientId)
+       .requestEmail();
+ 
+-    if (forceCodeForRefreshToken) {
+-      googleSignInBuilder.requestServerAuthCode(clientId, true);
++    // Only request ID token if clientId is a real OAuth client ID
++    // Skip for placeholders/empty to avoid "must be in same project" error
++    boolean isValidClientId = clientId != null
++      && !clientId.trim().isEmpty()
++      && !clientId.equals("SKIP")
++      && !clientId.equals("Your Web Client Key")
++      && clientId.contains(".apps.googleusercontent.com");
++    if (isValidClientId) {
++      googleSignInBuilder.requestIdToken(clientId);
++      if (forceCodeForRefreshToken) {
++        googleSignInBuilder.requestServerAuthCode(clientId, true);
++      }
+     }
+ 
+     Scope[] scopes = new Scope[scopeArray.length - 1];
+@@ -172,10 +181,18 @@ public class GoogleAuth extends Plugin {
+ 
+   @PluginMethod()
+   public void initialize(final PluginCall call) {
+-    // get data from config
++    // get data from config — gracefully handle missing server_client_id
++    String fallbackClientId = "";
++    try {
++      int resId = this.getContext().getResources().getIdentifier("server_client_id", "string", this.getContext().getPackageName());
++      if (resId != 0) {
++        fallbackClientId = this.getContext().getString(resId);
++      }
++    } catch (Exception e) {
++      // server_client_id not found in strings.xml — that's OK
++    }
+     String configClientId = getConfig().getString("androidClientId",
+-      getConfig().getString("clientId",
+-        this.getContext().getString(R.string.server_client_id)));
++      getConfig().getString("clientId", fallbackClientId));
+     boolean configForceCodeForRefreshToken = getConfig().getBoolean("forceCodeForRefreshToken", false);
+     // need to get this as string so as to standardize with data from plugin call
+     String configScopeArray = getConfig().getString("scopes", new String());
