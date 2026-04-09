@@ -41,3 +41,4 @@ apps/web/scripts/migrate-to-prod.mjs
 apps/web/prisma/export-data.json
 apps/web/prisma/import-to-prod.ts
 scripts/create-excel.*
+.credentials/

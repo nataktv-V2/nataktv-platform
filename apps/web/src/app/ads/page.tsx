@@ -66,6 +66,73 @@ const thumbAds = [
   },
 ];
 
+const carouselAds = [
+  {
+    theme: "Carousel Ads — Shows",
+    description: "5 best shows + CTA card. Crop each 1080x1080 card for Meta carousel format.",
+    variants: [
+      { name: "5 Shows Carousel (6 cards)", href: "/ads/carousel-shows" },
+      { name: "5 Genres Carousel (6 cards)", href: "/ads/carousel-genres" },
+    ],
+  },
+];
+
+const beforeAfterAds = [
+  {
+    theme: "Before/After Ads",
+    description: "Split-screen transformation: boring life → exciting Natak TV. High engagement format.",
+    variants: [
+      { name: "Horizontal Split — Feed (1080x1080)", href: "/ads/before-after-feed" },
+      { name: "Vertical Split — Story (1080x1920)", href: "/ads/before-after-story" },
+      { name: "Swipe Reveal — Story (1080x1920)", href: "/ads/before-after-swipe" },
+    ],
+  },
+];
+
+const fomoAds = [
+  {
+    theme: "FOMO / Countdown Ads",
+    description: "Urgency-driven with countdown timer and expiring ₹2 offer. Creates FOMO.",
+    variants: [
+      { name: "Countdown Timer — Feed (1080x1080)", href: "/ads/fomo-feed" },
+      { name: "Hurry Offer — Story (1080x1920)", href: "/ads/fomo-story" },
+    ],
+  },
+];
+
+const compareAds = [
+  {
+    theme: "Comparison Ads — vs Netflix/Hotstar",
+    description: "Price and content comparison tables. Shows Natak TV is 99% cheaper.",
+    variants: [
+      { name: "Price Table — Feed (1080x1080)", href: "/ads/compare-price-feed" },
+      { name: "Content Split — Feed (1080x1080)", href: "/ads/compare-content-feed" },
+    ],
+  },
+];
+
+const reviewAds = [
+  {
+    theme: "Social Proof / Review Ads",
+    description: "User reviews and ratings. Trust-building format with 4.8★ rating.",
+    variants: [
+      { name: "3 Reviews Stack — Feed (1080x1080)", href: "/ads/review-feed" },
+      { name: "Full Review — Story (1080x1920)", href: "/ads/review-story" },
+    ],
+  },
+];
+
+const ugcAds = [
+  {
+    theme: "UGC-Style Ads (Fake Screen Recording)",
+    description: "Looks like someone screen-recording their phone browsing Natak TV. Authentic feel.",
+    variants: [
+      { name: "App Browse — Story (1080x1920)", href: "/ads/ugc-browse" },
+      { name: "Reaction — Story (1080x1920)", href: "/ads/ugc-reaction" },
+    ],
+  },
+];
+
 export default function AdsGallery() {
   return (
     <div
@@ -185,6 +252,52 @@ export default function AdsGallery() {
           </div>
         ))}
       </div>
+
+      {/* New Ad Types */}
+      {[
+        { title: "Carousel Ads", color: "#8b5cf6", data: carouselAds, label: "Open carousel" },
+        { title: "Before/After Ads", color: "#06b6d4", data: beforeAfterAds, label: "Open ad" },
+        { title: "FOMO / Countdown Ads", color: "#ef4444", data: fomoAds, label: "Open ad" },
+        { title: "Comparison Ads", color: "#22c55e", data: compareAds, label: "Open ad" },
+        { title: "Social Proof Ads", color: "#eab308", data: reviewAds, label: "Open ad" },
+        { title: "UGC-Style Ads", color: "#ec4899", data: ugcAds, label: "Open ad" },
+      ].map((section) => (
+        <div key={section.title} className="space-y-10 mt-14">
+          <h2 className="text-2xl font-bold" style={{ color: section.color }}>
+            {section.title}
+          </h2>
+          {section.data.map((group) => (
+            <div key={group.theme}>
+              <h2 className="text-xl font-semibold mb-1" style={{ color: "#f4f4f5" }}>
+                {group.theme}
+              </h2>
+              <p className="text-sm mb-4" style={{ color: "#a1a1aa" }}>
+                {group.description}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {group.variants.map((v) => (
+                  <Link
+                    key={v.href}
+                    href={v.href}
+                    className="block rounded-xl p-5 transition-colors"
+                    style={{
+                      backgroundColor: "#121216",
+                      border: `1px solid ${section.color}33`,
+                    }}
+                  >
+                    <p className="font-medium mb-1" style={{ color: "#f4f4f5" }}>
+                      {v.name}
+                    </p>
+                    <p className="text-sm" style={{ color: section.color }}>
+                      {section.label} &rarr;
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ))}
 
       <div
         className="mt-12 p-6 rounded-xl"

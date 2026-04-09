@@ -15,7 +15,7 @@ export function middleware(request: NextRequest) {
   // --- Marketing domain (nataktv.com) ---
   if (isMarketingDomain) {
     // Allow landing page, legal pages, and static assets
-    if (LANDING_PATHS.has(pathname) || pathname.startsWith("/_next") || pathname.startsWith("/posters") || pathname.startsWith("/api") || pathname.includes(".")) {
+    if (LANDING_PATHS.has(pathname) || pathname.startsWith("/_next") || pathname.startsWith("/posters") || pathname.startsWith("/api") || pathname.startsWith("/ads") || pathname.includes(".")) {
       return NextResponse.next();
     }
     // Everything else on marketing domain → redirect to app domain
