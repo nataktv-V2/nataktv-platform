@@ -26,9 +26,9 @@ function openNativeCheckout(
   Checkout.open(paymentData)
     .then((result: Record<string, string>) => {
       onSuccess({
-        razorpay_payment_id: result.razorpay_payment_id || result["razorpay_payment_id"],
-        razorpay_subscription_id: result.razorpay_subscription_id || result["razorpay_subscription_id"],
-        razorpay_signature: result.razorpay_signature || result["razorpay_signature"],
+        razorpay_payment_id: result["razorpay_payment_id"] ?? "",
+        razorpay_subscription_id: result["razorpay_subscription_id"] ?? "",
+        razorpay_signature: result["razorpay_signature"] ?? "",
       });
     })
     .catch((err: { description?: string; code?: string }) => {
