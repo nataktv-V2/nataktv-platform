@@ -9,28 +9,6 @@ import { useCallback, useState } from "react";
 const BEATAI_PAYMENT_URL = "https://beatai.indidino.com/nataktv";
 const PAYMENT_CALLBACK_URL = `${typeof window !== "undefined" ? window.location.origin : ""}/payment-done`;
 
-// UPI config for auto-detecting installed payment apps
-const UPI_CONFIG = {
-  display: {
-    blocks: {
-      recommended: {
-        name: "Pay using UPI App",
-        instruments: [
-          {
-            method: "upi",
-            flows: ["intent"],
-            apps: ["phonepe", "google_pay", "paytm", "bhim", "cred"],
-          },
-        ],
-      },
-    },
-    sequence: ["block.recommended"],
-    preferences: {
-      show_default_blocks: true,
-    },
-  },
-};
-
 type RazorpayCheckoutProps = {
   onSuccess?: () => void;
   onError?: (error: string) => void;
@@ -83,7 +61,6 @@ export function RazorpayCheckout({
         },
         theme: { color: "#f97316" },
         notes: { _source: "nataktv" },
-        config: UPI_CONFIG,
       };
 
       // Navigate to beatai payment proxy.
