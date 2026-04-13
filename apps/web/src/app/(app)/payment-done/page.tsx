@@ -10,9 +10,10 @@ function PaymentVerifier() {
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
-    const paymentId = searchParams.get("razorpay_payment_id");
-    const subscriptionId = searchParams.get("razorpay_subscription_id");
-    const signature = searchParams.get("razorpay_signature");
+    // Accept both Razorpay native param names AND beatai proxy short names
+    const paymentId = searchParams.get("razorpay_payment_id") || searchParams.get("payment_id");
+    const subscriptionId = searchParams.get("razorpay_subscription_id") || searchParams.get("order_id");
+    const signature = searchParams.get("razorpay_signature") || searchParams.get("signature");
 
     if (!paymentId || !subscriptionId || !signature) {
       setStatus("error");
