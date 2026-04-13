@@ -5,9 +5,6 @@ import { RazorpayCheckout } from "@/components/subscription/RazorpayCheckout";
 import { useSubscription } from "@/components/subscription/SubscriptionGate";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { isCapacitorApp, purchaseMonthly, getTrialInfo } from "@/lib/revenuecat";
-
-const RAZORPAY_TEST_EMAILS = ["sandeep@indidino.com"];
 
 export default function SubscribePage() {
   const { user, signInWithGoogle } = useAuth();
@@ -16,9 +13,6 @@ export default function SubscribePage() {
   const [error, setError] = useState("");
   const [hadTrialBefore, setHadTrialBefore] = useState(false);
   const [checkingTrial, setCheckingTrial] = useState(true);
-  const [purchasing, setPurchasing] = useState(false);
-  const isTestEmail = RAZORPAY_TEST_EMAILS.includes(user?.email || "");
-  const isCapacitor = isCapacitorApp();
 
   // Check trial eligibility
   useEffect(() => {
@@ -144,58 +138,18 @@ export default function SubscribePage() {
         )}
 
         {user ? (
-          isTestEmail ? (
-            /* Razorpay flow — only for test emails */
-            <RazorpayCheckout
-              onSuccess={() => router.push("/home")}
-              onError={(err) => setError(err)}
-              className="w-full text-white py-4 rounded-2xl font-bold text-lg transition-colors"
-              style={{
-                background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
-                backgroundSize: "200% 100%",
-                animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
-              }}
-            >
-              {checkingTrial ? "Loading..." : showTrial ? "Start Free Trial →" : "Subscribe Now →"}
-            </RazorpayCheckout>
-          ) : isCapacitor ? (
-            /* Google Play flow — Capacitor users */
-            <button
-              disabled={purchasing}
-              onClick={async () => {
-                setPurchasing(true);
-                setError("");
-                const result = await purchaseMonthly();
-                if (result.success) {
-                  router.push("/home");
-                } else if (result.error && result.error !== "cancelled") {
-                  setError(result.error);
-                }
-                setPurchasing(false);
-              }}
-              className="w-full text-white py-4 rounded-2xl font-bold text-lg transition-colors"
-              style={{
-                background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
-                backgroundSize: "200% 100%",
-                animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
-              }}
-            >
-              {purchasing ? "Processing..." : checkingTrial ? "Loading..." : showTrial ? "Start Free Trial →" : "Subscribe Now →"}
-            </button>
-          ) : (
-            /* Web users (non-test) — Google Play badge */
-            <button
-              onClick={() => router.push("/home")}
-              className="w-full text-white py-4 rounded-2xl font-bold text-lg transition-colors"
-              style={{
-                background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
-                backgroundSize: "200% 100%",
-                animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
-              }}
-            >
-              {checkingTrial ? "Loading..." : showTrial ? "Start Free Trial →" : "Subscribe Now →"}
-            </button>
-          )
+          <RazorpayCheckout
+            onSuccess={() => router.push("/home")}
+            onError={(err) => setError(err)}
+            className="w-full text-white py-4 rounded-2xl font-bold text-lg transition-colors"
+            style={{
+              background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
+              backgroundSize: "200% 100%",
+              animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
+            }}
+          >
+            {checkingTrial ? "Loading..." : showTrial ? "Start Free Trial →" : "Subscribe Now →"}
+          </RazorpayCheckout>
         ) : (
           <button
             onClick={() => signInWithGoogle()}
