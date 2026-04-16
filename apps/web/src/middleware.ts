@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Pages allowed on the marketing domain (nataktv.com)
-const LANDING_PATHS = new Set(["/", "/privacy", "/terms", "/refund", "/delete-account"]);
+const LANDING_PATHS = new Set(["/", "/privacy", "/terms", "/refund", "/delete-account", "/go"]);
 
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") || "";
