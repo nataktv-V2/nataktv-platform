@@ -2,40 +2,12 @@
 
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useCallback, useState } from "react";
-import { isCapacitorApp } from "@/lib/revenuecat";
 
-// Payment proxy for browser users (nataktv.com doesn't have Razorpay permission).
+// Payment is routed through beatai.indidino.com/nataktv since nataktv.com
+// doesn't have Razorpay payment permission yet.
+// In Capacitor, allowNavigation keeps this inside the WebView (no Chrome).
 const BEATAI_PAYMENT_URL = "https://beatai.indidino.com/nataktv";
 const PAYMENT_CALLBACK_URL = `${typeof window !== "undefined" ? window.location.origin : ""}/payment-done`;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type CapacitorWindow = Window & { Capacitor?: any };
-
-/** Open Razorpay via native Android SDK (Capacitor plugin) */
-function openNativeCheckout(
-  paymentData: Record<string, unknown>,
-  onSuccess: (data: { razorpay_payment_id: string; razorpay_subscription_id: string; razorpay_signature: string }) => void,
-  onError: (error: string) => void,
-) {
-  const Checkout = (window as CapacitorWindow).Capacitor?.Plugins?.Checkout;
-  if (!Checkout) {
-    onError("Native checkout not available");
-    return;
-  }
-
-  Checkout.open(paymentData)
-    .then((result: Record<string, string>) => {
-      onSuccess({
-        razorpay_payment_id: result["razorpay_payment_id"] ?? "",
-        razorpay_subscription_id: result["razorpay_subscription_id"] ?? "",
-        razorpay_signature: result["razorpay_signature"] ?? "",
-      });
-    })
-    .catch((err: { description?: string; code?: string }) => {
-      // User cancelled or payment failed
-      onError(err?.description || "Payment failed");
-    });
-}
 
 type RazorpayCheckoutProps = {
   onSuccess?: () => void;
@@ -84,39 +56,22 @@ export function RazorpayCheckout({
         image: "https://app.nataktv.com/logo.png",
         prefill: {
           email: user.email || "",
-          contact: "",
+          name: user.displayName || "",
         },
         theme: { color: "#f97316" },
         notes: { _source: "nataktv" },
       };
 
-      if (isCapacitorApp()) {
-        // Native SDK — opens native Razorpay sheet with UPI Intent support
-        openNativeCheckout(
-          paymentData,
-          (result) => {
-            // Redirect to payment-done with Razorpay response params
-            const params = new URLSearchParams({
-              razorpay_payment_id: result.razorpay_payment_id,
-              razorpay_subscription_id: result.razorpay_subscription_id,
-              razorpay_signature: result.razorpay_signature,
-            });
-            window.location.href = `/payment-done?${params.toString()}`;
-          },
-          (error) => {
-            onError?.(error);
-            setLoading(false);
-          },
-        );
-      } else {
-        // Browser — redirect to beatai payment proxy
-        const url =
-          BEATAI_PAYMENT_URL +
-          "?data=" + encodeURIComponent(JSON.stringify(paymentData)) +
-          "&callback=" + encodeURIComponent(PAYMENT_CALLBACK_URL);
+      // Navigate to beatai payment proxy.
+      // On web: opens in browser tab.
+      // On Capacitor: stays inside WebView thanks to allowNavigation config.
+      // Callback returns user to /payment-done on our domain.
+      const url =
+        BEATAI_PAYMENT_URL +
+        "?data=" + encodeURIComponent(JSON.stringify(paymentData)) +
+        "&callback=" + encodeURIComponent(PAYMENT_CALLBACK_URL);
 
-        window.location.href = url;
-      }
+      window.location.href = url;
     } catch {
       onError?.("Something went wrong");
       setLoading(false);

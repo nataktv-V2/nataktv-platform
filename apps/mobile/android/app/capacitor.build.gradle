@@ -13,7 +13,6 @@ dependencies {
     implementation project(':capacitor-push-notifications')
     implementation project(':codetrix-studio-capacitor-google-auth')
     implementation project(':revenuecat-purchases-capacitor')
-    implementation project(':capacitor-razorpay')
 
 }
 
