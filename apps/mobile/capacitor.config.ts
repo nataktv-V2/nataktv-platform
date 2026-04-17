@@ -14,6 +14,13 @@ const config: CapacitorConfig = {
   android: {
     backgroundColor: "#0a0a0c",
     allowMixedContent: false,
+    // Spoof User-Agent to look like standard Chrome Mobile (not WebView).
+    // Razorpay detects "wv" / "; wv)" in the UA and disables UPI Intent flow
+    // (falls back to UPI Collect "enter your UPI ID"). By presenting a
+    // normal Chrome UA, Razorpay keeps UPI Intent enabled and emits
+    // phonepe://, intent:// URLs which MainActivity's interceptor launches.
+    overrideUserAgent:
+      "Mozilla/5.0 (Linux; Android 13; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
   },
   plugins: {
     SplashScreen: {
