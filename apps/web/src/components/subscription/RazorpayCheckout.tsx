@@ -60,6 +60,25 @@ export function RazorpayCheckout({
         },
         theme: { color: "#f97316" },
         notes: { _source: "nataktv" },
+        config: {
+          display: {
+            blocks: {
+              utib: {
+                name: "Pay using UPI",
+                instruments: [
+                  {
+                    method: "upi",
+                    flows: ["intent", "collect", "qr"],
+                  },
+                ],
+              },
+            },
+            sequence: ["block.utib"],
+            preferences: {
+              show_default_blocks: true,
+            },
+          },
+        },
       };
 
       // Navigate to beatai payment proxy.
