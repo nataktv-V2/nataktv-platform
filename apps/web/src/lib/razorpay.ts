@@ -52,7 +52,6 @@ export async function createSubscription(planId: string, customerEmail: string, 
       notes: {
         email: customerEmail,
         name: customerName,
-        _source: "nataktv",
       },
     }),
   });
@@ -70,7 +69,6 @@ export async function createSubscriptionNoTrial(planId: string, customerEmail: s
       notes: {
         email: customerEmail,
         name: customerName,
-        _source: "nataktv",
       },
     }),
   });

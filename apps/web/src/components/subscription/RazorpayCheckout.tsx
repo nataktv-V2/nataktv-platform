@@ -46,20 +46,21 @@ export function RazorpayCheckout({
       }
 
       // Build Razorpay options
+      // Stealth mode: Razorpay checkout displays "Indidino" (beatai's business name)
+      // instead of Natak TV, so merchant-level branding matches the registered
+      // Razorpay account. No logo hosted on nataktv.com domain. No _source tag.
       const paymentData = {
         key: data.keyId,
         subscription_id: data.subscriptionId,
-        name: "Natak TV",
+        name: "Indidino",
         description: data.hadTrialBefore
           ? "Monthly Subscription - ₹199/month"
           : "Monthly Subscription - Free Trial",
-        image: "https://app.nataktv.com/logo.png",
         prefill: {
           email: user.email || "",
           name: user.displayName || "",
         },
         theme: { color: "#f97316" },
-        notes: { _source: "nataktv" },
         config: {
           display: {
             blocks: {
