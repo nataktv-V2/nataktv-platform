@@ -10,14 +10,33 @@ function PaymentVerifier() {
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
-    // Accept both Razorpay native param names AND beatai proxy short names
-    const paymentId = searchParams.get("razorpay_payment_id") || searchParams.get("payment_id");
-    const subscriptionId = searchParams.get("razorpay_subscription_id") || searchParams.get("order_id");
-    const signature = searchParams.get("razorpay_signature") || searchParams.get("signature");
+    // Accept both Razorpay native param names AND beatai proxy short names.
+    // For subscriptions, Razorpay returns razorpay_subscription_id.
+    // For one-time, it returns razorpay_order_id.
+    // beatai may send either, and for subscriptions it sometimes sends order_id
+    // containing the subscription_id.
+    const paymentId =
+      searchParams.get("razorpay_payment_id") || searchParams.get("payment_id");
+    const subscriptionId =
+      searchParams.get("razorpay_subscription_id") ||
+      searchParams.get("subscription_id") ||
+      searchParams.get("razorpay_order_id") ||
+      searchParams.get("order_id");
+    const signature =
+      searchParams.get("razorpay_signature") || searchParams.get("signature");
+
+    // Log all incoming params so we can see exactly what beatai sent.
+    // Visible in Capacitor/Console logs.
+    const allParams: Record<string, string> = {};
+    searchParams.forEach((v, k) => { allParams[k] = v; });
+    console.log("[payment-done] params received:", JSON.stringify(allParams));
+    console.log("[payment-done] paymentId:", paymentId, "subscriptionId:", subscriptionId, "signature:", signature?.slice(0, 12));
 
     if (!paymentId || !subscriptionId || !signature) {
       setStatus("error");
-      setErrorMsg("Payment details missing. Please try again.");
+      setErrorMsg(
+        `Payment details missing. Got params: ${Object.keys(allParams).join(", ") || "NONE"}. Try again.`
+      );
       return;
     }
 
