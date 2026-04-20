@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
           orderBy: { createdAt: "desc" },
         });
 
-    if (!pendingSub) {
+    if (!pendingSub || !pendingSub.razorpaySubscriptionId) {
       // Already resolved — check current active status
       const active = await prisma.subscription.findFirst({
         where: {
@@ -64,10 +64,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    const rzpSubId: string = pendingSub.razorpaySubscriptionId;
+
     // Ask Razorpay what the actual state is
     let razorpayData;
     try {
-      razorpayData = await fetchSubscription(pendingSub.razorpaySubscriptionId);
+      razorpayData = await fetchSubscription(rzpSubId);
     } catch (err) {
       console.error("Razorpay fetch failed:", err);
       return NextResponse.json(
