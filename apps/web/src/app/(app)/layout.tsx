@@ -4,6 +4,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { AuthGatedLayout } from "@/components/layout/AuthGatedLayout";
 import { BackButtonHandler } from "@/components/layout/BackButtonHandler";
 import { NotificationPrompt } from "@/components/notifications/NotificationPrompt";
+import { UpdatePrompt } from "@/components/layout/UpdatePrompt";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,6 +16,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       >
         {children}
         <NotificationPrompt />
+        <UpdatePrompt />
       </AuthGatedLayout>
     </AuthProvider>
   );
