@@ -14,6 +14,8 @@ export default function ProfilePage() {
   const { status, isSubscribed, loading: subLoading } = useSubscription();
   const [cancelling, setCancelling] = useState(false);
   const [hadTrialBefore, setHadTrialBefore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshMsg, setRefreshMsg] = useState<string | null>(null);
   const router = useRouter();
 
   // Check if user already used trial
@@ -24,6 +26,36 @@ export default function ProfilePage() {
       .then((data) => setHadTrialBefore(data.hadTrial))
       .catch(() => {});
   }, [user?.uid]);
+
+  // Manual recovery for stuck PENDING subscriptions. Calls server which
+  // queries Razorpay API to reconcile DB with actual payment status.
+  async function handleRefreshSubscription() {
+    if (!user?.uid || refreshing) return;
+    setRefreshing(true);
+    setRefreshMsg(null);
+    try {
+      const res = await fetch("/api/subscription/refresh", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid: user.uid }),
+      });
+      const data = await res.json();
+      if (data.activated) {
+        setRefreshMsg("Subscription activated! Refreshing...");
+        setTimeout(() => window.location.reload(), 1200);
+      } else if (data.razorpayStatus) {
+        setRefreshMsg(
+          `Payment not yet confirmed (status: ${data.razorpayStatus}). Try again in a minute.`
+        );
+      } else {
+        setRefreshMsg("No pending payment found.");
+      }
+    } catch {
+      setRefreshMsg("Could not reach server. Check your connection.");
+    } finally {
+      setRefreshing(false);
+    }
+  }
 
   // Redirect to /home after login
   useEffect(() => {
@@ -338,6 +370,18 @@ export default function ProfilePage() {
             >
               {hadTrialBefore ? "Subscribe Now — ₹199/mo" : "Start Free Trial"}
             </RazorpayCheckout>
+
+            {/* Recovery: for users whose payment succeeded but app didn't activate */}
+            <button
+              onClick={handleRefreshSubscription}
+              disabled={refreshing}
+              className="w-full mt-2 text-center text-zinc-300 py-2 rounded-lg text-xs border border-white/10 bg-white/5 hover:bg-white/10 transition-colors disabled:opacity-50"
+            >
+              {refreshing ? "Checking..." : "Already paid? Refresh subscription"}
+            </button>
+            {refreshMsg && (
+              <p className="text-center text-xs text-zinc-400 mt-2">{refreshMsg}</p>
+            )}
           </>
         )}
       </div>

@@ -30,6 +30,48 @@ export function useSubscription() {
     }
 
     const uid = user.uid;
+    let lastRefreshAt = 0;
+
+    function fetchServerStatus() {
+      return fetch(`/api/subscription/status?uid=${uid}`)
+        .then((res) => res.json())
+        .then((data: SubStatus) => {
+          setStatus(data);
+          setLoading(false);
+          return data;
+        })
+        .catch(() => {
+          setStatus(null);
+          setLoading(false);
+          return null as SubStatus | null;
+        });
+    }
+
+    // Silent recovery for stuck PENDING subscriptions.
+    // Runs if the user appears unsubscribed — server queries Razorpay
+    // directly and activates the sub if payment is authenticated.
+    // Stealth: only OUR server talks to Razorpay API.
+    async function maybeRecoverPending() {
+      // Rate limit to once per 30s
+      if (Date.now() - lastRefreshAt < 30 * 1000) return;
+      lastRefreshAt = Date.now();
+      try {
+        const res = await fetch("/api/subscription/refresh", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uid }),
+        });
+        if (res.ok) {
+          const data = (await res.json()) as { activated?: boolean };
+          if (data.activated) {
+            // Subscription just got unstuck — refresh displayed status
+            await fetchServerStatus();
+          }
+        }
+      } catch {
+        // silent — this is a best-effort background check
+      }
+    }
 
     // In Capacitor, check RevenueCat entitlement and sync to server
     if (isCapacitorApp()) {
@@ -48,24 +90,28 @@ export function useSubscription() {
           return;
         }
         // RevenueCat says not active — trust it over stale server data
-        fetchServerStatus();
+        fetchServerStatus().then((s) => {
+          if (!s?.subscribed) void maybeRecoverPending();
+        });
       });
     } else {
-      fetchServerStatus();
+      fetchServerStatus().then((s) => {
+        if (!s?.subscribed) void maybeRecoverPending();
+      });
     }
 
-    function fetchServerStatus() {
-      fetch(`/api/subscription/status?uid=${uid}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setStatus(data);
-          setLoading(false);
-        })
-        .catch(() => {
-          setStatus(null);
-          setLoading(false);
+    // Re-check on app foreground (user returns after paying in UPI app)
+    function onVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        fetchServerStatus().then((s) => {
+          if (!s?.subscribed) void maybeRecoverPending();
         });
+      }
     }
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, [user?.uid]);
 
   return { status, loading, isSubscribed: status?.subscribed === true };

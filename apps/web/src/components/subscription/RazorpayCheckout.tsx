@@ -82,6 +82,24 @@ export function RazorpayCheckout({
         },
       };
 
+      // Stash subscription_id and uid in sessionStorage so /payment-done
+      // can recover even if beatai's callback doesn't forward them.
+      // Known issue: beatai's handler was built for one-time payments and
+      // sends order_id, not razorpay_subscription_id. This stash is the
+      // stealth fallback (no Razorpay exposure needed).
+      try {
+        sessionStorage.setItem(
+          "nataktv_pending_sub",
+          JSON.stringify({
+            subscriptionId: data.subscriptionId,
+            uid: user.uid,
+            ts: Date.now(),
+          })
+        );
+      } catch {
+        // sessionStorage may be unavailable in some contexts — non-fatal
+      }
+
       // Navigate to beatai payment proxy.
       // On web: opens in browser tab.
       // On Capacitor: stays inside WebView thanks to allowNavigation config.
