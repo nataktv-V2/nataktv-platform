@@ -359,8 +359,8 @@ export default function ProfilePage() {
               </p>
             ) : (
               <div className="mb-4 text-center">
-                <p className="text-white text-lg font-bold">Start Watching — ₹2</p>
-                <p className="text-zinc-500 text-xs mt-0.5">₹2 for 2 days · then ₹199/month · cancel anytime</p>
+                <p className="text-white text-lg font-bold">Start — ₹2</p>
+                <p className="text-zinc-500 text-xs mt-0.5">₹2 · then ₹199/mo</p>
               </div>
             )}
             <RazorpayCheckout
@@ -373,7 +373,7 @@ export default function ProfilePage() {
                 animation: "shimmer 3s linear infinite",
               }}
             >
-              {hadTrialBefore ? "Subscribe Now — ₹199/mo" : "Start Watching — ₹2"}
+              {hadTrialBefore ? "Subscribe — ₹199/mo" : "Start — ₹2"}
             </RazorpayCheckout>
 
             {/* Recovery: for users whose payment succeeded but app didn't activate */}
