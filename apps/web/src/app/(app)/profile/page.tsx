@@ -353,27 +353,27 @@ export default function ProfilePage() {
           </>
         ) : (
           <>
-            {hadTrialBefore ? (
-              <p className="text-zinc-400 text-sm mb-4">
-                Subscribe to continue watching all content.
-              </p>
-            ) : (
-              <div className="mb-4 text-center">
-                <p className="text-white text-lg font-bold">Start — ₹2</p>
-                <p className="text-zinc-500 text-xs mt-0.5">₹2 · then ₹199/mo</p>
-              </div>
-            )}
+            <div className="mb-4 text-center">
+              <p className="text-[#f97316] text-lg font-extrabold tracking-wide uppercase">Start Watching!</p>
+            </div>
             <RazorpayCheckout
               onSuccess={() => router.push("/home")}
               onError={() => {}}
-              className="w-full text-center text-white py-2.5 rounded-lg font-semibold text-sm"
+              className="w-full text-center text-white py-3 rounded-lg font-semibold text-sm"
               style={{
                 background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
                 backgroundSize: "200% 100%",
                 animation: "shimmer 3s linear infinite",
               }}
             >
-              {hadTrialBefore ? "Subscribe — ₹199/mo" : "Start — ₹2"}
+              <span className="flex flex-col items-center leading-tight">
+                <span className="text-base font-extrabold tracking-wide">
+                  {hadTrialBefore ? "START SUBSCRIPTION" : "START TRIAL"}
+                </span>
+                <span className="text-[10px] font-medium opacity-80">
+                  {hadTrialBefore ? "for ₹199/month" : "for ₹2"}
+                </span>
+              </span>
             </RazorpayCheckout>
 
             {/* Recovery: for users whose payment succeeded but app didn't activate */}

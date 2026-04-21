@@ -64,8 +64,8 @@ export default function SubscribePage() {
     <div className="max-w-md mx-auto px-4 py-6">
       {/* Unlock Visual */}
       <div className="mb-6">
-        <p className="text-center text-[#f97316] text-xs font-semibold tracking-widest uppercase mb-4">
-          {showTrial ? "Unlock everything" : "Resume watching"}
+        <p className="text-center text-[#f97316] text-lg font-extrabold tracking-wide uppercase mb-4">
+          Start Watching!
         </p>
         <div className="flex items-center justify-center gap-2 sm:gap-4">
           {/* LEFT — Blurred + Locked thumbnail */}
@@ -148,7 +148,18 @@ export default function SubscribePage() {
               animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
             }}
           >
-            {checkingTrial ? "Loading..." : showTrial ? "Start — ₹2 →" : "Subscribe →"}
+            {checkingTrial ? (
+              "Loading..."
+            ) : (
+              <span className="flex flex-col items-center leading-tight">
+                <span className="text-lg font-extrabold tracking-wide">
+                  {showTrial ? "START TRIAL" : "START SUBSCRIPTION"}
+                </span>
+                <span className="text-[11px] font-medium opacity-80">
+                  {showTrial ? "for ₹2" : "for ₹199/month"}
+                </span>
+              </span>
+            )}
           </RazorpayCheckout>
         ) : (
           <button
