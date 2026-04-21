@@ -350,13 +350,15 @@ export default function ReelsPage() {
           </svg>
         </div>
         <h2 className="text-2xl font-extrabold tracking-wide uppercase mb-6 text-accent">Start Watching!</h2>
+        <div className="shiny-border">
         <Link
           href="/subscribe"
-          className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-xl font-semibold transition-colors flex flex-col items-center leading-tight"
+          className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-[14px] font-semibold transition-colors flex flex-col items-center leading-tight"
         >
           <span className="text-base font-extrabold tracking-wide">START TRIAL</span>
           <span className="text-[10px] font-medium opacity-80">for ₹2</span>
         </Link>
+        </div>
       </div>
     );
   }

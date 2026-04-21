@@ -356,10 +356,11 @@ export default function ProfilePage() {
             <div className="mb-4 text-center">
               <p className="text-[#f97316] text-lg font-extrabold tracking-wide uppercase">Start Watching!</p>
             </div>
+            <div className="shiny-border w-full">
             <RazorpayCheckout
               onSuccess={() => router.push("/home")}
               onError={() => {}}
-              className="w-full text-center text-white py-3 rounded-lg font-semibold text-sm"
+              className="w-full text-center text-white py-3 rounded-[14px] font-semibold text-sm"
               style={{
                 background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
                 backgroundSize: "200% 100%",
@@ -375,6 +376,7 @@ export default function ProfilePage() {
                 </span>
               </span>
             </RazorpayCheckout>
+            </div>
 
             {/* Recovery: for users whose payment succeeded but app didn't activate */}
             <button

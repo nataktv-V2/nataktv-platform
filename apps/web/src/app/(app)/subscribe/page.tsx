@@ -138,10 +138,11 @@ export default function SubscribePage() {
         )}
 
         {user ? (
+          <div className="shiny-border w-full">
           <RazorpayCheckout
             onSuccess={() => router.push("/home")}
             onError={(err) => setError(err)}
-            className="w-full text-white py-4 rounded-2xl font-bold text-lg transition-colors"
+            className="w-full text-white py-4 rounded-[14px] font-bold text-lg transition-colors"
             style={{
               background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
               backgroundSize: "200% 100%",
@@ -161,10 +162,12 @@ export default function SubscribePage() {
               </span>
             )}
           </RazorpayCheckout>
+          </div>
         ) : (
+          <div className="shiny-border w-full">
           <button
             onClick={() => signInWithGoogle()}
-            className="w-full text-white py-4 rounded-2xl font-bold text-lg transition-colors"
+            className="w-full text-white py-4 rounded-[14px] font-bold text-lg transition-colors"
             style={{
               background: "linear-gradient(110deg, #f97316 0%, #f97316 40%, #fbbf24 50%, #f97316 60%, #f97316 100%)",
               backgroundSize: "200% 100%",
@@ -173,6 +176,7 @@ export default function SubscribePage() {
           >
             Sign in to Subscribe →
           </button>
+          </div>
         )}
 
         <div className="flex justify-center gap-5 mt-3 text-zinc-500 text-[11px]">

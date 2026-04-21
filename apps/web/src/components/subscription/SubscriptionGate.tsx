@@ -165,13 +165,15 @@ export function SubscriptionGate({ children, fallback }: SubscriptionGateProps) 
             <p className="text-[#f97316] text-xl font-extrabold tracking-wide uppercase mb-4">
               Start Watching!
             </p>
+            <div className="shiny-border inline-block">
             <Link
               href="/subscribe"
-              className="inline-flex flex-col items-center leading-tight bg-[#f97316] hover:bg-[#ea580c] text-white px-6 py-2.5 rounded-lg font-semibold transition-colors"
+              className="inline-flex flex-col items-center leading-tight bg-[#f97316] hover:bg-[#ea580c] text-white px-6 py-2.5 rounded-[14px] font-semibold transition-colors"
             >
               <span className="text-sm font-extrabold tracking-wide">START TRIAL</span>
               <span className="text-[10px] font-medium opacity-80">for ₹2</span>
             </Link>
+            </div>
           </div>
         </div>
       </div>
