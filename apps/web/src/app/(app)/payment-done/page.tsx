@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { track as mpTrack } from "@/lib/mixpanel";
 
 type Status = "verifying" | "success" | "error";
 
@@ -34,6 +35,12 @@ function PaymentVerifier() {
     const allParams: Record<string, string> = {};
     searchParams.forEach((v, k) => { allParams[k] = v; });
     console.log("[payment-done] URL params:", JSON.stringify(allParams));
+    mpTrack("payment_done_loaded", {
+      has_payment_id: !!paymentId,
+      has_subscription_id: !!urlSubscriptionId,
+      has_signature: !!signature,
+      param_keys: Object.keys(allParams).join(","),
+    });
 
     let cancelled = false;
 
@@ -52,10 +59,12 @@ function PaymentVerifier() {
         });
         if (cancelled) return;
         if (res.ok) {
+          mpTrack("subscribe_success", { method: "verify_signature" });
           setStatus("success");
           setTimeout(() => router.push("/home"), 2000);
           return;
         }
+        mpTrack("subscribe_verify_failed");
         console.warn("[payment-done] verify failed, falling back to refresh");
       }
 
@@ -111,6 +120,7 @@ function PaymentVerifier() {
               status?: string;
             };
             if (json.activated) {
+              mpTrack("subscribe_success", { method: "api_poll_refresh", attempt });
               try { sessionStorage.removeItem("nataktv_pending_sub"); } catch {}
               setStatus("success");
               setTimeout(() => router.push("/home"), 2000);
@@ -126,6 +136,7 @@ function PaymentVerifier() {
       }
 
       if (cancelled) return;
+      mpTrack("subscribe_failed_after_retries", { attempts: maxAttempts });
       setStatus("error");
       setErrorMsg(
         "We couldn't confirm your payment yet. If the amount was deducted, it will activate automatically — tap Refresh on your profile in a minute."

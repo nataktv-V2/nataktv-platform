@@ -21,6 +21,7 @@ import { auth, googleProvider } from "@/lib/firebase";
 declare const window: any;
 import { initRevenueCat, loginRevenueCat, logoutRevenueCat, isCapacitorApp } from "@/lib/revenuecat";
 import { initPushNotifications, linkPushTokenToUser } from "@/lib/push-notifications";
+import { identify as mpIdentify, reset as mpReset, track as mpTrack } from "@/lib/mixpanel";
 
 type AuthUser = {
   uid: string;
@@ -84,6 +85,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           displayName: firebaseUser.displayName,
           photoURL: firebaseUser.photoURL,
         });
+        // Mixpanel identify
+        mpIdentify(firebaseUser.uid, {
+          email: firebaseUser.email ?? undefined,
+          name: firebaseUser.displayName ?? undefined,
+          createdAt: firebaseUser.metadata?.creationTime,
+        });
         try {
           await syncUserToDatabase(firebaseUser);
         } catch {
@@ -96,6 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } else {
         setUser(null);
+        mpReset();
         if (isCapacitorApp()) logoutRevenueCat();
       }
       setLoading(false);
@@ -109,6 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithGoogle = async () => {
+    mpTrack("sign_in_tapped");
     try {
       const isCapacitor = typeof window !== "undefined" && !!window?.Capacitor;
       if (isCapacitor) {

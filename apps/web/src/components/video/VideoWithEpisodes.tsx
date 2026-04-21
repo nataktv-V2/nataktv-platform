@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { GatedVideoPlayer } from "./GatedVideoPlayer";
 import { EpisodeNav } from "./EpisodeNav";
+import { track as mpTrack } from "@/lib/mixpanel";
 
 type Episode = {
   id: string;
@@ -53,7 +54,13 @@ export function VideoWithEpisodes({
     ?? (searchParams.get("startAt") ? parseInt(searchParams.get("startAt")!, 10) : undefined)
     ?? (searchParams.get("t") ? parseInt(searchParams.get("t")!, 10) : undefined);
 
+  // Track video view once per mount
+  useEffect(() => {
+    mpTrack("video_opened", { video_id: videoId, title, youtube_id: youtubeId });
+  }, [videoId, title, youtubeId]);
+
   const handleEnded = () => {
+    mpTrack("video_ended", { video_id: videoId, title });
     if (nextVideo) setCountdown(5);
   };
 

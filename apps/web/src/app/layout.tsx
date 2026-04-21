@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { MixpanelLoader } from "@/components/analytics/MixpanelLoader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -69,7 +70,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.className}>
-      <body className="min-h-screen antialiased">{children}</body>
+      <body className="min-h-screen antialiased">
+        <MixpanelLoader />
+        {children}
+      </body>
     </html>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useCallback, useState } from "react";
+import { track as mpTrack } from "@/lib/mixpanel";
 
 // Payment is routed through beatai.indidino.com/nataktv since nataktv.com
 // doesn't have Razorpay payment permission yet.
@@ -28,6 +29,7 @@ export function RazorpayCheckout({
 
   const handleClick = useCallback(async () => {
     if (!user) return;
+    mpTrack("subscribe_tapped");
     setLoading(true);
 
     try {
@@ -40,10 +42,15 @@ export function RazorpayCheckout({
 
       const data = await res.json();
       if (!res.ok) {
+        mpTrack("subscribe_create_failed", { error: data.error });
         onError?.(data.error || "Failed to create subscription");
         setLoading(false);
         return;
       }
+      mpTrack("subscribe_created", {
+        subscription_id: data.subscriptionId,
+        had_trial_before: data.hadTrialBefore,
+      });
 
       // Build Razorpay options
       // Stealth mode: Razorpay checkout displays "Indidino" (beatai's business name)
@@ -100,6 +107,8 @@ export function RazorpayCheckout({
         // sessionStorage may be unavailable in some contexts — non-fatal
       }
 
+      mpTrack("subscribe_redirect_to_beatai");
+
       // Navigate to beatai payment proxy.
       // On web: opens in browser tab.
       // On Capacitor: stays inside WebView thanks to allowNavigation config.
@@ -110,7 +119,8 @@ export function RazorpayCheckout({
         "&callback=" + encodeURIComponent(PAYMENT_CALLBACK_URL);
 
       window.location.href = url;
-    } catch {
+    } catch (err) {
+      mpTrack("subscribe_error", { error: String(err) });
       onError?.("Something went wrong");
       setLoading(false);
     }
