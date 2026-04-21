@@ -93,14 +93,14 @@ export default function SubscribePage() {
           {/* CENTER — Arrow with price */}
           <div className="flex flex-col items-center gap-1 flex-shrink-0 px-1">
             <div className="bg-[#f97316] text-white text-sm sm:text-base font-extrabold px-3 py-1.5 rounded-full whitespace-nowrap" style={{ animation: "pulse-glow 2s ease-in-out infinite" }}>
-              {showTrial ? "FREE 4 DAYS" : "₹199/mo"}
+              {showTrial ? "START @ ₹2" : "₹199/mo"}
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-[#f97316]" style={{ animation: "arrow-bounce 1.2s ease-in-out infinite" }}>
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />
             </svg>
             <span className="text-[10px] text-zinc-500 font-medium">
-              {showTrial ? "4-day trial" : "full access"}
+              {showTrial ? "2-day access" : "full access"}
             </span>
           </div>
 
@@ -127,7 +127,7 @@ export default function SubscribePage() {
         </div>
 
         <p className="text-center text-zinc-500 text-xs mt-3">
-          {showTrial ? "free for 4 days · then ₹199/month" : "₹199/month · cancel anytime"}
+          {showTrial ? "₹2 today · then ₹199/month after 2 days" : "₹199/month · cancel anytime"}
         </p>
       </div>
 
@@ -148,7 +148,7 @@ export default function SubscribePage() {
               animation: "shimmer 3s linear infinite, pulse-glow 2s ease-in-out infinite",
             }}
           >
-            {checkingTrial ? "Loading..." : showTrial ? "Start Free Trial →" : "Subscribe Now →"}
+            {checkingTrial ? "Loading..." : showTrial ? "Start Watching — ₹2 →" : "Subscribe Now →"}
           </RazorpayCheckout>
         ) : (
           <button
@@ -211,7 +211,7 @@ export default function SubscribePage() {
       {/* Fine print */}
       <p className="text-zinc-600 text-[10px] text-center leading-relaxed">
         {showTrial
-          ? "2-day free trial, then ₹199/month. Auto-renews. Cancel anytime from your profile."
+          ? "₹2 today for 2 days, then ₹199/month. Auto-renews. Cancel anytime from your profile."
           : "₹199/month. Auto-renews. Cancel anytime from your profile."}
       </p>
     </div>

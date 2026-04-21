@@ -212,7 +212,7 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {[
             { step: "1", title: "Sign up", desc: "Create your account in seconds with Google." },
-            { step: "2", title: "Subscribe", desc: "Free for 4 days, then ₹199/month." },
+            { step: "2", title: "Subscribe", desc: "Start for ₹2 — 2 days, then ₹199/month." },
             { step: "3", title: "Browse & watch", desc: "Search, filter, and stream in HD quality." },
           ].map((item) => (
             <div key={item.step}>

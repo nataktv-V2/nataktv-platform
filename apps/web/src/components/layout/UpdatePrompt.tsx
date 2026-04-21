@@ -18,9 +18,6 @@ const MIN_VERSION_CODE = 14;
 const PLAY_STORE_URL =
   "https://play.google.com/store/apps/details?id=com.nataktv.app";
 
-// Dismissed flag — only show once per app launch (sessionStorage)
-const DISMISS_KEY = "nataktv_update_dismissed";
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CapacitorWindow = Window & { Capacitor?: any };
 
@@ -33,45 +30,25 @@ export function UpdatePrompt() {
     const cap = (window as CapacitorWindow).Capacitor;
     if (!cap?.isNativePlatform?.()) return; // browser — skip
 
-    // Already dismissed this session?
-    try {
-      if (sessionStorage.getItem(DISMISS_KEY) === "1") return;
-    } catch {
-      // ignore
-    }
-
     const appPlugin = cap.Plugins?.App;
     if (!appPlugin?.getInfo) return;
 
     appPlugin
       .getInfo()
       .then((info: { version?: string; build?: string }) => {
-        // build is versionCode on Android, a string like "13" or "14"
         const vcStr = info?.build ?? "0";
         const vc = parseInt(vcStr, 10);
         if (Number.isFinite(vc) && vc < MIN_VERSION_CODE) {
           setVisible(true);
         }
       })
-      .catch(() => {
-        // Couldn't read version — don't show prompt
-      });
+      .catch(() => {});
   }, []);
 
   if (!visible) return null;
 
   function handleUpdate() {
-    // Open Play Store. allowNavigation lets this hand off to the Play Store app.
     window.open(PLAY_STORE_URL, "_blank");
-  }
-
-  function handleDismiss() {
-    try {
-      sessionStorage.setItem(DISMISS_KEY, "1");
-    } catch {
-      // ignore
-    }
-    setVisible(false);
   }
 
   return (
@@ -87,10 +64,10 @@ export function UpdatePrompt() {
           </svg>
         </div>
         <h2 className="text-xl font-bold text-white text-center mb-1">
-          Latest update available on Play Store
+          Update required
         </h2>
         <p className="text-sm text-zinc-400 text-center mb-5">
-          Update Natak TV to get the faster payment experience and the latest improvements.
+          This version of Natak TV is no longer supported. Please update on Play Store to continue watching.
         </p>
         <div className="flex flex-col gap-2">
           <button
@@ -104,12 +81,6 @@ export function UpdatePrompt() {
             }}
           >
             Update on Play Store
-          </button>
-          <button
-            onClick={handleDismiss}
-            className="w-full text-zinc-400 py-2 rounded-xl text-sm hover:text-white transition-colors"
-          >
-            Maybe later
           </button>
         </div>
       </div>
