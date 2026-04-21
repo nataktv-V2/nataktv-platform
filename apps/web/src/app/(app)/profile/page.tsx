@@ -336,13 +336,18 @@ export default function ProfilePage() {
                     Next billing: {new Date(status.currentPeriodEnd).toLocaleDateString()}
                   </p>
                 )}
-                <button
-                  onClick={handleCancel}
-                  disabled={cancelling}
-                  className="w-full text-center border border-red-500/30 text-red-400 hover:bg-red-500/10 py-2.5 rounded-lg text-sm font-medium transition-colors"
-                >
-                  {cancelling ? "Cancelling..." : "Cancel Subscription"}
-                </button>
+                {/* Cancel is intentionally de-emphasized — plain text link,
+                    not a button. Users who really want to cancel can find it,
+                    but it doesn't compete with the main UI. */}
+                <div className="text-right mt-2">
+                  <button
+                    onClick={handleCancel}
+                    disabled={cancelling}
+                    className="text-zinc-600 hover:text-zinc-400 text-xs underline underline-offset-2 transition-colors disabled:opacity-50"
+                  >
+                    {cancelling ? "Cancelling..." : "Cancel subscription"}
+                  </button>
+                </div>
               </>
             )}
           </>
