@@ -33,13 +33,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Cancel on Razorpay (at end of current billing cycle)
+    // Cancel on Razorpay — use IMMEDIATE cancel (cancel_at_cycle_end=false).
+    // Important: cancel_at_cycle_end=true silently fails on some subscription
+    // states (Razorpay returns success but doesn't actually schedule the
+    // cancel), which would cause ghost charges + chargebacks. Immediate
+    // cancel works reliably.
     if (subscription.razorpaySubscriptionId) {
       try {
-        await cancelSubscription(subscription.razorpaySubscriptionId, true);
+        await cancelSubscription(subscription.razorpaySubscriptionId);
       } catch (rzpError: unknown) {
-        // Razorpay rejects cancel if no billing cycle has started (e.g. during trial)
-        // In that case, we still cancel locally
+        // Razorpay rejects cancel if no billing cycle has started (edge case).
+        // In that case we still cancel locally so the user sees the right state.
         const msg = rzpError instanceof Error ? rzpError.message : String(rzpError);
         if (!msg.includes("no billing cycle")) {
           throw rzpError; // Re-throw if it's a different error

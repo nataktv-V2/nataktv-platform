@@ -78,7 +78,21 @@ export async function fetchSubscription(subscriptionId: string) {
   return razorpayFetch(`/subscriptions/${subscriptionId}`);
 }
 
-export async function cancelSubscription(subscriptionId: string, cancelAtEnd: boolean = true) {
+/**
+ * Cancel a Razorpay subscription.
+ *
+ * IMPORTANT: default is `cancelAtEnd: false` (immediate cancel).
+ *
+ * We tested `cancel_at_cycle_end: 1` on a live subscription (paid_count=1,
+ * status=active) and Razorpay returned success but didn't actually schedule
+ * the cancel (has_scheduled_changes stayed false, next charge still pending).
+ * That silently-failing cancel would have caused ghost charges after the
+ * user clicked Cancel → chargebacks → real ban risk.
+ *
+ * `cancel_at_cycle_end: 0` (immediate) works reliably: status becomes
+ * "cancelled" right away, charge_at is cleared, no future charges possible.
+ */
+export async function cancelSubscription(subscriptionId: string, cancelAtEnd: boolean = false) {
   return razorpayFetch(`/subscriptions/${subscriptionId}/cancel`, {
     method: "POST",
     body: JSON.stringify({
