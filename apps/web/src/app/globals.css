@@ -144,3 +144,6 @@ body {
 .shiny-border > * {
   border-radius: calc(1rem - 2px);
 }
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
