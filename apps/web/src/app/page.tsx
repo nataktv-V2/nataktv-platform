@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { CapacitorAuthRedirect } from "@/components/auth/CapacitorAuthRedirect";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -31,6 +32,7 @@ const jsonLd = {
 export default function LandingPage() {
   return (
     <main className="min-h-screen">
+      <CapacitorAuthRedirect />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

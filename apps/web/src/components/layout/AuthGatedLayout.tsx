@@ -1,8 +1,11 @@
 "use client";
 
 import { useAuth } from "@/components/auth/AuthProvider";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useRef, useEffect, useState } from "react";
+
+// Routes that non-logged-in users CAN visit without being sent to /profile login.
+const PUBLIC_ROUTES = new Set(["/profile", "/privacy", "/terms", "/refund", "/help", "/delete-account"]);
 
 export function AuthGatedLayout({
   children,
@@ -15,8 +18,19 @@ export function AuthGatedLayout({
 }) {
   const { user, loading } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
   const navRef = useRef<HTMLDivElement>(null);
   const [navHeight, setNavHeight] = useState(56); // default h-14
+
+  // Upfront-login: any unauthenticated visit to a gated (app) route sends the
+  // user to /profile (which shows the login screen). Signup is captured before
+  // the user can browse — maximises email/FCM-token retention for retargeting.
+  useEffect(() => {
+    if (loading) return;
+    if (user) return;
+    if (PUBLIC_ROUTES.has(pathname)) return;
+    router.replace("/profile");
+  }, [loading, user, pathname, router]);
 
   // Measure actual navbar height (accounts for TrialBanner when visible)
   useEffect(() => {
