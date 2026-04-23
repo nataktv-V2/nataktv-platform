@@ -3,6 +3,7 @@
 import { useAuth } from "@/components/auth/AuthProvider";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useRef, useEffect, useState } from "react";
+import { Splash } from "@/components/layout/Splash";
 
 // Routes that non-logged-in users CAN visit without being sent to /profile login.
 const PUBLIC_ROUTES = new Set(["/profile", "/privacy", "/terms", "/refund", "/help", "/delete-account"]);
@@ -43,6 +44,13 @@ export function AuthGatedLayout({
     observer.observe(navRef.current);
     return () => observer.disconnect();
   }, []);
+
+  // Show branded splash while Firebase auth is still resolving, or while
+  // an about-to-happen redirect hasn't fired yet (unauthed on gated route).
+  const pendingRedirect = !loading && !user && !PUBLIC_ROUTES.has(pathname);
+  if (loading || pendingRedirect) {
+    return <Splash />;
+  }
 
   // On the profile page when not logged in, hide navbar and bottom nav (login screen takes over)
   const isLoginScreen = pathname === "/profile" && !user && !loading;

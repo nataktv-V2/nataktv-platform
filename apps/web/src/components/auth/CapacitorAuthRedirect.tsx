@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { Splash } from "@/components/layout/Splash";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CapacitorWindow = Window & { Capacitor?: any };
@@ -40,33 +41,5 @@ export function CapacitorAuthRedirect() {
   }, [router]);
 
   if (!isCapacitor) return null;
-
-  return (
-    <div
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0a0a0c]"
-      role="status"
-      aria-label="Loading Natak TV"
-    >
-      {/* Logo */}
-      <div className="flex items-center gap-2 mb-8">
-        <span
-          className="text-5xl font-black leading-none"
-          style={{
-            background: "linear-gradient(135deg,#f59e0b 0%,#ef4444 50%,#ec4899 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
-        >
-          Natak
-        </span>
-        <span className="text-xl font-extrabold bg-[#7c3aed] text-white px-2.5 py-1 rounded-lg leading-none">
-          TV
-        </span>
-      </div>
-
-      {/* Spinner */}
-      <div className="w-8 h-8 border-[3px] border-white/20 border-t-[#f97316] rounded-full animate-spin" />
-    </div>
-  );
+  return <Splash />;
 }
