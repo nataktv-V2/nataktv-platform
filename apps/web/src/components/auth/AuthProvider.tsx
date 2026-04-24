@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -68,6 +69,7 @@ async function syncUserToDatabase(firebaseUser: FirebaseUser) {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const prevUidRef = useRef<string | null>(null);
 
   // Register push notifications on app load (even before login)
   useEffect(() => {
@@ -79,6 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
+        const isFreshSignIn = prevUidRef.current !== firebaseUser.uid;
+        prevUidRef.current = firebaseUser.uid;
         setUser({
           uid: firebaseUser.uid,
           email: firebaseUser.email,
@@ -91,6 +95,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           name: firebaseUser.displayName ?? undefined,
           createdAt: firebaseUser.metadata?.creationTime,
         });
+        // Fire sign_in_success once per session-continuation (distinguishes
+        // fresh sign-ins from restored sessions via creationTime vs lastSignInTime).
+        if (isFreshSignIn) {
+          const created = firebaseUser.metadata?.creationTime;
+          const lastSignIn = firebaseUser.metadata?.lastSignInTime;
+          const isNewAccount =
+            !!created && !!lastSignIn && Math.abs(new Date(lastSignIn).getTime() - new Date(created).getTime()) < 60_000;
+          mpTrack("sign_in_success", {
+            is_new_account: isNewAccount,
+            method: "google",
+          });
+        }
         try {
           await syncUserToDatabase(firebaseUser);
         } catch {
@@ -102,6 +118,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           linkPushTokenToUser(firebaseUser.uid);
         }
       } else {
+        if (prevUidRef.current) mpTrack("sign_out");
+        prevUidRef.current = null;
         setUser(null);
         mpReset();
         if (isCapacitorApp()) logoutRevenueCat();

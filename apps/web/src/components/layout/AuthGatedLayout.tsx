@@ -4,6 +4,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useRef, useEffect, useState } from "react";
 import { Splash } from "@/components/layout/Splash";
+import { PageViewTracker } from "@/components/analytics/PageViewTracker";
 
 // Routes that non-logged-in users CAN visit without being sent to /profile login.
 const PUBLIC_ROUTES = new Set(["/profile", "/privacy", "/terms", "/refund", "/help", "/delete-account"]);
@@ -58,11 +59,17 @@ export function AuthGatedLayout({
   if (isLoginScreen) {
     // Login screen: hide navbar AND bottom nav so user can only sign in
     // (no escape hatches to other pages).
-    return <main className="min-h-screen">{children}</main>;
+    return (
+      <>
+        <PageViewTracker isAuthed={false} />
+        <main className="min-h-screen">{children}</main>
+      </>
+    );
   }
 
   return (
     <>
+      <PageViewTracker isAuthed={!!user} />
       <div ref={navRef} className="fixed top-0 left-0 right-0 z-50">
         {navbar}
       </div>
