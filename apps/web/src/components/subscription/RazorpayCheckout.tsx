@@ -66,15 +66,6 @@ export function RazorpayCheckout({
         prefill: {
           email: user.email || "",
           name: user.displayName || "",
-          // Pre-select UPI as the payment method so the modal opens
-          // directly on the UPI app picker (PhonePe / GPay / Paytm)
-          // instead of the generic "Choose payment method" screen.
-          method: "upi",
-        },
-        // Lock payment method to UPI — user can't switch to cards/wallets,
-        // and the method-switcher UI is hidden.
-        readonly: {
-          method: true,
         },
         theme: { color: "#f97316" },
         config: {
@@ -85,16 +76,14 @@ export function RazorpayCheckout({
                 instruments: [
                   {
                     method: "upi",
-                    // Order matters: intent first → app picker shows immediately
                     flows: ["intent", "collect", "qr"],
                   },
                 ],
               },
             },
             sequence: ["block.utib"],
-            // Hide cards/wallets/netbanking blocks — UPI only.
             preferences: {
-              show_default_blocks: false,
+              show_default_blocks: true,
             },
           },
         },
