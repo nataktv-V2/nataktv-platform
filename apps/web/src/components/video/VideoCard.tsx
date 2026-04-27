@@ -3,6 +3,7 @@
 import { memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSubscription } from "@/components/subscription/SubscriptionGate";
 
 type VideoCardProps = {
   id: string;
@@ -24,9 +25,14 @@ function formatDuration(seconds: number) {
 
 export const VideoCard = memo(function VideoCard({ id, title, thumbnailUrl, generatedThumbnailUrl, duration, language, fullWidth, createdAt }: VideoCardProps) {
   const isNew = createdAt ? (Date.now() - new Date(createdAt).getTime()) < 7 * 24 * 60 * 60 * 1000 : false;
+  const { isSubscribed, loading: subLoading } = useSubscription();
+
+  // Unauth or non-subscribed users skip straight to /subscribe instead of
+  // wasting a tap on /video/[id] just to hit the paywall there.
+  const href = !subLoading && !isSubscribed ? "/subscribe" : `/video/${id}`;
 
   return (
-    <Link href={`/video/${id}`} className={`group block flex-shrink-0 ${fullWidth ? "w-full" : "w-36 sm:w-44"}`}>
+    <Link href={href} className={`group block flex-shrink-0 ${fullWidth ? "w-full" : "w-36 sm:w-44"}`}>
       <div className="relative aspect-[9/16] rounded-xl overflow-hidden bg-bg-surface">
         <Image
           src={generatedThumbnailUrl || thumbnailUrl}
